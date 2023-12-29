@@ -1,0 +1,65 @@
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
+}
+
+group = 'sk.adr3ez'
+version = '1.0.1'
+
+ext {
+    targetJavaVersion = 17
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    //lombok
+    compileOnly 'org.projectlombok:lombok:1.18.26'
+    annotationProcessor 'org.projectlombok:lombok:1.18.26'
+
+    testCompileOnly 'org.projectlombok:lombok:1.18.26'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.26'
+
+    implementation group: 'org.jetbrains', name: 'annotations', version: '24.1.0'
+    annotationProcessor group: 'org.jetbrains', name: 'annotations', version: '24.1.0'
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'com.github.johnrengelman.shadow'
+
+    sourceCompatibility = targetJavaVersion
+    targetCompatibility = targetJavaVersion
+
+    tasks.withType(JavaCompile) {
+        options.encoding = 'UTF-8'
+    }
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        //lombok
+        compileOnly 'org.projectlombok:lombok:1.18.26'
+        annotationProcessor 'org.projectlombok:lombok:1.18.26'
+
+        testCompileOnly 'org.projectlombok:lombok:1.18.26'
+        testAnnotationProcessor 'org.projectlombok:lombok:1.18.26'
+
+        implementation group: 'org.jetbrains', name: 'annotations', version: '24.1.0'
+        annotationProcessor group: 'org.jetbrains', name: 'annotations', version: '24.1.0'
+
+        //BoostedYAML
+        implementation group: 'dev.dejvokep', name: 'boosted-yaml', version: '1.3.1'
+
+        //Adventure-api
+        implementation "net.kyori:adventure-api:4.14.0"
+    }
+}
+
+test {
+    useJUnitPlatform()
+}

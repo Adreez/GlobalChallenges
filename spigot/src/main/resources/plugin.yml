@@ -1,0 +1,8 @@
+name: GCSpigotPlugin
+version: '${version}'
+main: sk.adr3ez.globalchallenges.GCSpigotPlugin
+api-version: '1.20'
+load: STARTUP
+softdepend: [PlaceholderAPI]
+authors: [asd]
+description: asd
