@@ -15,6 +15,7 @@ dependencies {
     implementation "net.kyori:adventure-platform-bukkit:4.3.1"
 
     implementation project(':api')
+    implementation project(':core')
 }
 
 java {

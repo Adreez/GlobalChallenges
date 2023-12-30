@@ -1,2 +1,2 @@
 rootProject.name = 'GlobalChallenges'
-include('api', 'spigot')
+include('api', 'spigot', 'core')
