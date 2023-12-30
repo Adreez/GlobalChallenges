@@ -49,8 +49,8 @@ subprojects {
         testCompileOnly 'org.projectlombok:lombok:1.18.26'
         testAnnotationProcessor 'org.projectlombok:lombok:1.18.26'
 
-        implementation group: 'org.jetbrains', name: 'annotations', version: '24.1.0'
-        annotationProcessor group: 'org.jetbrains', name: 'annotations', version: '24.1.0'
+        //implementation group: 'org.jetbrains', name: 'annotations', version: '24.1.0'
+        //annotationProcessor group: 'org.jetbrains', name: 'annotations', version: '24.1.0'
 
         //BoostedYAML
         implementation group: 'dev.dejvokep', name: 'boosted-yaml', version: '1.3.1'
