@@ -2,13 +2,13 @@ package sk.adr3ez.globalchallenges.core.database.adapter;
 
 import org.jetbrains.annotations.NotNull;
 import sk.adr3ez.globalchallenges.api.database.Storage;
-import sk.adr3ez.globalchallenges.core.database.AbstractTable;
-import sk.adr3ez.globalchallenges.core.database.ConnectionPoolManager;
+import sk.adr3ez.globalchallenges.core.database.mysql.AbstractTable;
+import sk.adr3ez.globalchallenges.core.database.mysql.MySQLConnectionFactoryAdapter;
 
 import java.util.UUID;
 
 public class MySQLStorageAdapter extends AbstractTable implements Storage {
-    public MySQLStorageAdapter(@NotNull ConnectionPoolManager manager, @NotNull String table) {
+    public MySQLStorageAdapter(@NotNull MySQLConnectionFactoryAdapter manager, @NotNull String table) {
         super(manager, table);
     }
 

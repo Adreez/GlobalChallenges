@@ -1,4 +1,4 @@
-package sk.adr3ez.globalchallenges.core.database;
+package sk.adr3ez.globalchallenges.core.database.mysql;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -7,11 +7,12 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import sk.adr3ez.globalchallenges.core.database.ConnectionFactory;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class ConnectionPoolManager {
+public class MySQLConnectionFactoryAdapter implements ConnectionFactory {
 
     @Nullable
     @Getter
@@ -48,9 +49,10 @@ public class ConnectionPoolManager {
      * This method will create new HikariConfig with all properties and then
      * new HikariDataSource will be created.
      */
-    public ConnectionPoolManager() {
+    public MySQLConnectionFactoryAdapter() {
     }
 
+    @Override
     public void setup() {
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl(
@@ -66,13 +68,15 @@ public class ConnectionPoolManager {
     }
 
     @Nullable
+    @Override
     public Connection getConnection() throws SQLException {
         if (dataSource == null || dataSource.isClosed())
             setup();
         return dataSource.getConnection();
     }
 
-    public void closePool() {
+    @Override
+    public void close() {
         if (dataSource != null && !dataSource.isClosed()) dataSource.close();
     }
 }

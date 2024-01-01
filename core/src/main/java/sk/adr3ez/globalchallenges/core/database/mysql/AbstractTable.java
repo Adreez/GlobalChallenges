@@ -1,7 +1,8 @@
-package sk.adr3ez.globalchallenges.core.database;
+package sk.adr3ez.globalchallenges.core.database.mysql;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import sk.adr3ez.globalchallenges.core.database.ConnectionFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,11 +14,11 @@ public abstract class AbstractTable {
     @NotNull
     protected String table;
     @NotNull
-    protected ConnectionPoolManager manager;
+    protected ConnectionFactory manager;
 
     public abstract void createTable();
 
-    public AbstractTable(@NotNull ConnectionPoolManager manager, @NotNull String table) {
+    public AbstractTable(@NotNull ConnectionFactory manager, @NotNull String table) {
         this.manager = manager;
         this.table = table;
         createTable();

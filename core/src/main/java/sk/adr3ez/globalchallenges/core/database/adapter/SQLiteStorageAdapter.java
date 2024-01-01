@@ -2,14 +2,14 @@ package sk.adr3ez.globalchallenges.core.database.adapter;
 
 import org.jetbrains.annotations.NotNull;
 import sk.adr3ez.globalchallenges.api.database.Storage;
-import sk.adr3ez.globalchallenges.core.database.AbstractTable;
-import sk.adr3ez.globalchallenges.core.database.ConnectionPoolManager;
+import sk.adr3ez.globalchallenges.core.database.ConnectionFactory;
+import sk.adr3ez.globalchallenges.core.database.mysql.AbstractTable;
 
 import java.util.UUID;
 
 public class SQLiteStorageAdapter extends AbstractTable implements Storage {
-    public SQLiteStorageAdapter(@NotNull ConnectionPoolManager manager, @NotNull String table) {
-        super(manager, table);
+    public SQLiteStorageAdapter(@NotNull ConnectionFactory factory, @NotNull String table) {
+        super(factory, table);
     }
 
     @Override

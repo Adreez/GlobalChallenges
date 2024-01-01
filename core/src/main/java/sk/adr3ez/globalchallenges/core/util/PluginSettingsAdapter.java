@@ -1,12 +1,12 @@
 package sk.adr3ez.globalchallenges.core.util;
 
-import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import sk.adr3ez.globalchallenges.api.GlobalChallenges;
 import sk.adr3ez.globalchallenges.api.configuration.StorageMethod;
 import sk.adr3ez.globalchallenges.api.util.log.PluginSettings;
 
 public class PluginSettingsAdapter extends PluginSettings {
+
 
     int timeBetweenGames = 600; //Every 30 seconds TODO change
     int requiredPlayers = 2;
@@ -33,29 +33,43 @@ public class PluginSettingsAdapter extends PluginSettings {
         return storageMethod;
     }
 
-    @Getter
-    public static enum ConfigRoutes {
+    @NotNull
+    @Override
+    public String getDataHostname() {
+        return plugin.getConfiguration().getString(ConfigRoutes.STORAGE_DATA_HOSTNAME.getRoute());
+    }
 
-        STORAGE_METHOD("storage.method"),
-        STORAGE_DATA_HOSTNAME("storage.data.hostname"),
-        STORAGE_DATA_DATABASE("storage.data.database"),
-        STORAGE_DATA_USERNAME("storage.data.username"),
-        STORAGE_DATA_PASSWORD("storage.data.password"),
-        STORAGE_DATA_MINIMUMCONNECTIONS("storage.data.minimumConnections"),
-        STORAGE_DATA_MAXIMUMCONNECTIONS("storage.data.maximumConnections"),
-        STORAGE_DATA_CONNECTIONTIMEOUT("storage.data.connectionTimeout"),
+    @NotNull
+    @Override
+    public String getDataPassword() {
+        return plugin.getConfiguration().getString(ConfigRoutes.STORAGE_DATA_PASSWORD.getRoute());
+    }
 
+    @NotNull
+    @Override
+    public String getDataDatabase() {
+        return plugin.getConfiguration().getString(ConfigRoutes.STORAGE_DATA_DATABASE.getRoute());
+    }
 
-        ;
+    @NotNull
+    @Override
+    public String getDataUsername() {
+        return plugin.getConfiguration().getString(ConfigRoutes.STORAGE_DATA_USERNAME.getRoute());
+    }
 
-        @NotNull
-        private final String route;
+    @Override
+    public int getDataMinimumConnections() {
+        return plugin.getConfiguration().getInt(ConfigRoutes.STORAGE_DATA_MINIMUMCONNECTIONS.getRoute());
+    }
 
-        ConfigRoutes(@NotNull String route) {
-            this.route = route;
-        }
+    @Override
+    public int getDataMaximumConnections() {
+        return plugin.getConfiguration().getInt(ConfigRoutes.STORAGE_DATA_MAXIMUMCONNECTIONS.getRoute());
+    }
 
-
+    @Override
+    public int getDataConnectionTimeout() {
+        return plugin.getConfiguration().getInt(ConfigRoutes.STORAGE_DATA_CONNECTIONTIMEOUT.getRoute());
     }
 
 }
