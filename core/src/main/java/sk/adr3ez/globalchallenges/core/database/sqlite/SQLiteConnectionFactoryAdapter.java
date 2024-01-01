@@ -30,16 +30,16 @@ public class SQLiteConnectionFactoryAdapter implements ConnectionFactory {
             try {
                 dataFolder.createNewFile();
             } catch (IOException e) {
-                plugin.getPluginLogger().severe("File write error: globalchallenges.db");
+                plugin.getPluginLogger().warn("File write error: globalchallenges.db");
             }
         }
         try {
             Class.forName("org.sqlite.JDBC");
             connection = DriverManager.getConnection("jdbc:sqlite:" + dataFolder);
         } catch (SQLException ex) {
-            plugin.getPluginLogger().severe("SQLite exception on initialize" + ex);
+            plugin.getPluginLogger().warn("SQLite exception on initialize" + ex);
         } catch (ClassNotFoundException ex) {
-            plugin.getPluginLogger().severe("You need the SQLite JBDC library. Google it. Put it in /lib folder.");
+            plugin.getPluginLogger().warn("You need the SQLite JBDC library. Google it. Put it in /lib folder.");
         }
     }
 
