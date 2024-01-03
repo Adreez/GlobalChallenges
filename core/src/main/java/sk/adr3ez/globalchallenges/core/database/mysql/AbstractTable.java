@@ -2,6 +2,7 @@ package sk.adr3ez.globalchallenges.core.database.mysql;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import sk.adr3ez.globalchallenges.api.GlobalChallenges;
 import sk.adr3ez.globalchallenges.core.database.ConnectionFactory;
 
 import java.sql.Connection;
@@ -12,15 +13,18 @@ import java.sql.SQLException;
 public abstract class AbstractTable {
 
     @NotNull
-    protected String table;
+    protected final String table;
     @NotNull
-    protected ConnectionFactory manager;
+    protected final ConnectionFactory manager;
+    @NotNull
+    protected final GlobalChallenges plugin;
 
     public abstract void createTable();
 
-    public AbstractTable(@NotNull ConnectionFactory manager, @NotNull String table) {
+    public AbstractTable(@NotNull ConnectionFactory manager, @NotNull GlobalChallenges plugin, @NotNull String table) {
         this.manager = manager;
         this.table = table;
+        this.plugin = plugin;
         createTable();
     }
 
