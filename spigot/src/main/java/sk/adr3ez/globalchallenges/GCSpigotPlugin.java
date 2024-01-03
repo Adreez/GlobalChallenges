@@ -14,8 +14,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import sk.adr3ez.globalchallenges.api.GlobalChallenges;
+import sk.adr3ez.globalchallenges.api.database.DataManager;
 import sk.adr3ez.globalchallenges.api.util.log.PluginLogger;
 import sk.adr3ez.globalchallenges.api.util.log.PluginSettings;
+import sk.adr3ez.globalchallenges.core.util.DataManagerAdapter;
 import sk.adr3ez.globalchallenges.core.util.PluginSettingsAdapter;
 import sk.adr3ez.globalchallenges.util.SpigotLogger;
 
@@ -32,6 +34,8 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
     private @Nullable YamlDocument configurationFile;
     private @Nullable PluginSettings pluginSettings;
 
+    private @Nullable DataManager dataManager;
+
     @Override
     public void onEnable() {
         long startupTime = System.currentTimeMillis();
@@ -40,6 +44,7 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
 
         this.adventure = BukkitAudiences.create(this);
         this.pluginSettings = new PluginSettingsAdapter(this);
+        this.dataManager = new DataManagerAdapter(this);
 
         try {
             configurationFile = YamlDocument.create(new File(getDataFolder(), "config.yml"), Objects.requireNonNull(getResource("config.yml")),
@@ -49,19 +54,19 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
             getLogger().warning("There was error with loading config.yml, please try to reload the plugin \n" + e);
         }
 
-        getPluginLogger().info(ConsoleColors.YELLOW + "Plugin has been loaded (" + (startupTime - System.currentTimeMillis()) + " ms)");
+        getPluginLogger().info(ConsoleColors.YELLOW + "Plugin has been loaded (" + (System.currentTimeMillis() - startupTime) + " ms)");
     }
 
     @Override
     public void onDisable() {
-        if(this.adventure != null) {
+        if (this.adventure != null) {
             this.adventure.close();
             this.adventure = null;
         }
     }
 
     public @NotNull BukkitAudiences adventure() {
-        if(this.adventure == null) {
+        if (this.adventure == null) {
             throw new IllegalStateException("Tried to access Adventure when the plugin was disabled!");
         }
         return this.adventure;
@@ -86,6 +91,14 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
         if (pluginSettings == null)
             throw new IllegalStateException("Tried to access plugin settings while plugin is not loaded yet!");
         return pluginSettings;
+    }
+
+    @NotNull
+    @Override
+    public DataManager getDataManager() {
+        if (dataManager == null)
+            throw new IllegalStateException("Tried to access data manager while plugin is not loaded yet!");
+        return dataManager;
     }
 
     @Override
