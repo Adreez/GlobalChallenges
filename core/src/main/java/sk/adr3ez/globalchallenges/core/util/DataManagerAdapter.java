@@ -39,10 +39,11 @@ public class DataManagerAdapter implements DataManager {
             poolManager.setConnectionTimeout(plugin.getPluginSettings().getDataConnectionTimeout());
             poolManager.setMaximumConnections(plugin.getPluginSettings().getDataMaximumConnections());
             poolManager.setMinimumConnections(plugin.getPluginSettings().getDataMinimumConnections());
+            poolManager.setup();
 
             storage = new MySQLStorageAdapter(poolManager, plugin, "globalchallenges_data");
         } else {
-            storage = new SQLiteStorageAdapter(new SQLiteConnectionFactoryAdapter(plugin), "globalchallenges_data");
+            storage = new SQLiteStorageAdapter(new SQLiteConnectionFactoryAdapter(plugin), plugin, "globalchallenges_data");
         }
 
     }

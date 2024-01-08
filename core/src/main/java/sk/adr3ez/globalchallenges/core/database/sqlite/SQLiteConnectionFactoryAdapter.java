@@ -21,6 +21,7 @@ public class SQLiteConnectionFactoryAdapter implements ConnectionFactory {
 
     public SQLiteConnectionFactoryAdapter(@NotNull GlobalChallenges plugin) {
         this.plugin = plugin;
+        setup();
     }
 
     @Override

@@ -42,6 +42,9 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
 
         getPluginLogger().info(ConsoleColors.YELLOW + "Initializing plugin...");
 
+        if (!getDataFolder().exists())
+            getDataFolder().mkdirs();
+
         this.adventure = BukkitAudiences.create(this);
         this.pluginSettings = new PluginSettingsAdapter(this);
         this.dataManager = new DataManagerAdapter(this);
