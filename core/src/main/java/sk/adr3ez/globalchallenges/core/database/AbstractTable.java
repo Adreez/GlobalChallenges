@@ -1,9 +1,8 @@
-package sk.adr3ez.globalchallenges.core.database.mysql;
+package sk.adr3ez.globalchallenges.core.database;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import sk.adr3ez.globalchallenges.api.GlobalChallenges;
-import sk.adr3ez.globalchallenges.core.database.ConnectionFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

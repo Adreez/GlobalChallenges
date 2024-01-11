@@ -17,7 +17,8 @@ public class SQLiteConnectionFactoryAdapter implements ConnectionFactory {
     private final GlobalChallenges plugin;
 
     @Nullable
-    private Connection connection;
+    private File dataFolder = null;
+
 
     public SQLiteConnectionFactoryAdapter(@NotNull GlobalChallenges plugin) {
         this.plugin = plugin;
@@ -26,7 +27,7 @@ public class SQLiteConnectionFactoryAdapter implements ConnectionFactory {
 
     @Override
     public void setup() {
-        File dataFolder = new File(plugin.getDataDirectory(), "globalchallenges.db");
+        dataFolder = new File(plugin.getDataDirectory(), "globalchallenges.db");
         if (!dataFolder.exists()) {
             try {
                 dataFolder.createNewFile();
@@ -34,29 +35,32 @@ public class SQLiteConnectionFactoryAdapter implements ConnectionFactory {
                 plugin.getPluginLogger().warn("File write error: globalchallenges.db");
             }
         }
-        try {
-            Class.forName("org.sqlite.JDBC");
-            connection = DriverManager.getConnection("jdbc:sqlite:" + dataFolder);
-        } catch (SQLException ex) {
-            plugin.getPluginLogger().warn("SQLite exception on initialize" + ex);
-        } catch (ClassNotFoundException ex) {
-            plugin.getPluginLogger().warn("You need the SQLite JBDC library. Google it. Put it in /lib folder.");
-        }
     }
 
     @Nullable
     @Override
     public Connection getConnection() {
-        return connection;
+        try {
+            if (dataFolder != null) {
+                Class.forName("org.sqlite.JDBC");
+                return DriverManager.getConnection("jdbc:sqlite:file:" + dataFolder.getAbsolutePath());
+            }
+            System.out.println("jdbc:sqlite:file:" + dataFolder);
+        } catch (SQLException ex) {
+            plugin.getPluginLogger().warn("SQLite exception on initialize" + ex);
+        } catch (ClassNotFoundException ex) {
+            plugin.getPluginLogger().warn("You need the SQLite JBDC library. Google it. Put it in /lib folder.");
+        }
+        return null;
     }
 
     @Override
     public void close() throws RuntimeException {
-        try {
+        /*try {
             if (connection != null && !connection.isClosed())
                 connection.close();
         } catch (SQLException e) {
             throw new RuntimeException(e);
-        }
+        }*/
     }
 }

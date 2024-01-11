@@ -3,7 +3,7 @@ package sk.adr3ez.globalchallenges.core.database.adapter;
 import org.jetbrains.annotations.NotNull;
 import sk.adr3ez.globalchallenges.api.GlobalChallenges;
 import sk.adr3ez.globalchallenges.api.database.Storage;
-import sk.adr3ez.globalchallenges.core.database.mysql.AbstractTable;
+import sk.adr3ez.globalchallenges.core.database.AbstractTable;
 import sk.adr3ez.globalchallenges.core.database.mysql.MySQLConnectionFactoryAdapter;
 
 import java.sql.Connection;
@@ -26,7 +26,7 @@ public class MySQLStorageAdapter extends AbstractTable implements Storage {
             assert connection != null;
             preparedStatement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + table + " (uuid VARCHAR(36) NOT NULL PRIMARY KEY," +
                     "games_played INT DEFAULT 0," +
-                    "games_won INT DEFAULT 0");
+                    "games_won INT DEFAULT 0)");
             preparedStatement.execute();
         } catch (SQLException e) {
             plugin.getPluginLogger().severe(e.getMessage());

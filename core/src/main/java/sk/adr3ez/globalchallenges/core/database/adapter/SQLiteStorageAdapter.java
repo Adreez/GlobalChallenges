@@ -3,8 +3,8 @@ package sk.adr3ez.globalchallenges.core.database.adapter;
 import org.jetbrains.annotations.NotNull;
 import sk.adr3ez.globalchallenges.api.GlobalChallenges;
 import sk.adr3ez.globalchallenges.api.database.Storage;
+import sk.adr3ez.globalchallenges.core.database.AbstractTable;
 import sk.adr3ez.globalchallenges.core.database.ConnectionFactory;
-import sk.adr3ez.globalchallenges.core.database.mysql.AbstractTable;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -24,9 +24,9 @@ public class SQLiteStorageAdapter extends AbstractTable implements Storage {
         try {
             connection = manager.getConnection();
             assert connection != null;
-            preparedStatement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + table + " (uuid VARCHAR(36) NOT NULL PRIMARY KEY," +
-                    "games_played INT DEFAULT 0," +
-                    "games_won INT DEFAULT 0");
+            preparedStatement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + table + " (`uuid` VARCHAR(36) NOT NULL PRIMARY KEY," +
+                    "`games_played` INT DEFAULT 0," +
+                    "`games_won` INT DEFAULT 0);");
             preparedStatement.execute();
         } catch (SQLException e) {
             plugin.getPluginLogger().severe(e.getMessage());
