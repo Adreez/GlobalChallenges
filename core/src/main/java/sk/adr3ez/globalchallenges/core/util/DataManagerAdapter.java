@@ -1,10 +1,9 @@
 package sk.adr3ez.globalchallenges.core.util;
 
-import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import sk.adr3ez.globalchallenges.api.GlobalChallenges;
 import sk.adr3ez.globalchallenges.api.configuration.StorageMethod;
+import sk.adr3ez.globalchallenges.api.database.ConnectionFactory;
 import sk.adr3ez.globalchallenges.api.database.DataManager;
 import sk.adr3ez.globalchallenges.api.database.Storage;
 import sk.adr3ez.globalchallenges.core.database.adapter.MySQLStorageAdapter;
@@ -19,9 +18,9 @@ public class DataManagerAdapter implements DataManager {
     @NotNull
     Storage storage;
 
-    @Nullable
-    @Getter
-    private MySQLConnectionFactoryAdapter poolManager;
+    @NotNull
+    private final ConnectionFactory connectionFactory;
+
     @NotNull
     private final GlobalChallenges plugin;
 
@@ -31,19 +30,22 @@ public class DataManagerAdapter implements DataManager {
 
 
         if (storageMethod == StorageMethod.MYSQL) {
-            poolManager = new MySQLConnectionFactoryAdapter();
-            poolManager.setPassword(plugin.getPluginSettings().getDataPassword());
-            poolManager.setUsername(plugin.getPluginSettings().getDataUsername());
-            poolManager.setHostname(plugin.getPluginSettings().getDataHostname());
-            poolManager.setDatabase(plugin.getPluginSettings().getDataDatabase());
-            poolManager.setConnectionTimeout(plugin.getPluginSettings().getDataConnectionTimeout());
-            poolManager.setMaximumConnections(plugin.getPluginSettings().getDataMaximumConnections());
-            poolManager.setMinimumConnections(plugin.getPluginSettings().getDataMinimumConnections());
-            poolManager.setup();
+            connectionFactory = new MySQLConnectionFactoryAdapter();
+            MySQLConnectionFactoryAdapter connFact = (MySQLConnectionFactoryAdapter) connectionFactory;
 
-            storage = new MySQLStorageAdapter(poolManager, plugin, "globalchallenges_data");
+            connFact.setPassword(plugin.getPluginSettings().getDataPassword());
+            connFact.setUsername(plugin.getPluginSettings().getDataUsername());
+            connFact.setHostname(plugin.getPluginSettings().getDataHostname());
+            connFact.setDatabase(plugin.getPluginSettings().getDataDatabase());
+            connFact.setConnectionTimeout(plugin.getPluginSettings().getDataConnectionTimeout());
+            connFact.setMaximumConnections(plugin.getPluginSettings().getDataMaximumConnections());
+            connFact.setMinimumConnections(plugin.getPluginSettings().getDataMinimumConnections());
+            connFact.setup();
+
+            storage = new MySQLStorageAdapter(connFact, plugin, "globalchallenges_data");
         } else {
-            storage = new SQLiteStorageAdapter(new SQLiteConnectionFactoryAdapter(plugin), plugin, "globalchallenges_data");
+            connectionFactory = new SQLiteConnectionFactoryAdapter(plugin);
+            storage = new SQLiteStorageAdapter(connectionFactory, plugin, "globalchallenges_data");
         }
 
     }
@@ -58,5 +60,11 @@ public class DataManagerAdapter implements DataManager {
     @Override
     public Storage getStorage() {
         return storage;
+    }
+
+    @NotNull
+    @Override
+    public ConnectionFactory getFactory() {
+        return connectionFactory;
     }
 }

@@ -2,9 +2,9 @@ package sk.adr3ez.globalchallenges.core.database.adapter;
 
 import org.jetbrains.annotations.NotNull;
 import sk.adr3ez.globalchallenges.api.GlobalChallenges;
+import sk.adr3ez.globalchallenges.api.database.ConnectionFactory;
 import sk.adr3ez.globalchallenges.api.database.Storage;
 import sk.adr3ez.globalchallenges.core.database.AbstractTable;
-import sk.adr3ez.globalchallenges.core.database.ConnectionFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

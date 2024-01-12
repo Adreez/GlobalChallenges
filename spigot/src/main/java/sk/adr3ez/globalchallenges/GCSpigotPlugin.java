@@ -6,6 +6,8 @@ import dev.dejvokep.boostedyaml.settings.dumper.DumperSettings;
 import dev.dejvokep.boostedyaml.settings.general.GeneralSettings;
 import dev.dejvokep.boostedyaml.settings.loader.LoaderSettings;
 import dev.dejvokep.boostedyaml.settings.updater.UpdaterSettings;
+import dev.jorel.commandapi.CommandAPICommand;
+import dev.jorel.commandapi.arguments.GreedyStringArgument;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -40,7 +42,7 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
     public void onEnable() {
         long startupTime = System.currentTimeMillis();
 
-        getPluginLogger().info(ConsoleColors.YELLOW + "Initializing plugin...");
+        getPluginLogger().info(ConsoleColors.format("&y[&cGlobalChallenges&y] &gInitializing plugin...&reset"));
 
         if (!getDataFolder().exists())
             getDataFolder().mkdirs();
@@ -54,10 +56,11 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
                     GeneralSettings.DEFAULT, LoaderSettings.builder().setAutoUpdate(true).build(), DumperSettings.DEFAULT, UpdaterSettings.builder()
                             .setVersioning(new BasicVersioning("file-version")).build());
         } catch (IOException e) {
-            getLogger().warning("There was error with loading config.yml, please try to reload the plugin \n" + e);
+            getPluginLogger().warn("There was error with loading config.yml, please try to reload the plugin \n" + e);
         }
 
-        getPluginLogger().info(ConsoleColors.YELLOW + "Plugin has been loaded (" + (System.currentTimeMillis() - startupTime) + " ms)");
+        setupCommands();
+        getPluginLogger().info(ConsoleColors.format("&y[&cGlobalChallenges&y] &gPlugin has been loaded (" + (System.currentTimeMillis() - startupTime) + " ms)&reset"));
     }
 
     @Override
@@ -66,6 +69,7 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
             this.adventure.close();
             this.adventure = null;
         }
+        getDataManager().getFactory().close();
     }
 
     public @NotNull BukkitAudiences adventure() {
@@ -121,6 +125,26 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
         return Bukkit.getOnlinePlayers();
     }
 
+    private void setupCommands() {
+        new CommandAPICommand("globalchallenges")
+                .withAliases("gch", "globalch", "glch")
+                .withPermission("globalchallenges.use")
+                .withSubcommand(new CommandAPICommand("start")
+                        .withArguments(new GreedyStringArgument("challengeID")
+                                .executes((sender, args) -> {
+                                    if (args.get("challengeID") == "REPLACE") {
+                                        sender.sendMessage("Yeey - replace");
+                                    } else if (args.get("challengeID") == "YES") {
+                                        sender.sendMessage("Yeeey - YES");
+                                    }
+                                    sender.sendMessage("NOPE!");
+                                })))
+                .executes((sender, args) -> {
+                    sender.sendMessage("TEST");
+                })
+                .register();
+    }
+
     public static class ConsoleColors {
         @NotNull
         public static final String RESET = "\u001B[0m";
@@ -140,5 +164,17 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
         public static final String CYAN = "\u001B[36m";
         @NotNull
         public static final String WHITE = "\u001B[37m";
+
+        public static String format(String input) {
+            return input.replaceAll("&reset", RESET)
+                    .replaceAll("&0", BLACK)
+                    .replaceAll("&r", RED)
+                    .replaceAll("&g", GREEN)
+                    .replaceAll("&y", YELLOW)
+                    .replaceAll("&b", BLUE)
+                    .replaceAll("&c", CYAN)
+                    .replaceAll("&w", WHITE);
+
+        }
     }
 }

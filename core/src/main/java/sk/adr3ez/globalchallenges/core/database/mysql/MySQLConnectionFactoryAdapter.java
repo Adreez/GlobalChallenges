@@ -7,7 +7,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import sk.adr3ez.globalchallenges.core.database.ConnectionFactory;
+import sk.adr3ez.globalchallenges.api.database.ConnectionFactory;
 
 import java.sql.Connection;
 import java.sql.SQLException;

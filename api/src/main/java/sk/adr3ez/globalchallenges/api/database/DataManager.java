@@ -5,7 +5,13 @@ import sk.adr3ez.globalchallenges.api.configuration.StorageMethod;
 
 public interface DataManager {
 
-    @NotNull StorageMethod getStorageMethod();
-    @NotNull Storage getStorage();
+    @NotNull
+    StorageMethod getStorageMethod();
+
+    @NotNull
+    Storage getStorage();
+
+    @NotNull
+    ConnectionFactory getFactory();
 
 }
