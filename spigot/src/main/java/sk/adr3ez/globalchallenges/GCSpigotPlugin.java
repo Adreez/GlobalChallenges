@@ -7,9 +7,10 @@ import dev.dejvokep.boostedyaml.settings.general.GeneralSettings;
 import dev.dejvokep.boostedyaml.settings.loader.LoaderSettings;
 import dev.dejvokep.boostedyaml.settings.updater.UpdaterSettings;
 import dev.jorel.commandapi.CommandAPICommand;
-import dev.jorel.commandapi.arguments.GreedyStringArgument;
+import dev.jorel.commandapi.arguments.StringArgument;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -129,18 +130,29 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
         new CommandAPICommand("globalchallenges")
                 .withAliases("gch", "globalch", "glch")
                 .withPermission("globalchallenges.use")
-                .withSubcommand(new CommandAPICommand("start")
-                        .withArguments(new GreedyStringArgument("challengeID")
-                                .executes((sender, args) -> {
-                                    if (args.get("challengeID") == "REPLACE") {
-                                        sender.sendMessage("Yeey - replace");
-                                    } else if (args.get("challengeID") == "YES") {
-                                        sender.sendMessage("Yeeey - YES");
-                                    }
-                                    sender.sendMessage("NOPE!");
-                                })))
+                .withSubcommand(new CommandAPICommand("help")
+                        .executes((sender, args) -> {
+                            adventure().sender(sender).sendMessage(MiniMessage.miniMessage().deserialize("""
+                                    GlobalChallenges
+                                    /glch help
+                                    /glch game <action> <gameID>
+                                    """));
+                        })
+                )
+                .withSubcommand(new CommandAPICommand("list")
+                        .executes((sender, args) -> {
+                            sender.sendMessage("LIST of games");
+                        })
+                )
+                .withSubcommand(new CommandAPICommand("game")
+                        .withArguments(new StringArgument("action"))
+                        .withOptionalArguments(new StringArgument("gameID"))
+                        .executes((sender, args) -> {
+
+                        })
+                )
                 .executes((sender, args) -> {
-                    sender.sendMessage("TEST");
+                    Bukkit.dispatchCommand(sender, "glch help");
                 })
                 .register();
     }
