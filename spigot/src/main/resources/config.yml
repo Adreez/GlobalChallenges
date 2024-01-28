@@ -17,16 +17,14 @@
 ##########################################################################################
 
 
-#
 # Please do not change if developer don't ask you!
-#
 file-version: 1
 
 ##########################################################################################
-# |-
-# |- STORAGE
-# |-  » Types of storage: MySQL, SQLite
-# |-
+# |-                                                                                  -| #
+# |- STORAGE                                                                          -| #
+# |-  » Types of storage: MySQL, SQLite                                               -| #
+# |-                                                                                  -| #
 ##########################################################################################
 
 storage:
@@ -41,3 +39,19 @@ storage:
     minimumConnections: 1
     maximumConnections: 20
     connectionTimeout: 2000
+
+
+##########################################################################################
+# |-                                                                                  -| #
+# |- PLUGIN SETTINGS                                                                  -| #
+# |-  »                                                                               -| #
+# |-                                                                                  -| #
+##########################################################################################
+
+game_settings:
+
+  # How many players are required to start a challenge.
+  players_required: 3
+
+
+
