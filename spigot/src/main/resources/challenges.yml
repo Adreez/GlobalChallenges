@@ -8,3 +8,5 @@ challenges:
     list:
       - DIAMOND_ORE
       - GOLD_ORE
+      - IRON_ORE
+      - COAL_ORE

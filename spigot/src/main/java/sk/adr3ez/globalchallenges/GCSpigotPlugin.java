@@ -20,6 +20,7 @@ import sk.adr3ez.globalchallenges.api.GlobalChallenges;
 import sk.adr3ez.globalchallenges.api.database.DataManager;
 import sk.adr3ez.globalchallenges.api.util.log.PluginLogger;
 import sk.adr3ez.globalchallenges.api.util.log.PluginSettings;
+import sk.adr3ez.globalchallenges.core.model.GameManagerAdapter;
 import sk.adr3ez.globalchallenges.core.util.DataManagerAdapter;
 import sk.adr3ez.globalchallenges.core.util.PluginSettingsAdapter;
 import sk.adr3ez.globalchallenges.util.SpigotLogger;
@@ -38,6 +39,8 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
     private @Nullable PluginSettings pluginSettings;
 
     private @Nullable DataManager dataManager;
+
+    private @Nullable GameManagerAdapter gameManager;
 
     @Override
     public void onEnable() {
@@ -78,6 +81,12 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
             throw new IllegalStateException("Tried to access Adventure when the plugin was disabled!");
         }
         return this.adventure;
+    }
+
+    @NotNull
+    @Override
+    public JavaPlugin getGCPlugin() {
+        return this;
     }
 
     @Override

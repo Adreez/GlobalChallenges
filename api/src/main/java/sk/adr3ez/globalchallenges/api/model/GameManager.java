@@ -11,6 +11,8 @@ public interface GameManager {
 
     void startRandom();
 
+    void start(@NotNull Challenge<?> challenge);
+
     void startChallenge(@NotNull Challenge<?> challenge);
 
     @Nullable

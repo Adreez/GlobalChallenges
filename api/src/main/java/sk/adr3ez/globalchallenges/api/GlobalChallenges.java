@@ -2,6 +2,7 @@ package sk.adr3ez.globalchallenges.api;
 
 import dev.dejvokep.boostedyaml.YamlDocument;
 import net.kyori.adventure.text.Component;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import sk.adr3ez.globalchallenges.api.database.DataManager;
 import sk.adr3ez.globalchallenges.api.util.log.PluginLogger;
@@ -10,6 +11,9 @@ import sk.adr3ez.globalchallenges.api.util.log.PluginSettings;
 import java.util.Collection;
 
 public interface GlobalChallenges {
+
+    @NotNull
+    JavaPlugin getGCPlugin();
 
     /**
      * Default config.yml

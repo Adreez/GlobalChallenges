@@ -49,17 +49,25 @@ public class GameManagerAdapter implements GameManager {
         Random random = new Random();
         int rand = random.nextInt(registeredChallenges.size());
 
-        Challenge<?> challenge = registeredChallenges.get(rand);
+        this.start(registeredChallenges.get(rand));
+    }
 
-        if (challenge.start(challengesFile, "challenges." + challenge.getKey())) {
+    @Override
+    public void start(@NotNull Challenge<?> challenge) {
+
+        if (activeChallenge != null) //Won't start challenge if one is active
+            return;
+
+        if (challenge.start()) {
             activeChallenge = challenge;
         }
+        //TODO Broadcast message
     }
 
     @Override
     public void startChallenge(@NotNull Challenge<?> challenge) {
         if (activeChallenge == null)
-            challenge.start(challengesFile, "challenges." + challenge.getKey());
+            challenge.start();
     }
 
     @Nullable

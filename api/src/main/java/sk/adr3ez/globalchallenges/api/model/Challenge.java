@@ -6,33 +6,40 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
-public interface Challenge<T extends Number> {
+public abstract class Challenge<T extends Number> {
 
     @NotNull
-    String getKey();
+    protected YamlDocument document;
+
+    public Challenge(@NotNull YamlDocument document) {
+        this.document = document;
+    }
 
     @NotNull
-    String getName();
+    public abstract String getKey();
 
     @NotNull
-    String getDescription();
+    public abstract String getName();
 
-    boolean isEnabled();
+    @NotNull
+    public abstract String getDescription();
+
+    public abstract boolean isEnabled();
 
     /**
      * @param document YamlDocument configuration of the challenge
      * @param path     The path to the challenge in document
      * @return if game was successfuly started
      */
-    boolean start(@Nullable YamlDocument document, @Nullable String path);
+    public abstract boolean start();
 
-    void end();
+    public abstract void end();
 
-    void addScore(@NotNull T value, @NotNull UUID target);
+    public abstract void addScore(@NotNull T value, @NotNull UUID target);
 
-    void setScore(@NotNull T value, @NotNull UUID target);
+    public abstract void setScore(@NotNull T value, @NotNull UUID target);
 
     @Nullable
-    T getScore(@NotNull UUID target);
+    public abstract T getScore(@NotNull UUID target);
 
 }
