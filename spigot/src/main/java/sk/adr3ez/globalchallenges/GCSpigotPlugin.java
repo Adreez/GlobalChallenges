@@ -17,6 +17,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import sk.adr3ez.globalchallenges.api.GlobalChallenges;
+import sk.adr3ez.globalchallenges.api.GlobalChallengesProvider;
 import sk.adr3ez.globalchallenges.api.database.DataManager;
 import sk.adr3ez.globalchallenges.api.util.log.PluginLogger;
 import sk.adr3ez.globalchallenges.api.util.log.PluginSettings;
@@ -45,6 +46,8 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
     @Override
     public void onEnable() {
         long startupTime = System.currentTimeMillis();
+
+        GlobalChallengesProvider.set(this);
 
         getPluginLogger().info(ConsoleColors.format("&y[&cGlobalChallenges&y] &gInitializing plugin...&reset"));
 
@@ -85,7 +88,7 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
 
     @NotNull
     @Override
-    public JavaPlugin getGCPlugin() {
+    public JavaPlugin getJavaPlugin() {
         return this;
     }
 

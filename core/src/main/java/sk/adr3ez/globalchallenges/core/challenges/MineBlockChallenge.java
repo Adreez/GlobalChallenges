@@ -2,9 +2,11 @@ package sk.adr3ez.globalchallenges.core.challenges;
 
 import dev.dejvokep.boostedyaml.YamlDocument;
 import org.bukkit.Bukkit;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import sk.adr3ez.globalchallenges.api.GlobalChallengesProvider;
 import sk.adr3ez.globalchallenges.api.model.Challenge;
 import sk.adr3ez.globalchallenges.api.model.GameManager;
 
@@ -43,13 +45,15 @@ public class MineBlockChallenge extends Challenge<Double> implements Listener {
 
         //TODO Register listener
 
-        Bukkit.getPluginManager().registerEvents();
+        Bukkit.getPluginManager().registerEvents(this, GlobalChallengesProvider.get().getJavaPlugin());
 
         return false;
     }
 
     @Override
     public void end() {
+
+        HandlerList.unregisterAll(this);
 
     }
 

@@ -13,7 +13,7 @@ import java.util.Collection;
 public interface GlobalChallenges {
 
     @NotNull
-    JavaPlugin getGCPlugin();
+    JavaPlugin getJavaPlugin();
 
     /**
      * Default config.yml
@@ -58,6 +58,6 @@ public interface GlobalChallenges {
     Collection<?> getOnlinePlayers();
 
     //Server version
-    //getChallgeneManager - getActiveChallenge
+    //getChallengeManager - getActiveChallenge
 
 }
