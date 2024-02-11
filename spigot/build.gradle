@@ -51,6 +51,7 @@ processResources {
 
 shadowJar {
     //relocate 'sk.adr3ez.alib', 'sk.adr3ez.darkauth.alib'
+    relocate 'dev.dejvokep.boostedyaml', 'sk.adr3ez.libs.boostedyaml'
 
-    archiveFileName.set("GlobalChallenges-${rootProject.version}.jar")
+    archiveFileName.set("GlobalChallenges-Spigot-${rootProject.version}.jar")
 }
