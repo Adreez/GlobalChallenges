@@ -23,7 +23,7 @@ public abstract class Challenge<T extends Number> implements Scoreable<T> {
 
     public abstract boolean isEnabled();
 
-    public abstract boolean start();
+    public abstract void start();
 
     public abstract void end();
 

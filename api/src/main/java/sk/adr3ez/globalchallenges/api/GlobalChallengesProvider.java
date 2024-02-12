@@ -1,7 +1,11 @@
 package sk.adr3ez.globalchallenges.api;
 
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * This is provider class of GlobalChallenges plugin
+ */
 public class GlobalChallengesProvider {
 
 
@@ -19,6 +23,12 @@ public class GlobalChallengesProvider {
         return globalChallenges;
     }
 
+    /**
+     * Set the plugin instance, should be only used internally
+     *
+     * @param plugin instance
+     */
+    @ApiStatus.Internal
     public static void set(GlobalChallenges plugin) {
         globalChallenges = plugin;
     }

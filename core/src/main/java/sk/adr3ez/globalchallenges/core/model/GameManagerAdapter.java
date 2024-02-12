@@ -1,6 +1,7 @@
 package sk.adr3ez.globalchallenges.core.model;
 
 import dev.dejvokep.boostedyaml.YamlDocument;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import sk.adr3ez.globalchallenges.api.GlobalChallenges;
@@ -57,14 +58,18 @@ public class GameManagerAdapter implements GameManager {
     @Override
     public void start(@NotNull Challenge<?> challenge) {
 
-
         if (activeChallenge.isPresent()) //Won't start challenge if one is active
             return;
 
-        if (challenge.start()) {
-            activeChallenge = Optional.of(challenge);
-        }
+        challenge.start();
+        activeChallenge = Optional.of(challenge);
+
         //TODO Broadcast message
+        plugin.broadcast(MiniMessage.miniMessage().deserialize("""
+                                
+                                STARTING GAME
+                                
+                """));
     }
 
     @Override
