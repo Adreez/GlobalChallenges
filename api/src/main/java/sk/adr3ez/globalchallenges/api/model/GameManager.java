@@ -4,10 +4,16 @@ import dev.dejvokep.boostedyaml.YamlDocument;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Optional;
+import java.util.Set;
+
 public interface GameManager {
 
     @Nullable
-    Challenge<?> getActiveChallenge();
+    Optional<Challenge<?>> getActiveChallenge();
+
+    @NotNull
+    Set<Challenge<?>> getLoadedChallenges();
 
     void startRandom();
 
@@ -17,6 +23,9 @@ public interface GameManager {
 
     @Nullable
     Challenge<?> getChallenge(@NotNull String key);
+
+    @Nullable
+    Challenge<?> getChallenge(@NotNull Class<? extends Challenge<?>> clazz);
 
     @Nullable
     YamlDocument getChallengesFile();

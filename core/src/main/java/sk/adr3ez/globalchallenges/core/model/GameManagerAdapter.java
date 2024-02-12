@@ -9,10 +9,7 @@ import sk.adr3ez.globalchallenges.api.model.GameManager;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 
 public class GameManagerAdapter implements GameManager {
 
@@ -22,7 +19,7 @@ public class GameManagerAdapter implements GameManager {
     @Nullable
     private YamlDocument challengesFile;
     @Nullable
-    private Challenge<?> activeChallenge;
+    private Optional<Challenge<?>> activeChallenge = Optional.empty();
 
     @NotNull
     private final List<Challenge<?>> registeredChallenges = new ArrayList<>();
@@ -40,8 +37,13 @@ public class GameManagerAdapter implements GameManager {
 
     @Nullable
     @Override
-    public Challenge<?> getActiveChallenge() {
+    public Optional<Challenge<?>> getActiveChallenge() {
         return activeChallenge;
+    }
+
+    @Override
+    public @NotNull Set<Challenge<?>> getLoadedChallenges() {
+        return new HashSet<>(registeredChallenges);
     }
 
     @Override
@@ -55,11 +57,12 @@ public class GameManagerAdapter implements GameManager {
     @Override
     public void start(@NotNull Challenge<?> challenge) {
 
-        if (activeChallenge != null) //Won't start challenge if one is active
+
+        if (activeChallenge.isPresent()) //Won't start challenge if one is active
             return;
 
         if (challenge.start()) {
-            activeChallenge = challenge;
+            activeChallenge = Optional.of(challenge);
         }
         //TODO Broadcast message
     }
@@ -75,6 +78,17 @@ public class GameManagerAdapter implements GameManager {
     public Challenge<?> getChallenge(@NotNull String key) {
         for (Challenge<?> challenge : registeredChallenges) {
             if (challenge.getKey().equals(key)) {
+                return challenge;
+            }
+        }
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public Challenge<?> getChallenge(@NotNull Class<? extends Challenge<?>> clazz) {
+        for (Challenge<?> challenge : registeredChallenges) {
+            if (clazz.isAssignableFrom(challenge.getClass())) {
                 return challenge;
             }
         }
