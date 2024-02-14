@@ -10,7 +10,7 @@ import java.util.Set;
 public interface GameManager {
 
     @Nullable
-    Optional<Challenge<?>> getActiveChallenge();
+    Optional<ActiveChallenge> getActiveChallenge();
 
     @NotNull
     Set<Challenge<?>> getLoadedChallenges();

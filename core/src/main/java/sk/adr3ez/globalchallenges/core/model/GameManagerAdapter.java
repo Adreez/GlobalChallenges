@@ -5,6 +5,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import sk.adr3ez.globalchallenges.api.GlobalChallenges;
+import sk.adr3ez.globalchallenges.api.model.ActiveChallenge;
 import sk.adr3ez.globalchallenges.api.model.Challenge;
 import sk.adr3ez.globalchallenges.api.model.GameManager;
 
@@ -20,7 +21,7 @@ public class GameManagerAdapter implements GameManager {
     @Nullable
     private YamlDocument challengesFile;
     @Nullable
-    private Optional<Challenge<?>> activeChallenge = Optional.empty();
+    private Optional<ActiveChallenge> activeChallenge = Optional.empty();
 
     @NotNull
     private final List<Challenge<?>> registeredChallenges = new ArrayList<>();
@@ -38,7 +39,7 @@ public class GameManagerAdapter implements GameManager {
 
     @Nullable
     @Override
-    public Optional<Challenge<?>> getActiveChallenge() {
+    public Optional<ActiveChallenge> getActiveChallenge() {
         return activeChallenge;
     }
 
@@ -62,7 +63,7 @@ public class GameManagerAdapter implements GameManager {
             return;
 
         challenge.start();
-        activeChallenge = Optional.of(challenge);
+        activeChallenge = Optional.of(new ActiveChallengeAdapter());
 
         //TODO Broadcast message
         plugin.broadcast(MiniMessage.miniMessage().deserialize("""

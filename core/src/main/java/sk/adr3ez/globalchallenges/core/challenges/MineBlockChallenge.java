@@ -43,15 +43,11 @@ public class MineBlockChallenge extends Challenge<Double> implements Listener {
     @Override
     public void start() {
         Bukkit.getPluginManager().registerEvents(this, GlobalChallengesProvider.get().getJavaPlugin());
-
-        
     }
 
     @Override
     public void end() {
-
         HandlerList.unregisterAll(this);
-
     }
 
     @Override

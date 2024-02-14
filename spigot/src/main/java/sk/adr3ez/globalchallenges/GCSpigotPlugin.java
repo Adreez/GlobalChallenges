@@ -21,6 +21,7 @@ import sk.adr3ez.globalchallenges.api.GlobalChallenges;
 import sk.adr3ez.globalchallenges.api.GlobalChallengesProvider;
 import sk.adr3ez.globalchallenges.api.database.DataManager;
 import sk.adr3ez.globalchallenges.api.model.Challenge;
+import sk.adr3ez.globalchallenges.api.model.GameManager;
 import sk.adr3ez.globalchallenges.api.util.log.PluginLogger;
 import sk.adr3ez.globalchallenges.api.util.log.PluginSettings;
 import sk.adr3ez.globalchallenges.core.model.GameManagerAdapter;
@@ -45,7 +46,7 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
 
     private @Nullable DataManager dataManager;
 
-    private @Nullable GameManagerAdapter gameManager;
+    private @Nullable GameManager gameManager;
 
     @Override
     public void onEnable() {
@@ -126,6 +127,12 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
         return dataManager;
     }
 
+    @NotNull
+    @Override
+    public GameManager getGameManager() {
+        return gameManager;
+    }
+
     @Override
     public void broadcast(@NotNull Component component) {
         for (Player player : getOnlinePlayers()) {
@@ -203,7 +210,7 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
 
                                 if (gameManager.getActiveChallenge().isPresent()) {
 
-                                    gameManager.getActiveChallenge().get().end();
+                                    //TODO gameManager.getActiveChallenge().get().end();
 
                                     sender.sendMessage("Stopping game");
                                 } else {
