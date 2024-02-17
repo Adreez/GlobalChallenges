@@ -1,5 +1,7 @@
 package sk.adr3ez.globalchallenges.api;
 
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import dev.dejvokep.boostedyaml.YamlDocument;
 import net.kyori.adventure.text.Component;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -14,6 +16,7 @@ import java.util.Collection;
 public interface GlobalChallenges {
 
     @NotNull
+    @Inject
     JavaPlugin getJavaPlugin();
 
     /**
@@ -22,6 +25,8 @@ public interface GlobalChallenges {
      * @return YamlDocument - BoostedYaml
      */
     @NotNull
+    @Inject
+    @Named("config")
     YamlDocument getConfiguration();
 
     /**
@@ -30,6 +35,7 @@ public interface GlobalChallenges {
      * @return PluginLogger
      */
     @NotNull
+    @Inject
     PluginLogger getPluginLogger();
 
     /**
@@ -38,6 +44,7 @@ public interface GlobalChallenges {
      * @return PluginSettings
      */
     @NotNull
+    @Inject
     PluginSettings getPluginSettings();
 
     /**
@@ -46,9 +53,11 @@ public interface GlobalChallenges {
      * @return DataManager
      */
     @NotNull
+    @Inject
     DataManager getDataManager();
 
     @NotNull
+    @Inject
     GameManager getGameManager();
 
     //MessageManager - languages

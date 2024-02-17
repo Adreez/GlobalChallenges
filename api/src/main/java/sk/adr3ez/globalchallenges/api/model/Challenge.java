@@ -1,19 +1,25 @@
 package sk.adr3ez.globalchallenges.api.model;
 
-import dev.dejvokep.boostedyaml.YamlDocument;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class Challenge<T extends Number> implements Scoreable<T> {
 
     @NotNull
-    protected YamlDocument document;
+    protected GameManager gameManager;
 
-    public Challenge(@NotNull YamlDocument document) {
-        this.document = document;
+    public Challenge(@NotNull GameManager gameManager) {
+        this.gameManager = gameManager;
     }
 
     @NotNull
     public abstract String getKey();
+
+    /**
+     * If specific challenge requires
+     *
+     * @return
+     */
+    public abstract boolean canLoad();
 
     @NotNull
     public abstract String getName();
@@ -23,8 +29,8 @@ public abstract class Challenge<T extends Number> implements Scoreable<T> {
 
     public abstract boolean isEnabled();
 
-    public abstract void start();
+    public abstract void onStart();
 
-    public abstract void end();
+    public abstract void onEnd();
 
 }

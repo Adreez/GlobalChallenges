@@ -1,4 +1,4 @@
-package sk.adr3ez.globalchallenges;
+package sk.adr3ez.globalchallenges.spigot;
 
 import dev.dejvokep.boostedyaml.YamlDocument;
 import dev.dejvokep.boostedyaml.dvs.versioning.BasicVersioning;
@@ -6,6 +6,7 @@ import dev.dejvokep.boostedyaml.settings.dumper.DumperSettings;
 import dev.dejvokep.boostedyaml.settings.general.GeneralSettings;
 import dev.dejvokep.boostedyaml.settings.loader.LoaderSettings;
 import dev.dejvokep.boostedyaml.settings.updater.UpdaterSettings;
+import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.ArgumentSuggestions;
 import dev.jorel.commandapi.arguments.StringArgument;
@@ -27,14 +28,13 @@ import sk.adr3ez.globalchallenges.api.util.log.PluginSettings;
 import sk.adr3ez.globalchallenges.core.model.GameManagerAdapter;
 import sk.adr3ez.globalchallenges.core.util.DataManagerAdapter;
 import sk.adr3ez.globalchallenges.core.util.PluginSettingsAdapter;
-import sk.adr3ez.globalchallenges.util.SpigotLogger;
+import sk.adr3ez.globalchallenges.spigot.util.SpigotLogger;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges {
 
@@ -83,6 +83,8 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
             this.adventure = null;
         }
         getDataManager().getFactory().close();
+
+        CommandAPI.unregister("globalchallenges");
     }
 
     public @NotNull BukkitAudiences adventure() {
@@ -151,9 +153,6 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
     }
 
     private void setupCommands() {
-        List<String> challenges = new ArrayList<>();
-        gameManager.getLoadedChallenges().forEach(challenge -> challenges.add(challenge.getKey()));
-
         new CommandAPICommand("globalchallenges")
                 .withAliases("gch", "globalch", "glch")
                 .withPermission("globalchallenges.use")
@@ -169,61 +168,65 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
                 )
                 .withSubcommand(new CommandAPICommand("list")
                         .executes((sender, args) -> {
-                            sender.sendMessage(Objects.requireNonNull(gameManager).getLoadedChallenges().stream().toString());
+                            Objects.requireNonNull(gameManager).getLoadedChallenges().forEach(challenge ->
+                                    sender.sendMessage("Loaded: " + challenge.getKey() + "/ (Class) " + challenge.getClass().getName()));
                         })
                 )
                 .withSubcommand(new CommandAPICommand("game")
                         .withArguments(new StringArgument("action")
                                 .setListed(true).replaceSuggestions(ArgumentSuggestions.strings("start", "end")))
-                        .withOptionalArguments(new StringArgument("gameID").setListed(true)
-                                .replaceSuggestions(ArgumentSuggestions.strings(challenges))))
-                .executes((sender, args) -> {
+                        .withOptionalArguments(new StringArgument("gameID")
+                                .replaceSuggestions(ArgumentSuggestions.stringsAsync(info ->
+                                        CompletableFuture.supplyAsync(() ->
+                                                gameManager.getLoadedChallengesKeys().toArray(new String[0])))))
+                        .executes((sender, args) -> {
 
-                            if (args.get("action") == "start") {
-                                if (args.getOptional("gameID").isPresent()) {
+                            String action = (String) args.get("action");
 
-                                    //Start a game
+                            switch (action) {
+                                case "start":
+                                    if (gameManager.getActiveChallenge().isEmpty()) {
+                                        if (args.getOptional("gameID").isPresent()) {
+                                            //Start exact game
 
-                                    Challenge<?> challenge = gameManager.getChallenge(String.valueOf(args.getOptional("gameID")));
+                                            Challenge<?> challenge = gameManager.getChallenge(args.getOptional("gameID").get().toString());
 
-                                    if (challenge != null) {
-
-                                        //Start one if nor already started
-
-                                        if (gameManager.getActiveChallenge().isEmpty()) {
-
-                                            gameManager.startRandom();
-                                            sender.sendMessage("Starting random game");
+                                            if (challenge != null) {
+                                                sender.sendMessage("Start exact game: " + challenge.getKey());
+                                                gameManager.start(challenge);
+                                            } else {
+                                                sender.sendMessage("This game is not loaded!");
+                                            }
 
                                         } else {
-                                            sender.sendMessage("To start the challenge you have to end active one or wait until it will be done automaticaly.");
+                                            //Start random one
+                                            gameManager.startRandom();
+                                            sender.sendMessage("Starting random game");
                                         }
-
                                     } else {
-                                        sender.sendMessage("This game does not exist!");
+                                        sender.sendMessage("To start the challenge you have to end active one or wait until it will be done automaticaly.");
                                     }
+                                    break;
+                                case "end":
+                                    //End a game if started
+                                    if (gameManager.getActiveChallenge().isPresent()) {
 
-                                }
-                            } else if (args.get("action") == "end") {
+                                        gameManager.endActive();
 
-                                //End a game if started
-
-                                if (gameManager.getActiveChallenge().isPresent()) {
-
-                                    //TODO gameManager.getActiveChallenge().get().end();
-
-                                    sender.sendMessage("Stopping game");
-                                } else {
-                                    sender.sendMessage("There's no active game.");
-                                }
-
+                                        sender.sendMessage("Stopping game (Sender)");
+                                    } else {
+                                        sender.sendMessage("There's no active game.");
+                                    }
+                                    break;
+                                default:
+                                    sender.sendMessage("This command does not exist!");
+                                    break;
                             }
-
+                        }))
+                .executes((sender, args) -> {
+                            Bukkit.getServer().dispatchCommand(sender, "glch help");
                         }
                 )
-                .executes((sender, args) -> {
-                    Bukkit.dispatchCommand(sender, "glch help");
-                })
                 .register();
     }
 

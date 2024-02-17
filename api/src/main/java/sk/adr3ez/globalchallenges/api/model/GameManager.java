@@ -15,9 +15,13 @@ public interface GameManager {
     @NotNull
     Set<Challenge<?>> getLoadedChallenges();
 
+    Set<String> getLoadedChallengesKeys();
+
     void startRandom();
 
     void start(@NotNull Challenge<?> challenge);
+
+    void endActive();
 
     void startChallenge(@NotNull Challenge<?> challenge);
 
@@ -30,7 +34,7 @@ public interface GameManager {
     @Nullable
     YamlDocument getChallengesFile();
 
-    boolean registerChallenge(@NotNull Challenge<?> challenge);
+    void registerChallenge(@NotNull Challenge<?> challenge);
 
     boolean unregisterChallenge(@NotNull Challenge<?> challenge);
 

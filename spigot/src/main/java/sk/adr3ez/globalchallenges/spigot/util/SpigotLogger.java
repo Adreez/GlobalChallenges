@@ -1,4 +1,4 @@
-package sk.adr3ez.globalchallenges.util;
+package sk.adr3ez.globalchallenges.spigot.util;
 
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.Nullable;

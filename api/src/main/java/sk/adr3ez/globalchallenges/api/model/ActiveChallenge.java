@@ -1,6 +1,7 @@
 package sk.adr3ez.globalchallenges.api.model;
 
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Optional;
@@ -8,15 +9,23 @@ import java.util.UUID;
 
 public interface ActiveChallenge {
 
+    @NotNull
+    Challenge<?> getChallenge();
+
     List<UUID> getJoinedPlayers();
 
-    Optional<UUID> getPlayer(UUID uuid);
+    Optional<UUID> getPlayer(@NotNull UUID uuid);
 
-    boolean add(UUID uuid);
+    boolean add(@NotNull UUID uuid);
 
-    int countJoinedPlayers(UUID uuid);
+    boolean remove(@NotNull UUID uuid);
 
-    boolean isJoined(Player player);
+    @NotNull
+    int countJoinedPlayers();
 
-    boolean isJoined(UUID uuid);
+    @NotNull
+    boolean isJoined(@NotNull Player player);
+
+    @NotNull
+    boolean isJoined(@NotNull UUID uuid);
 }

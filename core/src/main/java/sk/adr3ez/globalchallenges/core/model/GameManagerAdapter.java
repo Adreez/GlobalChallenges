@@ -4,6 +4,7 @@ import dev.dejvokep.boostedyaml.YamlDocument;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.reflections.Reflections;
 import sk.adr3ez.globalchallenges.api.GlobalChallenges;
 import sk.adr3ez.globalchallenges.api.model.ActiveChallenge;
 import sk.adr3ez.globalchallenges.api.model.Challenge;
@@ -35,6 +36,24 @@ public class GameManagerAdapter implements GameManager {
         } catch (IOException e) {
             plugin.getPluginLogger().warn("There was error with loading challenges.yml, please try to reload the plugin \n" + e);
         }
+
+        //Load all challenges in sk.adr3ez.globalchallenges.core.challenges
+        Set<Class<? extends Challenge>> set = new HashSet<>();
+
+        Reflections reflector = new Reflections("sk.adr3ez.globalchallenges.core.challenges");
+
+        try {
+            set = reflector.getSubTypesOf(Challenge.class);
+        } catch (Exception ignored) {
+        }
+
+        for (Class<? extends Challenge> clazz : set) {
+            try {
+                Challenge<?> challenge = clazz.getDeclaredConstructor(GameManager.class).newInstance(this);
+                registerChallenge(challenge);
+            } catch (Exception ignored) {
+            }
+        }
     }
 
     @Nullable
@@ -49,7 +68,20 @@ public class GameManagerAdapter implements GameManager {
     }
 
     @Override
+    public Set<String> getLoadedChallengesKeys() {
+        Set<String> keys = new HashSet<>();
+        for (Challenge<?> challenge : getLoadedChallenges()) {
+            keys.add(challenge.getKey());
+        }
+        return keys;
+    }
+
+    @Override
     public void startRandom() {
+
+        if (registeredChallenges.isEmpty())
+            return;
+
         Random random = new Random();
         int rand = random.nextInt(registeredChallenges.size());
 
@@ -62,8 +94,8 @@ public class GameManagerAdapter implements GameManager {
         if (activeChallenge.isPresent()) //Won't start challenge if one is active
             return;
 
-        challenge.start();
-        activeChallenge = Optional.of(new ActiveChallengeAdapter());
+        challenge.onStart();
+        activeChallenge = Optional.of(new ActiveChallengeAdapter(challenge));
 
         //TODO Broadcast message
         plugin.broadcast(MiniMessage.miniMessage().deserialize("""
@@ -74,17 +106,30 @@ public class GameManagerAdapter implements GameManager {
     }
 
     @Override
+    public void endActive() {
+        activeChallenge.ifPresent(challenge -> challenge.getChallenge().onEnd());
+
+        plugin.broadcast(MiniMessage.miniMessage().deserialize("""
+                                
+                Game has been ended!
+                                
+                """));
+    }
+
+    @Override
     public void startChallenge(@NotNull Challenge<?> challenge) {
         if (activeChallenge == null)
-            challenge.start();
+            challenge.onStart();
     }
 
     @Nullable
     @Override
     public Challenge<?> getChallenge(@NotNull String key) {
-        for (Challenge<?> challenge : registeredChallenges) {
-            if (challenge.getKey().equals(key)) {
-                return challenge;
+        if (getLoadedChallengesKeys().contains(key)) {
+            for (Challenge<?> challenge : registeredChallenges) {
+                if (challenge.getKey().equals(key)) {
+                    return challenge;
+                }
             }
         }
         return null;
@@ -108,9 +153,10 @@ public class GameManagerAdapter implements GameManager {
     }
 
     @Override
-    public boolean registerChallenge(@NotNull Challenge<?> challenge) {
-        registeredChallenges.add(challenge);
-        return true;
+    public void registerChallenge(@NotNull Challenge<?> challenge) {
+        if (challenge.canLoad()) {
+            registeredChallenges.add(challenge);
+        }
     }
 
     @Override
