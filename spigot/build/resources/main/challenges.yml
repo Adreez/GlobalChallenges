@@ -1,0 +1,12 @@
+challenges:
+
+  mine_block:
+    name: "Mine block"
+    description: "Mine a %block%"
+    enabled: true
+    
+    list:
+      - DIAMOND_ORE
+      - GOLD_ORE
+      - IRON_ORE
+      - COAL_ORE
