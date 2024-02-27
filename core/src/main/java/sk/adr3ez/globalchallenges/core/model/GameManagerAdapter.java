@@ -6,9 +6,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.reflections.Reflections;
 import sk.adr3ez.globalchallenges.api.GlobalChallenges;
-import sk.adr3ez.globalchallenges.api.model.ActiveChallenge;
-import sk.adr3ez.globalchallenges.api.model.Challenge;
 import sk.adr3ez.globalchallenges.api.model.GameManager;
+import sk.adr3ez.globalchallenges.api.model.challenge.ActiveChallenge;
+import sk.adr3ez.globalchallenges.api.model.challenge.Challenge;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,7 +25,7 @@ public class GameManagerAdapter implements GameManager {
     private Optional<ActiveChallenge> activeChallenge = Optional.empty();
 
     @NotNull
-    private final List<Challenge<?>> registeredChallenges = new ArrayList<>();
+    private final List<Challenge> registeredChallenges = new ArrayList<>();
 
     public GameManagerAdapter(@NotNull GlobalChallenges plugin) {
         this.plugin = plugin;
@@ -49,7 +49,7 @@ public class GameManagerAdapter implements GameManager {
 
         for (Class<? extends Challenge> clazz : set) {
             try {
-                Challenge<?> challenge = clazz.getDeclaredConstructor(GameManager.class).newInstance(this);
+                Challenge challenge = clazz.getDeclaredConstructor(GameManager.class).newInstance(this);
                 registerChallenge(challenge);
             } catch (Exception ignored) {
             }
@@ -63,14 +63,14 @@ public class GameManagerAdapter implements GameManager {
     }
 
     @Override
-    public @NotNull Set<Challenge<?>> getLoadedChallenges() {
+    public @NotNull Set<Challenge> getLoadedChallenges() {
         return new HashSet<>(registeredChallenges);
     }
 
     @Override
     public Set<String> getLoadedChallengesKeys() {
         Set<String> keys = new HashSet<>();
-        for (Challenge<?> challenge : getLoadedChallenges()) {
+        for (Challenge challenge : getLoadedChallenges()) {
             keys.add(challenge.getKey());
         }
         return keys;
@@ -89,12 +89,14 @@ public class GameManagerAdapter implements GameManager {
     }
 
     @Override
-    public void start(@NotNull Challenge<?> challenge) {
+    public boolean start(@NotNull Challenge challenge) {
 
         if (activeChallenge.isPresent()) //Won't start challenge if one is active
-            return;
+            return false;
 
-        challenge.onStart();
+        if (!challenge.handleStart())
+            return false;
+
         activeChallenge = Optional.of(new ActiveChallengeAdapter(challenge));
 
         //TODO Broadcast message
@@ -102,12 +104,22 @@ public class GameManagerAdapter implements GameManager {
                                 
                                 STARTING GAME
                                 
-                """));
+                Desc: %description%
+                Name: %name%
+                Key: %key%
+                                
+                """
+                .replaceAll("%description%", challenge.getDescription())
+                .replaceAll("%name%", challenge.getName())
+                .replaceAll("%key%", challenge.getKey())
+        ));
+
+        return true;
     }
 
     @Override
     public void endActive() {
-        activeChallenge.ifPresent(challenge -> challenge.getChallenge().onEnd());
+        activeChallenge.ifPresent(challenge -> challenge.getChallenge().handleEnd());
 
         plugin.broadcast(MiniMessage.miniMessage().deserialize("""
                                 
@@ -116,17 +128,11 @@ public class GameManagerAdapter implements GameManager {
                 """));
     }
 
-    @Override
-    public void startChallenge(@NotNull Challenge<?> challenge) {
-        if (activeChallenge == null)
-            challenge.onStart();
-    }
-
     @Nullable
     @Override
-    public Challenge<?> getChallenge(@NotNull String key) {
+    public Challenge getChallenge(@NotNull String key) {
         if (getLoadedChallengesKeys().contains(key)) {
-            for (Challenge<?> challenge : registeredChallenges) {
+            for (Challenge challenge : registeredChallenges) {
                 if (challenge.getKey().equals(key)) {
                     return challenge;
                 }
@@ -137,8 +143,8 @@ public class GameManagerAdapter implements GameManager {
 
     @Nullable
     @Override
-    public Challenge<?> getChallenge(@NotNull Class<? extends Challenge<?>> clazz) {
-        for (Challenge<?> challenge : registeredChallenges) {
+    public Challenge getChallenge(@NotNull Class<? extends Challenge> clazz) {
+        for (Challenge challenge : registeredChallenges) {
             if (clazz.isAssignableFrom(challenge.getClass())) {
                 return challenge;
             }
@@ -153,14 +159,14 @@ public class GameManagerAdapter implements GameManager {
     }
 
     @Override
-    public void registerChallenge(@NotNull Challenge<?> challenge) {
+    public void registerChallenge(@NotNull Challenge challenge) {
         if (challenge.canLoad()) {
             registeredChallenges.add(challenge);
         }
     }
 
     @Override
-    public boolean unregisterChallenge(@NotNull Challenge<?> challenge) {
+    public boolean unregisterChallenge(@NotNull Challenge challenge) {
         if (registeredChallenges.contains(challenge)) {
             registeredChallenges.remove(challenge);
             return true;
@@ -170,7 +176,7 @@ public class GameManagerAdapter implements GameManager {
 
     @Override
     public boolean unregisterChallenge(@NotNull String key) {
-        for (Challenge<?> challenge : registeredChallenges) {
+        for (Challenge challenge : registeredChallenges) {
             if (challenge.getKey().equals(key)) {
                 return unregisterChallenge(challenge);
             }

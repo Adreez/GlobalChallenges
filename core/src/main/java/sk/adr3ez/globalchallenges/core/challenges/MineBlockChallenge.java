@@ -1,21 +1,24 @@
 package sk.adr3ez.globalchallenges.core.challenges;
 
-import org.bukkit.Bukkit;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
+import org.bukkit.Material;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import sk.adr3ez.globalchallenges.api.GlobalChallengesProvider;
-import sk.adr3ez.globalchallenges.api.model.Challenge;
 import sk.adr3ez.globalchallenges.api.model.GameManager;
+import sk.adr3ez.globalchallenges.api.model.challenge.Challenge;
 
+import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
-public class MineBlockChallenge extends Challenge<Integer> implements Listener {
+public class MineBlockChallenge extends Challenge {
+
+    private Material material;
 
     public MineBlockChallenge(@NotNull GameManager gameManager) {
         super(gameManager);
     }
+
 
     @NotNull
     @Override
@@ -28,46 +31,33 @@ public class MineBlockChallenge extends Challenge<Integer> implements Listener {
         return true;
     }
 
-    @NotNull
     @Override
-    public String getName() {
-        return gameManager.getChallengesFile().getString("Challenges." + getKey() + ".name");
+    public boolean onChallengeStart() {
+        //Choose random block
+        List<String> blocks = gameManager.getChallengesFile().getStringList("challenges." + getKey() + ".list");
+
+        if (blocks.isEmpty())
+            return false;
+
+        blocks.removeIf(block -> Material.getMaterial(block.toUpperCase()) == null);
+
+        material = Material.getMaterial(blocks.get(new Random(blocks.size()).nextInt()).toUpperCase());
+
+        return material != null;
     }
 
-    @NotNull
+
     @Override
-    public String getDescription() {
-        return gameManager.getChallengesFile().getString("Challenges." + getKey() + ".description");
+    public void onChallengeEnd() {
     }
 
-    @Override
-    public boolean isEnabled() {
-        return gameManager.getChallengesFile().getBoolean("Challenges." + getKey() + ".enabled");
-    }
-
-    @Override
-    public void onStart() {
-        Bukkit.getPluginManager().registerEvents(this, GlobalChallengesProvider.get().getJavaPlugin());
-    }
-
-    @Override
-    public void onEnd() {
-        HandlerList.unregisterAll(this);
-    }
-
-    @Override
-    public void addScore(@NotNull Integer value, @NotNull UUID target) {
-
-    }
-
-    @Override
-    public void setScore(@NotNull Integer value, @NotNull UUID target) {
-
-    }
-
-    @Nullable
-    @Override
-    public Integer getScore(@NotNull UUID target) {
-        return null;
+    @EventHandler
+    public void onEvent(BlockBreakEvent event) {
+        if (event.getBlock().getType() == material) {
+            UUID uuid = event.getPlayer().getUniqueId();
+            if (gameManager.getActiveChallenge().isPresent() && gameManager.getActiveChallenge().get().isJoined(uuid)) {
+                addScore(uuid, 1D);
+            }
+        }
     }
 }

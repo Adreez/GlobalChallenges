@@ -11,6 +11,8 @@ public interface Scoreable<T extends Number> {
 
     void setScore(@NotNull T value, @NotNull UUID target);
 
+    void removeScore(@NotNull T value, @NotNull UUID target);
+
     @Nullable
     T getScore(@NotNull UUID target);
 

@@ -21,8 +21,8 @@ import org.jetbrains.annotations.Nullable;
 import sk.adr3ez.globalchallenges.api.GlobalChallenges;
 import sk.adr3ez.globalchallenges.api.GlobalChallengesProvider;
 import sk.adr3ez.globalchallenges.api.database.DataManager;
-import sk.adr3ez.globalchallenges.api.model.Challenge;
 import sk.adr3ez.globalchallenges.api.model.GameManager;
+import sk.adr3ez.globalchallenges.api.model.challenge.Challenge;
 import sk.adr3ez.globalchallenges.api.util.log.PluginLogger;
 import sk.adr3ez.globalchallenges.api.util.log.PluginSettings;
 import sk.adr3ez.globalchallenges.core.model.GameManagerAdapter;
@@ -189,11 +189,15 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
                                         if (args.getOptional("gameID").isPresent()) {
                                             //Start exact game
 
-                                            Challenge<?> challenge = gameManager.getChallenge(args.getOptional("gameID").get().toString());
+                                            Challenge challenge = gameManager.getChallenge(args.getOptional("gameID").get().toString());
 
                                             if (challenge != null) {
                                                 sender.sendMessage("Start exact game: " + challenge.getKey());
-                                                gameManager.start(challenge);
+                                                if (gameManager.start(challenge)) {
+                                                    sender.sendMessage("Game started");
+                                                } else {
+                                                    sender.sendMessage("Game failed to start");
+                                                }
                                             } else {
                                                 sender.sendMessage("This game is not loaded!");
                                             }
