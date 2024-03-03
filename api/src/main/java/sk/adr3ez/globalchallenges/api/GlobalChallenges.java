@@ -1,9 +1,13 @@
 package sk.adr3ez.globalchallenges.api;
 
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import dev.dejvokep.boostedyaml.YamlDocument;
 import net.kyori.adventure.text.Component;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import sk.adr3ez.globalchallenges.api.database.DataManager;
+import sk.adr3ez.globalchallenges.api.model.GameManager;
 import sk.adr3ez.globalchallenges.api.util.log.PluginLogger;
 import sk.adr3ez.globalchallenges.api.util.log.PluginSettings;
 
@@ -11,12 +15,18 @@ import java.util.Collection;
 
 public interface GlobalChallenges {
 
+    @NotNull
+    @Inject
+    JavaPlugin getJavaPlugin();
+
     /**
      * Default config.yml
      *
      * @return YamlDocument - BoostedYaml
      */
     @NotNull
+    @Inject
+    @Named("config")
     YamlDocument getConfiguration();
 
     /**
@@ -25,6 +35,7 @@ public interface GlobalChallenges {
      * @return PluginLogger
      */
     @NotNull
+    @Inject
     PluginLogger getPluginLogger();
 
     /**
@@ -33,6 +44,7 @@ public interface GlobalChallenges {
      * @return PluginSettings
      */
     @NotNull
+    @Inject
     PluginSettings getPluginSettings();
 
     /**
@@ -41,7 +53,12 @@ public interface GlobalChallenges {
      * @return DataManager
      */
     @NotNull
+    @Inject
     DataManager getDataManager();
+
+    @NotNull
+    @Inject
+    GameManager getGameManager();
 
     //MessageManager - languages
 
@@ -54,6 +71,6 @@ public interface GlobalChallenges {
     Collection<?> getOnlinePlayers();
 
     //Server version
-    //getChallgeneManager - getActiveChallenge
+    //getChallengeManager - getActiveChallenge
 
 }

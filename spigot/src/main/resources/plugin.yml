@@ -1,8 +1,9 @@
 name: GlobalChallenges
 version: '${version}'
-main: sk.adr3ez.globalchallenges.GCSpigotPlugin
+main: sk.adr3ez.globalchallenges.spigot.GCSpigotPlugin
 api-version: '1.20'
 load: STARTUP
 softdepend: [ PlaceholderAPI ]
+depend: [ CommandAPI ]
 authors: [ Adr3ez_ ]
 description: asd

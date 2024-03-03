@@ -9,6 +9,9 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/GlobalChallenges.main.iml" filepath="$PROJECT_DIR$/.idea/modules/GlobalChallenges.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/spigot/GlobalChallenges.spigot.main.iml" filepath="$PROJECT_DIR$/.idea/modules/spigot/GlobalChallenges.spigot.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/spigot/GlobalChallenges.spigot.test.iml" filepath="$PROJECT_DIR$/.idea/modules/spigot/GlobalChallenges.spigot.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/api/IdeaProjects.GlobalChallenges.api.test.iml" filepath="$PROJECT_DIR$/.idea/modules/api/IdeaProjects.GlobalChallenges.api.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/core/IdeaProjects.GlobalChallenges.core.test.iml" filepath="$PROJECT_DIR$/.idea/modules/core/IdeaProjects.GlobalChallenges.core.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/spigot/IdeaProjects.GlobalChallenges.spigot.test.iml" filepath="$PROJECT_DIR$/.idea/modules/spigot/IdeaProjects.GlobalChallenges.spigot.test.iml" />
     </modules>
   </component>
 </project>

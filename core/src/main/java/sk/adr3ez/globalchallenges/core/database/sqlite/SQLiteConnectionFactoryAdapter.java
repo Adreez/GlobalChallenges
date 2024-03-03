@@ -3,7 +3,7 @@ package sk.adr3ez.globalchallenges.core.database.sqlite;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import sk.adr3ez.globalchallenges.api.GlobalChallenges;
-import sk.adr3ez.globalchallenges.core.database.ConnectionFactory;
+import sk.adr3ez.globalchallenges.api.database.ConnectionFactory;
 
 import java.io.File;
 import java.io.IOException;

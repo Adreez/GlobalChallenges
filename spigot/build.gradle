@@ -8,11 +8,18 @@ repositories {
         name = "sonatype"
         url = "https://oss.sonatype.org/content/groups/public/"
     }
+    //cmdAPI
+    maven { url = "https://repo.codemc.org/repository/maven-public/" }
 }
 
 dependencies {
     compileOnly "org.spigotmc:spigot-api:1.20.4-R0.1-SNAPSHOT"
     implementation "net.kyori:adventure-platform-bukkit:4.3.1"
+
+    implementation "net.kyori:adventure-text-minimessage:4.14.0"
+
+    //cmdAPI
+    compileOnly "dev.jorel:commandapi-bukkit-core:9.3.0"
 
     implementation project(':api')
     implementation project(':core')
@@ -44,6 +51,7 @@ processResources {
 
 shadowJar {
     //relocate 'sk.adr3ez.alib', 'sk.adr3ez.darkauth.alib'
+    relocate 'dev.dejvokep.boostedyaml', 'sk.adr3ez.libs.boostedyaml'
 
-    archiveFileName.set("GlobalChallenges-${rootProject.version}.jar")
+    archiveFileName.set("GlobalChallenges-Spigot-${rootProject.version}.jar")
 }

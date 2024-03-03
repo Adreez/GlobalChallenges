@@ -53,5 +53,7 @@ public abstract class PluginSettings {
 
     public abstract int getDataConnectionTimeout();
 
+    public abstract boolean monitorBlocks();
+
 
 }

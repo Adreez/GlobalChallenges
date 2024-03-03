@@ -2,9 +2,9 @@ package sk.adr3ez.globalchallenges.core.database.adapter;
 
 import org.jetbrains.annotations.NotNull;
 import sk.adr3ez.globalchallenges.api.GlobalChallenges;
+import sk.adr3ez.globalchallenges.api.database.ConnectionFactory;
 import sk.adr3ez.globalchallenges.api.database.Storage;
 import sk.adr3ez.globalchallenges.core.database.AbstractTable;
-import sk.adr3ez.globalchallenges.core.database.ConnectionFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,8 +12,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
 
-public class SQLiteStorageAdapter extends AbstractTable implements Storage {
-    public SQLiteStorageAdapter(@NotNull ConnectionFactory factory, @NotNull GlobalChallenges plugin, @NotNull String table) {
+public class StorageAdapter extends AbstractTable implements Storage {
+    public StorageAdapter(@NotNull ConnectionFactory factory, @NotNull GlobalChallenges plugin, @NotNull String table) {
         super(factory, plugin, table);
     }
 
@@ -94,7 +94,7 @@ public class SQLiteStorageAdapter extends AbstractTable implements Storage {
     }
 
     @Override
-    public boolean addJoin(@NotNull UUID uuid) {
+    public void addJoin(@NotNull UUID uuid) {
         PreparedStatement preparedStatement = null;
         Connection connection = null;
         try {
@@ -106,13 +106,11 @@ public class SQLiteStorageAdapter extends AbstractTable implements Storage {
             preparedStatement.setInt(1, gamesJoined + 1);
             preparedStatement.setString(2, uuid.toString());
             preparedStatement.execute();
-            return true;
         } catch (SQLException e) {
             plugin.getPluginLogger().severe(e.getMessage());
         } finally {
             close(connection, preparedStatement, null);
         }
-        return false;
     }
 
     @Override

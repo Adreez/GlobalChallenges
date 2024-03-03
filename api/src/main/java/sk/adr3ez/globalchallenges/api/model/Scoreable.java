@@ -5,15 +5,14 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
-public interface Challenge<T extends Number> {
-
-    @NotNull String getName();
-    @NotNull String getDescription();
-    boolean enable();
-    boolean disable();
+public interface Scoreable<T extends Number> {
 
     void addScore(@NotNull T value, @NotNull UUID target);
+
     void setScore(@NotNull T value, @NotNull UUID target);
+
+    void removeScore(@NotNull T value, @NotNull UUID target);
+
     @Nullable
     T getScore(@NotNull UUID target);
 

@@ -1,0 +1,15 @@
+challenges:
+
+  mine_block:
+    name: "Mine block"
+    description: "Mine a %block%"
+    enabled: true
+
+    #If you want to cancel blocks placed by player, you can leave this to false but
+    #monitor_blocks in config.yml has to be enabled!
+    player_placed: false
+    list:
+      - DIAMOND_ORE
+      - GOLD_ORE
+      - IRON_ORE
+      - COAL_ORE
