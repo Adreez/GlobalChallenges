@@ -119,13 +119,15 @@ public class GameManagerAdapter implements GameManager {
 
     @Override
     public void endActive() {
-        activeChallenge.ifPresent(challenge -> challenge.getChallenge().handleEnd());
+        activeChallenge.ifPresent(activeChallenge -> activeChallenge.getChallenge().handleEnd());
 
         plugin.broadcast(MiniMessage.miniMessage().deserialize("""
                                 
-                Game has been ended!
+                Game has been ended! Thank you for playing
                                 
                 """));
+
+        activeChallenge = Optional.empty();
     }
 
     @Nullable

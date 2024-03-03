@@ -67,22 +67,29 @@ public abstract class Challenge implements Listener {
 
     @ApiStatus.Internal
     public void handleEnd() {
-
+        HandlerList.unregisterAll(this);
+        
         this.onChallengeEnd();
     }
 
     protected void addScore(UUID uuid, Double value) {
-        if (gameManager.getActiveChallenge().isPresent())
+        if (gameManager.getActiveChallenge().isPresent() && gameManager.getActiveChallenge().get().isJoined(uuid))
             gameManager.getActiveChallenge().get().getChallengeData().addScore(value, uuid);
     }
 
+    protected Double getScore(UUID uuid) {
+        if (gameManager.getActiveChallenge().isPresent() && gameManager.getActiveChallenge().get().isJoined(uuid))
+            return gameManager.getActiveChallenge().get().getChallengeData().getScore(uuid);
+        return 0D;
+    }
+
     protected void setScore(UUID uuid, Double value) {
-        if (gameManager.getActiveChallenge().isPresent())
+        if (gameManager.getActiveChallenge().isPresent() && gameManager.getActiveChallenge().get().isJoined(uuid))
             gameManager.getActiveChallenge().get().getChallengeData().setScore(value, uuid);
     }
 
     protected void removeScore(UUID uuid, Double value) {
-        if (gameManager.getActiveChallenge().isPresent())
+        if (gameManager.getActiveChallenge().isPresent() && gameManager.getActiveChallenge().get().isJoined(uuid))
             gameManager.getActiveChallenge().get().getChallengeData().removeScore(value, uuid);
     }
 
@@ -91,7 +98,6 @@ public abstract class Challenge implements Listener {
     }
 
     protected void onChallengeEnd() {
-        HandlerList.unregisterAll(this);
     }
 
 

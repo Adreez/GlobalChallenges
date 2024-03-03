@@ -1,7 +1,10 @@
 package sk.adr3ez.globalchallenges.core.model;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import sk.adr3ez.globalchallenges.api.GlobalChallengesProvider;
 import sk.adr3ez.globalchallenges.api.model.challenge.ActiveChallenge;
 import sk.adr3ez.globalchallenges.api.model.challenge.Challenge;
 import sk.adr3ez.globalchallenges.api.model.challenge.ChallengeData;
@@ -52,9 +55,13 @@ public final class ActiveChallengeAdapter implements ActiveChallenge {
     @Override
     public void joinPlayer(@NotNull UUID uuid) {
         players.add(uuid);
+
+        Bukkit.getScheduler().runTaskAsynchronously(GlobalChallengesProvider.get().getJavaPlugin(),
+                () -> GlobalChallengesProvider.get().getDataManager().getStorage().addJoin(uuid));
     }
 
     @Override
+    @ApiStatus.Internal
     public void dumpPlayer(@NotNull UUID uuid) {
         players.remove(uuid);
     }

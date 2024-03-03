@@ -25,9 +25,10 @@ import sk.adr3ez.globalchallenges.api.model.GameManager;
 import sk.adr3ez.globalchallenges.api.model.challenge.Challenge;
 import sk.adr3ez.globalchallenges.api.util.log.PluginLogger;
 import sk.adr3ez.globalchallenges.api.util.log.PluginSettings;
+import sk.adr3ez.globalchallenges.core.database.DataManagerAdapter;
 import sk.adr3ez.globalchallenges.core.model.GameManagerAdapter;
-import sk.adr3ez.globalchallenges.core.util.DataManagerAdapter;
 import sk.adr3ez.globalchallenges.core.util.PluginSettingsAdapter;
+import sk.adr3ez.globalchallenges.spigot.util.BlockListener;
 import sk.adr3ez.globalchallenges.spigot.util.SpigotLogger;
 
 import java.io.File;
@@ -37,10 +38,7 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges {
-
-
-    @Nullable
-    private BukkitAudiences adventure;
+    private @Nullable BukkitAudiences adventure;
     private @Nullable YamlDocument configurationFile;
     private @Nullable PluginSettings pluginSettings;
 
@@ -71,6 +69,9 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
         } catch (IOException e) {
             getPluginLogger().warn("There was error with loading config.yml, please try to reload the plugin \n" + e);
         }
+
+        if (pluginSettings.monitorBlocks())
+            Bukkit.getPluginManager().registerEvents(new BlockListener(this), this);
 
         setupCommands();
         getPluginLogger().info(ConsoleColors.format("&y[&cGlobalChallenges&y] &gPlugin has been loaded (" + (System.currentTimeMillis() - startupTime) + " ms)&reset"));
@@ -155,8 +156,8 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
     private void setupCommands() {
         new CommandAPICommand("globalchallenges")
                 .withAliases("gch", "globalch", "glch")
-                .withPermission("globalchallenges.use")
                 .withSubcommand(new CommandAPICommand("help")
+                        .withPermission("globalchallenges.admin")
                         .executes((sender, args) -> {
                             adventure().sender(sender).sendMessage(MiniMessage.miniMessage().deserialize("""
                                     GlobalChallenges
@@ -167,12 +168,14 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
                         })
                 )
                 .withSubcommand(new CommandAPICommand("list")
+                        .withPermission("globalchallenges.admin")
                         .executes((sender, args) -> {
                             Objects.requireNonNull(gameManager).getLoadedChallenges().forEach(challenge ->
                                     sender.sendMessage("Loaded: " + challenge.getKey() + "/ (Class) " + challenge.getClass().getName()));
                         })
                 )
                 .withSubcommand(new CommandAPICommand("game")
+                        .withPermission("globalchallenges.admin")
                         .withArguments(new StringArgument("action")
                                 .setListed(true).replaceSuggestions(ArgumentSuggestions.strings("start", "end")))
                         .withOptionalArguments(new StringArgument("gameID")
@@ -211,7 +214,7 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
                                         sender.sendMessage("To start the challenge you have to end active one or wait until it will be done automaticaly.");
                                     }
                                     break;
-                                case "end":
+                                case "end", "stop":
                                     //End a game if started
                                     if (gameManager.getActiveChallenge().isPresent()) {
 
@@ -225,6 +228,17 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
                                 default:
                                     sender.sendMessage("This command does not exist!");
                                     break;
+                            }
+                        }))
+                .withSubcommand(new CommandAPICommand("join")
+                        .withPermission("globalchallenges.join")
+                        .executesPlayer((sender, args) -> {
+                            //Join cmd
+                            if (gameManager.getActiveChallenge().isPresent()) {
+                                sender.sendMessage("You've joined the game!");
+                                gameManager.getActiveChallenge().get().joinPlayer(sender.getUniqueId());
+                            } else {
+                                sender.sendMessage("No active game to join!");
                             }
                         }))
                 .executes((sender, args) -> {

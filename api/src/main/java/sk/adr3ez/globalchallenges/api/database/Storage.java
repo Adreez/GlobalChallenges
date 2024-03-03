@@ -11,31 +11,36 @@ public interface Storage {
      * @return if operation was successful
      */
     boolean createUser(@NotNull UUID uuid);
+
     /**
      * @param uuid of the player.
      * @return if operation was successful
      */
     boolean exists(@NotNull UUID uuid);
+
     /**
      * @param uuid of the player.
      * @return if operation was successful
      */
     boolean deleteUser(@NotNull UUID uuid);
+
     /**
      * @param uuid of the player.
-     * @return if operation was successful
      */
-    boolean addJoin(@NotNull UUID uuid);
+    void addJoin(@NotNull UUID uuid);
+
     /**
      * @param uuid of the player.
      * @return if operation was successful
      */
     boolean addWin(@NotNull UUID uuid);
+
     /**
      * @param uuid of the player.
      * @return if operation was successful
      */
     int getWins(@NotNull UUID uuid);
+
     /**
      * @param uuid of the player.
      * @return if operation was successful

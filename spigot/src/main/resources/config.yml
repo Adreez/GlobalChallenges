@@ -48,10 +48,14 @@ storage:
 # |-                                                                                  -| #
 ##########################################################################################
 
-game_settings:
+settings:
 
   # How many players are required to start a challenge.
-  players_required: 3
+  players_required: 2
+
+  # If placed blocks should be monitored for player_placed condition in challenges
+  #
+  monitor_blocks: true
 
 
 

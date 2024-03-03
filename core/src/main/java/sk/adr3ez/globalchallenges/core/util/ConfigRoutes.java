@@ -14,6 +14,8 @@ public enum ConfigRoutes {
     STORAGE_DATA_MINIMUMCONNECTIONS("storage.data.minimumConnections"),
     STORAGE_DATA_MAXIMUMCONNECTIONS("storage.data.maximumConnections"),
     STORAGE_DATA_CONNECTIONTIMEOUT("storage.data.connectionTimeout"),
+    SETTINGS_REQUIRED_PLAYERS("settings.players_required"),
+    SETTINGS_MONITOR_BLOCKS("settings.monitor_blocks"),
 
 
     ;

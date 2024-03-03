@@ -72,4 +72,9 @@ public class PluginSettingsAdapter extends PluginSettings {
         return plugin.getConfiguration().getInt(ConfigRoutes.STORAGE_DATA_CONNECTIONTIMEOUT.getRoute());
     }
 
+    @Override
+    public boolean monitorBlocks() {
+        return plugin.getConfiguration().getBoolean(ConfigRoutes.SETTINGS_MONITOR_BLOCKS.getRoute());
+    }
+
 }
