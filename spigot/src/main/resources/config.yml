@@ -5,19 +5,15 @@
 # |-  | |_| | | (_) | |_) | (_| | | |___| | | | (_| | | |  __/ | | | (_| |  __/\__ \  -| #
 # |-   \____|_|\___/|_.__/ \__,_|_|\____|_| |_|\__,_|_|_|\___|_| |_|\__, |\___||___/  -| #
 # |-                                                                |___/             -| #
-# |-  Author: Adr3ez_
-# |-
-# |-  Description:
-# |-
-# |-  Support:
-# |-
-# |-  Github:
-# |-
-# |-
+# |-  Author: Adr3ez_                                                                 -| #
+# |-                                                                                  -| #
+# |-  Wiki & Support: https://darklabs.gitbook.io/globalchallenges/                   -| #
+# |-                                                                                  -| #
+# |-  Github: https://github.com/Adreez/GlobalChallenges                              -| #
+# |-                                                                                  -| #
 ##########################################################################################
 
-
-# Please do not change if developer don't ask you!
+# Please do not change! Unless developer told you to do so.
 file-version: 1
 
 ##########################################################################################
@@ -30,6 +26,7 @@ file-version: 1
 storage:
   method: SQLite
 
+  # Mysql setup
   data:
     hostname: "localhost"
     database: "globalchallenges"
@@ -44,7 +41,7 @@ storage:
 ##########################################################################################
 # |-                                                                                  -| #
 # |- PLUGIN SETTINGS                                                                  -| #
-# |-  »                                                                               -| #
+# |-  » Channge settings of all important things in plugin                            -| #
 # |-                                                                                  -| #
 ##########################################################################################
 
@@ -54,8 +51,42 @@ settings:
   players_required: 2
 
   # If placed blocks should be monitored for player_placed condition in challenges
-  #
-  monitor_blocks: true
+  monitor_blocks: false
 
+##########################################################################################
+# |-                                                                                  -| #
+# |- MESSAGES & SOUNDS                                                                -| #
+# |-  » All messages are formatted using MiniMessage                                  -| #
+# |-  » You can find docs at: https://docs.advntr.dev/minimessage/format.html         -| #
+# |-                                                                                  -| #
+# |-  » Legacy colors such as '&l' are NOT supported!                                 -| #
+# |-                                                                                  -| #
+##########################################################################################
 
+messages:
 
+  # In this category you can find all broadcast messages such as:
+  # game_start, game_end
+  broadcast:
+
+    # In this category you can find all messages that will show when game will start.
+    game_start:
+      # This message will show in chat when challenge will start!
+      # Possible placeholders: %name%, %description%, %key%
+      chat:
+        - ""
+        - "                       <gradient:#245A6A:#D48C93><b>ɢʟᴏʙᴀʟᴄʜᴀʟʟᴇɴɢᴇs</b></gradient>"
+        - "                   <gradient:#ff57fa:#ff00f7><obf>|||</obf> <u>ᴄʜᴀʟʟᴇɴɢᴇ ʜᴀs sᴛᴀʀᴛᴇᴅ</u> <obf>|||</obf></gradient>"
+        - ""
+        - " <dark_gray>» <#D48C93>Challenge <dark_gray>• <green>%name%"
+        - ""
+        - "                   <hover:show_text:'%description%'> <dark_gray>[<#2bffc0>information<dark_gray>] </hover>  <dark_gray>•  <hover:show_text:'<gray><i>Click to join the challenge!'><click:run_command:'/glch join'> <dark_gray>[<#00ff08>join<dark_gray>] </click></hover>"
+        - ""
+      # Title that will show when challenge starts
+      title:
+        title: "<gradient:#245A6A:#D48C93><b>ɢʟᴏʙᴀʟᴄʜᴀʟʟᴇɴɢᴇs</b></gradient>"
+        subtitle: "<#00ff08><u>Join in chat!</u>"
+
+        fadein: 10
+        stay: 15
+        fadeout: 10

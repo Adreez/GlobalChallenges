@@ -30,4 +30,6 @@ public interface ActiveChallenge {
 
     @NotNull
     boolean isJoined(@NotNull UUID uuid);
+
+    void handleEnd();
 }

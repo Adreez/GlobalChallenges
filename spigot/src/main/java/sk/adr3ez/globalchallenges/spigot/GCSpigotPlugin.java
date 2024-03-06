@@ -13,6 +13,7 @@ import dev.jorel.commandapi.arguments.StringArgument;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -133,6 +134,8 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
     @NotNull
     @Override
     public GameManager getGameManager() {
+        if (gameManager == null)
+            throw new IllegalStateException("Tried to access game manager while plugin is not loaded yet!");
         return gameManager;
     }
 
@@ -140,6 +143,13 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
     public void broadcast(@NotNull Component component) {
         for (Player player : getOnlinePlayers()) {
             adventure().player(player).sendMessage(component);
+        }
+    }
+
+    @Override
+    public void broadcastTitle(@NotNull Title title) {
+        for (Player player : getOnlinePlayers()) {
+            adventure().player(player).showTitle(title);
         }
     }
 
@@ -172,6 +182,13 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
                         .executes((sender, args) -> {
                             Objects.requireNonNull(gameManager).getLoadedChallenges().forEach(challenge ->
                                     sender.sendMessage("Loaded: " + challenge.getKey() + "/ (Class) " + challenge.getClass().getName()));
+                        })
+                )
+                .withSubcommand(new CommandAPICommand("reload")
+                        .withPermission("globalchallenges.admin")
+                        .executes((sender, args) -> {
+                            this.reload();
+                            sender.sendMessage("Reloaded!");
                         })
                 )
                 .withSubcommand(new CommandAPICommand("game")
@@ -235,8 +252,14 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
                         .executesPlayer((sender, args) -> {
                             //Join cmd
                             if (gameManager.getActiveChallenge().isPresent()) {
-                                sender.sendMessage("You've joined the game!");
-                                gameManager.getActiveChallenge().get().joinPlayer(sender.getUniqueId());
+
+                                if (gameManager.getActiveChallenge().get().isJoined(sender.getUniqueId())) {
+                                    sender.sendMessage("You've joined the game!");
+                                    gameManager.getActiveChallenge().get().joinPlayer(sender.getUniqueId());
+                                } else {
+                                    sender.sendMessage("You already joined game!");
+                                }
+
                             } else {
                                 sender.sendMessage("No active game to join!");
                             }
@@ -246,6 +269,15 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
                         }
                 )
                 .register();
+    }
+
+    private void reload() {
+        try {
+            configurationFile.reload();
+            gameManager.getChallengesFile().reload();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static class ConsoleColors {

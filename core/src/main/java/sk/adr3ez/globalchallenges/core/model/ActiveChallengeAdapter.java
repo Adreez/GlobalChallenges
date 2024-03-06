@@ -16,15 +16,15 @@ import java.util.UUID;
 
 public final class ActiveChallengeAdapter implements ActiveChallenge {
 
-    private final List<UUID> players = new ArrayList<>();
+    private List<UUID> players;
 
     @NotNull
-    private final Challenge challenge;
-    private final ChallengeData challengeData;
+    private Challenge challenge;
+    private ChallengeData challengeData;
 
     public ActiveChallengeAdapter(@NotNull Challenge challenge) {
         this.challenge = challenge;
-
+        this.players = new ArrayList<>();
         challengeData = new ChallengeData(this);
     }
 
@@ -81,5 +81,14 @@ public final class ActiveChallengeAdapter implements ActiveChallenge {
     @Override
     public boolean isJoined(@NotNull UUID uuid) {
         return players.contains(uuid);
+    }
+
+    @Override
+    public void handleEnd() {
+        challenge.handleEnd();
+        players.clear();
+        this.challengeData = null;
+        this.challenge = null;
+        players = null;
     }
 }

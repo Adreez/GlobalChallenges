@@ -17,6 +17,13 @@ public enum ConfigRoutes {
     SETTINGS_REQUIRED_PLAYERS("settings.players_required"),
     SETTINGS_MONITOR_BLOCKS("settings.monitor_blocks"),
 
+    MESSAGES_BROADCAST_GAMESTART_CHAT("messages.broadcast.game_start.chat"),
+    MESSAGES_BROADCAST_GAMESTART_TITLE("messages.broadcast.game_start.title.title"),
+    MESSAGES_BROADCAST_GAMESTART_SUBTITLE("messages.broadcast.game_start.title.subtitle"),
+    MESSAGES_BROADCAST_GAMESTART_FADEIN("messages.broadcast.game_start.title.fadein"),
+    MESSAGES_BROADCAST_GAMESTART_STAY("messages.broadcast.game_start.title.stay"),
+    MESSAGES_BROADCAST_GAMESTART_FADEOUT("messages.broadcast.game_start.title.fadeout"),
+
 
     ;
 

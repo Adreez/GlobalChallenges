@@ -2,6 +2,7 @@ package sk.adr3ez.globalchallenges.core.model;
 
 import dev.dejvokep.boostedyaml.YamlDocument;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.title.Title;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.reflections.Reflections;
@@ -9,9 +10,11 @@ import sk.adr3ez.globalchallenges.api.GlobalChallenges;
 import sk.adr3ez.globalchallenges.api.model.GameManager;
 import sk.adr3ez.globalchallenges.api.model.challenge.ActiveChallenge;
 import sk.adr3ez.globalchallenges.api.model.challenge.Challenge;
+import sk.adr3ez.globalchallenges.core.util.ConfigRoutes;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.*;
 
 public class GameManagerAdapter implements GameManager {
@@ -38,16 +41,16 @@ public class GameManagerAdapter implements GameManager {
         }
 
         //Load all challenges in sk.adr3ez.globalchallenges.core.challenges
-        Set<Class<? extends Challenge>> set = new HashSet<>();
+        Set<Class<? extends Challenge>> classes = new HashSet<>();
 
         Reflections reflector = new Reflections("sk.adr3ez.globalchallenges.core.challenges");
 
         try {
-            set = reflector.getSubTypesOf(Challenge.class);
+            classes = reflector.getSubTypesOf(Challenge.class);
         } catch (Exception ignored) {
         }
 
-        for (Class<? extends Challenge> clazz : set) {
+        for (Class<? extends Challenge> clazz : classes) {
             try {
                 Challenge challenge = clazz.getDeclaredConstructor(GameManager.class).newInstance(this);
                 registerChallenge(challenge);
@@ -99,27 +102,26 @@ public class GameManagerAdapter implements GameManager {
 
         activeChallenge = Optional.of(new ActiveChallengeAdapter(challenge));
 
-        //TODO Broadcast message
-        plugin.broadcast(MiniMessage.miniMessage().deserialize("""
-                                
-                                STARTING GAME
-                                
-                Desc: %description%
-                Name: %name%
-                Key: %key%
-                                
-                """
+        plugin.broadcast(MiniMessage.miniMessage().deserialize(String.join("<br>", plugin.getConfiguration().getStringList(ConfigRoutes.MESSAGES_BROADCAST_GAMESTART_CHAT.getRoute()))
                 .replaceAll("%description%", challenge.getDescription())
                 .replaceAll("%name%", challenge.getName())
                 .replaceAll("%key%", challenge.getKey())
         ));
+        plugin.broadcastTitle(Title.title(
+                MiniMessage.miniMessage().deserialize(plugin.getConfiguration().getString(ConfigRoutes.MESSAGES_BROADCAST_GAMESTART_TITLE.getRoute())),
+                MiniMessage.miniMessage().deserialize(plugin.getConfiguration().getString(ConfigRoutes.MESSAGES_BROADCAST_GAMESTART_SUBTITLE.getRoute())),
+                Title.Times.times(
+                        Duration.ofMillis(plugin.getConfiguration().getInt(ConfigRoutes.MESSAGES_BROADCAST_GAMESTART_FADEIN.getRoute())),
+                        Duration.ofMillis(plugin.getConfiguration().getInt(ConfigRoutes.MESSAGES_BROADCAST_GAMESTART_STAY.getRoute())),
+                        Duration.ofMillis(plugin.getConfiguration().getInt(ConfigRoutes.MESSAGES_BROADCAST_GAMESTART_FADEOUT.getRoute()))
+                )));
 
         return true;
     }
 
     @Override
     public void endActive() {
-        activeChallenge.ifPresent(activeChallenge -> activeChallenge.getChallenge().handleEnd());
+        this.activeChallenge.get().handleEnd();
 
         plugin.broadcast(MiniMessage.miniMessage().deserialize("""
                                 
@@ -127,7 +129,7 @@ public class GameManagerAdapter implements GameManager {
                                 
                 """));
 
-        activeChallenge = Optional.empty();
+        this.activeChallenge = Optional.empty();
     }
 
     @Nullable

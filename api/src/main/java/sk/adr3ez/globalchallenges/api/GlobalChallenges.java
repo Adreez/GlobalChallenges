@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import dev.dejvokep.boostedyaml.YamlDocument;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.title.Title;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import sk.adr3ez.globalchallenges.api.database.DataManager;
@@ -64,6 +65,8 @@ public interface GlobalChallenges {
 
     void broadcast(@NotNull Component component);
 
+    void broadcastTitle(@NotNull Title title);
+
     @NotNull
     String getDataDirectory();
 
@@ -71,6 +74,5 @@ public interface GlobalChallenges {
     Collection<?> getOnlinePlayers();
 
     //Server version
-    //getChallengeManager - getActiveChallenge
 
 }
