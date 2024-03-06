@@ -87,6 +87,7 @@ messages:
         title: "<gradient:#245A6A:#D48C93><b>ɢʟᴏʙᴀʟᴄʜᴀʟʟᴇɴɢᴇs</b></gradient>"
         subtitle: "<#00ff08><u>Join in chat!</u>"
 
-        fadein: 10
-        stay: 15
-        fadeout: 10
+        # In milliseconds (1 second = 1000 milliseconds)
+        fadein: 500
+        stay: 3000
+        fadeout: 500
