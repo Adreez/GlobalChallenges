@@ -1,7 +1,9 @@
 package sk.adr3ez.globalchallenges.api.model.challenge;
 
+import net.kyori.adventure.audience.Audience;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import sk.adr3ez.globalchallenges.api.model.player.ChallengePlayer;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,13 +14,13 @@ public interface ActiveChallenge {
     @NotNull
     Challenge getChallenge();
 
-    ChallengeData getChallengeData();
+    Double getRequiredScore();
 
     List<UUID> getJoinedPlayers();
 
-    Optional<UUID> getPlayer(@NotNull UUID uuid);
+    Optional<ChallengePlayer> getPlayer(@NotNull UUID uuid);
 
-    void joinPlayer(@NotNull UUID uuid);
+    void joinPlayer(@NotNull UUID uuid, @NotNull Audience audience);
 
     void dumpPlayer(@NotNull UUID uuid);
 

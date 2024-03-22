@@ -255,7 +255,7 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
 
                                 if (gameManager.getActiveChallenge().get().isJoined(sender.getUniqueId())) {
                                     sender.sendMessage("You've joined the game!");
-                                    gameManager.getActiveChallenge().get().joinPlayer(sender.getUniqueId());
+                                    gameManager.getActiveChallenge().get().joinPlayer(sender.getUniqueId(), adventure().player(sender));
                                 } else {
                                     sender.sendMessage("You already joined game!");
                                 }

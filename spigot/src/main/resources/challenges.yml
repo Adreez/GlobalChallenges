@@ -23,10 +23,11 @@ challenges:
     #monitor_blocks in config.yml has to be enabled!
     player_placed: false
     list:
-      - DIAMOND_ORE
-      - GOLD_ORE
-      - IRON_ORE
-      - COAL_ORE
+      # Material : minimalValue : maximalValue <- (NOTE! -> These values are used for randomly generated number between them)
+      - DIAMOND_ORE:10:1
+      - GOLD_ORE:20:1
+      - IRON_ORE:30:1
+      - COAL_ORE:64:1
 
   xp_gathered:
     name: "Gather experience"
@@ -35,7 +36,7 @@ challenges:
 
   players_killed:
     name: "Kill players"
-    description: "<gray><i>Kill as much players as you can!"
+    description: "<gray><i>Kill as much unique players as you can!"
     enabled: true
 
   harvest_crops:
