@@ -3,6 +3,7 @@ package sk.adr3ez.globalchallenges.core.util;
 import org.jetbrains.annotations.NotNull;
 import sk.adr3ez.globalchallenges.api.GlobalChallenges;
 import sk.adr3ez.globalchallenges.api.configuration.StorageMethod;
+import sk.adr3ez.globalchallenges.api.util.ConfigRoutes;
 import sk.adr3ez.globalchallenges.api.util.log.PluginSettings;
 
 public class PluginSettingsAdapter extends PluginSettings {

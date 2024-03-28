@@ -23,6 +23,7 @@ import sk.adr3ez.globalchallenges.api.GlobalChallenges;
 import sk.adr3ez.globalchallenges.api.GlobalChallengesProvider;
 import sk.adr3ez.globalchallenges.api.database.DataManager;
 import sk.adr3ez.globalchallenges.api.model.GameManager;
+import sk.adr3ez.globalchallenges.api.model.challenge.ActiveChallenge;
 import sk.adr3ez.globalchallenges.api.model.challenge.Challenge;
 import sk.adr3ez.globalchallenges.api.util.log.PluginLogger;
 import sk.adr3ez.globalchallenges.api.util.log.PluginSettings;
@@ -249,19 +250,21 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
                         }))
                 .withSubcommand(new CommandAPICommand("join")
                         .withPermission("globalchallenges.join")
-                        .executesPlayer((sender, args) -> {
+                        .executesPlayer((player, args) -> {
                             //Join cmd
                             if (gameManager.getActiveChallenge().isPresent()) {
 
-                                if (gameManager.getActiveChallenge().get().isJoined(sender.getUniqueId())) {
-                                    sender.sendMessage("You've joined the game!");
-                                    gameManager.getActiveChallenge().get().joinPlayer(sender.getUniqueId(), adventure().player(sender));
+                                ActiveChallenge activeChallenge = gameManager.getActiveChallenge().get();
+
+                                if (!activeChallenge.isJoined(player.getUniqueId())) {
+                                    player.sendMessage("You've joined the game!");
+                                    activeChallenge.joinPlayer(player.getUniqueId(), adventure().player(player));
                                 } else {
-                                    sender.sendMessage("You already joined game!");
+                                    player.sendMessage("You already joined game!");
                                 }
 
                             } else {
-                                sender.sendMessage("No active game to join!");
+                                player.sendMessage("No active game to join!");
                             }
                         }))
                 .executes((sender, args) -> {

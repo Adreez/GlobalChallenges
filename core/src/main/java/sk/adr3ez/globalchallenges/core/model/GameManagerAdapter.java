@@ -10,7 +10,7 @@ import sk.adr3ez.globalchallenges.api.GlobalChallenges;
 import sk.adr3ez.globalchallenges.api.model.GameManager;
 import sk.adr3ez.globalchallenges.api.model.challenge.ActiveChallenge;
 import sk.adr3ez.globalchallenges.api.model.challenge.Challenge;
-import sk.adr3ez.globalchallenges.core.util.ConfigRoutes;
+import sk.adr3ez.globalchallenges.api.util.ConfigRoutes;
 
 import java.io.File;
 import java.io.IOException;

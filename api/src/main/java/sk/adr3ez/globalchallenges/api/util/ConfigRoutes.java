@@ -1,4 +1,4 @@
-package sk.adr3ez.globalchallenges.core.util;
+package sk.adr3ez.globalchallenges.api.util;
 
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
@@ -23,6 +23,8 @@ public enum ConfigRoutes {
     MESSAGES_BROADCAST_GAMESTART_FADEIN("messages.broadcast.game_start.title.fadein"),
     MESSAGES_BROADCAST_GAMESTART_STAY("messages.broadcast.game_start.title.stay"),
     MESSAGES_BROADCAST_GAMESTART_FADEOUT("messages.broadcast.game_start.title.fadeout"),
+
+    PLAYER_ACTIVE_BOSSBAR("messages.player.active_bossbar"),
 
 
     ;

@@ -1,10 +1,9 @@
 package sk.adr3ez.globalchallenges.core.model;
 
 import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.bossbar.BossBar;
-import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import sk.adr3ez.globalchallenges.api.GlobalChallenges;
@@ -17,17 +16,21 @@ import java.util.*;
 
 public final class ActiveChallengeAdapter implements ActiveChallenge {
 
-    private HashMap<UUID, ChallengePlayer> players;
+    private Map<UUID, ChallengePlayer> players = new HashMap<>();
 
     @NotNull
     private Challenge challenge;
 
-    private Double requiredScore;
+    private final Double requiredScore;
+
+    private BukkitTask bossBarTask;
 
 
     public ActiveChallengeAdapter(@NotNull Challenge challenge) {
         this.challenge = challenge;
-        this.players = new HashMap<>();
+
+        this.requiredScore = challenge.getRequiredScore();
+        Bukkit.getServer().broadcastMessage("Players: " + players.keySet());
     }
 
     @NotNull
@@ -55,16 +58,18 @@ public final class ActiveChallengeAdapter implements ActiveChallenge {
 
     @Override
     public void joinPlayer(@NotNull UUID uuid, @NotNull Audience audience) {
-        ChallengePlayer cp = new ChallengePlayer();
-        cp.setBossBar(BossBar.bossBar(Component.text("Yey"), 0f, BossBar.Color.PURPLE, BossBar.Overlay.PROGRESS));
+        ChallengePlayer cp = new ChallengePlayer(uuid, audience);
 
         GlobalChallenges plugin = GlobalChallengesProvider.get();
         players.put(uuid, cp);
 
-        audience.showBossBar(cp.getBossBar());
-
         Bukkit.getScheduler().runTaskAsynchronously(plugin.getJavaPlugin(),
                 () -> GlobalChallengesProvider.get().getDataManager().getStorage().addJoin(uuid));
+
+        bossBarTask = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin.getJavaPlugin(), () -> {
+            for (ChallengePlayer challengePlayer : players.values())
+                challengePlayer.updateBossbar();
+        }, 20, 20);
 
     }
 
@@ -82,17 +87,21 @@ public final class ActiveChallengeAdapter implements ActiveChallenge {
     @NotNull
     @Override
     public boolean isJoined(@NotNull Player player) {
-        return isJoined(player.getUniqueId());
+        return this.isJoined(player.getUniqueId());
     }
 
     @NotNull
     @Override
     public boolean isJoined(@NotNull UUID uuid) {
-        return players.containsKey(uuid);
+        return this.players.containsKey(uuid);
     }
 
     @Override
     public void handleEnd() {
+        for (ChallengePlayer challengePlayer : players.values())
+            challengePlayer.getAudience().hideBossBar(challengePlayer.getBossBar());
+        bossBarTask.cancel();
+
         challenge.handleEnd();
         players.clear();
         this.challenge = null;

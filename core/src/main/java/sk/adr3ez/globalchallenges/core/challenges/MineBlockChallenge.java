@@ -49,7 +49,7 @@ public class MineBlockChallenge extends Challenge {
 
     @Override
     public Double getRequiredScore() {
-        return (double) (new Random().nextInt(64 - 1) + 1);
+        return (double) (new Random().nextInt(challengeMaterial.maximum - challengeMaterial.minimum) + 1);
     }
 
     @Override
@@ -78,6 +78,7 @@ public class MineBlockChallenge extends Challenge {
         Random random = new Random();
         int i = random.nextInt(blocks.size());
         challengeMaterial = blocks.get(i);
+
 
         playerPlaced = gameManager.getChallengesFile().getBoolean("challenges." + getKey() + ".block_player_placed");
 
@@ -112,19 +113,21 @@ public class MineBlockChallenge extends Challenge {
         private final Material material;
 
         @Nullable
-        private Integer maxNumber = 64;
+        private Integer maximum = 64;
 
         @Nullable
-        private Integer minNumber = 1;
+        private Integer minimum = 1;
 
         public ChallengeMaterial(String materialString) {
             String[] strings = materialString.split(":");
 
             this.material = Material.getMaterial(strings[0].toUpperCase());
             if (isInt(strings[1]))
-                this.maxNumber = Integer.valueOf(strings[1]);
+                if (Integer.parseInt(strings[1]) > 0)
+                    this.maximum = Integer.valueOf(strings[1]);
             if (isInt(strings[2]))
-                this.minNumber = Integer.valueOf(strings[2]);
+                if (Integer.parseInt(strings[2]) > 0)
+                    this.minimum = Integer.valueOf(strings[2]);
         }
 
         private boolean isInt(@Nullable String s) {

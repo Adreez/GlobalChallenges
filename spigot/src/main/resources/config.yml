@@ -91,3 +91,5 @@ messages:
         fadein: 500
         stay: 3000
         fadeout: 500
+  player:
+    active_bossbar: "<dark_grey>•|• <grey>(Time left) <color:#d6ff7d><time_left></color> <dark_grey>•|• <gradient:#245A6A:#D48C93><b>ɢʟᴏʙᴀʟᴄʜᴀʟʟᴇɴɢᴇs</b></gradient> <dark_grey>•|• <color:#d6ff7d><score></color> <grey>(score) <dark_grey>•|• "
