@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
@@ -48,6 +50,7 @@ public class ChallengePlayer {
 
     public void addScore(@NotNull Double value) {
         this.score += value;
+        audience.playSound(Sound.sound(Key.key("block.note_block.bell"), Sound.Source.MUSIC, 0.4f, 1f));
 
         if (score < requiredScore)
             return;
