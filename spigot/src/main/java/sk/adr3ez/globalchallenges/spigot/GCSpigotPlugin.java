@@ -10,6 +10,7 @@ import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.ArgumentSuggestions;
 import dev.jorel.commandapi.arguments.StringArgument;
+import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -266,6 +267,11 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
                             } else {
                                 player.sendMessage("No active game to join!");
                             }
+                        }))
+                .withSubcommand(new CommandAPICommand("results")
+                        .executesPlayer((player, args) -> {
+                            adventure().player(player).openBook(Book.book(Component.text("Title"), Component.text("Author"),
+                                    MiniMessage.miniMessage().deserialize("<b><color:#245a6a>1:</b> <color:#009c15>Adr3ez_ <gray>(3 min 25 sec)")));
                         }))
                 .executes((sender, args) -> {
                             Bukkit.getServer().dispatchCommand(sender, "glch help");

@@ -123,11 +123,17 @@ public class GameManagerAdapter implements GameManager {
     public void endActive() {
         this.activeChallenge.get().handleEnd();
 
-        plugin.broadcast(MiniMessage.miniMessage().deserialize("""
-                                
-                Game has been ended! Thank you for playing
-                                
-                """));
+        plugin.broadcast(MiniMessage.miniMessage().deserialize(String.join("<br>",
+                plugin.getConfiguration().getStringList(ConfigRoutes.MESSAGES_BROADCAST_GAMEEND_CHAT.getRoute()))
+        ));
+        plugin.broadcastTitle(Title.title(
+                MiniMessage.miniMessage().deserialize(plugin.getConfiguration().getString(ConfigRoutes.MESSAGES_BROADCAST_GAMEEND_TITLE.getRoute())),
+                MiniMessage.miniMessage().deserialize(plugin.getConfiguration().getString(ConfigRoutes.MESSAGES_BROADCAST_GAMEEND_SUBTITLE.getRoute())),
+                Title.Times.times(
+                        Duration.ofMillis(plugin.getConfiguration().getInt(ConfigRoutes.MESSAGES_BROADCAST_GAMEEND_FADEIN.getRoute())),
+                        Duration.ofMillis(plugin.getConfiguration().getInt(ConfigRoutes.MESSAGES_BROADCAST_GAMEEND_STAY.getRoute())),
+                        Duration.ofMillis(plugin.getConfiguration().getInt(ConfigRoutes.MESSAGES_BROADCAST_GAMEEND_FADEOUT.getRoute()))
+                )));
 
         this.activeChallenge = Optional.empty();
     }

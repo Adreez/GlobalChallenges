@@ -103,7 +103,6 @@ public class MineBlockChallenge extends Challenge {
         }
 
         addScore(uuid, 1D);
-        GlobalChallengesProvider.get().getPluginLogger().warn("Total: " + gameManager.getActiveChallenge().get().getPlayer(uuid).get().getScore());
     }
 
     @Getter

@@ -50,6 +50,9 @@ settings:
   # How many players are required to start a challenge.
   players_required: 2
 
+  # How many seconds will one challange be run for.
+  challenge_time: 300 #5 minutes
+
   # If placed blocks should be monitored for player_placed condition in challenges
   monitor_blocks: false
 
@@ -91,5 +94,25 @@ messages:
         fadein: 500
         stay: 3000
         fadeout: 500
+    game_end:
+      # This message will show in chat when challenge will end!
+      chat:
+        - ""
+        - "                       <gradient:#245A6A:#D48C93><b>ɢʟᴏʙᴀʟᴄʜᴀʟʟᴇɴɢᴇs</b></gradient>"
+        - "               <gradient:#ff5781:#ff1414><obf>|||</obf> <u>ᴄʜᴀʟʟᴇɴɢᴇ ʜᴀs ᴇɴᴅᴇᴅ</u> <obf>|||</obf></gradient>"
+        - ""
+        - "                <white>Thank you for participation!"
+        - "                            <hover:show_text:'<gray><i>Click to see full results of game.'><click:run_command:'/glch results'> <dark_gray>[<color:#08ffea>results</color><dark_gray>] </click></hover>"
+        - ""
+      # Title that will show when challenge starts
+      title:
+        title: "<gradient:#245A6A:#D48C93><b>ɢʟᴏʙᴀʟᴄʜᴀʟʟᴇɴɢᴇs</b></gradient>"
+        subtitle: "<#ff4242><u>ᴄʜᴀʟʟᴇɴɢᴇ ʜᴀs ᴇɴᴅᴇᴅ</u>"
+
+        # In milliseconds (1 second = 1000 milliseconds)
+        fadein: 500
+        stay: 3000
+        fadeout: 500
   player:
-    active_bossbar: "<dark_grey>•|• <grey>(Time left) <color:#d6ff7d><time_left></color> <dark_grey>•|• <gradient:#245A6A:#D48C93><b>ɢʟᴏʙᴀʟᴄʜᴀʟʟᴇɴɢᴇs</b></gradient> <dark_grey>•|• <color:#d6ff7d><score></color> <grey>(score) <dark_grey>•|• "
+    active_bossbar: "<dark_grey>•|• <grey>(Time left) <color:#d6ff7d><time_left></color> <dark_grey>•|• <gradient:#245A6A:#D48C93><b>ɢʟᴏʙᴀʟᴄʜᴀʟʟᴇɴɢᴇs</b></gradient> <dark_grey>•|• <color:#d6ff7d><score>/<needed></color> <grey>(score) <dark_grey>•|• "
+    finished_bossbar: "<dark_grey>•|• <grey>(Time left) <color:#d6ff7d><time_left></color> <dark_grey>•|• <gradient:#245A6A:#D48C93><b>ɢʟᴏʙᴀʟᴄʜᴀʟʟᴇɴɢᴇs</b></gradient> <dark_grey>•|• <color:green>finished</color> <grey>(in <finished_time> sec) <dark_grey>•|•"

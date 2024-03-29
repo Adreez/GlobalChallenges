@@ -1,7 +1,7 @@
 package sk.adr3ez.globalchallenges.api.model.challenge;
 
 import net.kyori.adventure.audience.Audience;
-import org.bukkit.entity.Player;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import sk.adr3ez.globalchallenges.api.model.player.ChallengePlayer;
 
@@ -16,22 +16,24 @@ public interface ActiveChallenge {
 
     Double getRequiredScore();
 
+    Integer getTimeLeft();
+
+    Long getStartTime();
+
     List<UUID> getJoinedPlayers();
 
     Optional<ChallengePlayer> getPlayer(@NotNull UUID uuid);
 
     void joinPlayer(@NotNull UUID uuid, @NotNull Audience audience);
 
-    void dumpPlayer(@NotNull UUID uuid);
-
     @NotNull
     int countPlayers();
 
     @NotNull
-    boolean isJoined(@NotNull Player player);
-
-    @NotNull
     boolean isJoined(@NotNull UUID uuid);
 
+    @ApiStatus.Internal
     void handleEnd();
+
+    void finishPlayer(UUID uuid);
 }
