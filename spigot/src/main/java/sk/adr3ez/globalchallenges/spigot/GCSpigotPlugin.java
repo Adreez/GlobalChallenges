@@ -10,9 +10,11 @@ import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.ArgumentSuggestions;
 import dev.jorel.commandapi.arguments.StringArgument;
+import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -22,6 +24,7 @@ import sk.adr3ez.globalchallenges.api.GlobalChallenges;
 import sk.adr3ez.globalchallenges.api.GlobalChallengesProvider;
 import sk.adr3ez.globalchallenges.api.database.DataManager;
 import sk.adr3ez.globalchallenges.api.model.GameManager;
+import sk.adr3ez.globalchallenges.api.model.challenge.ActiveChallenge;
 import sk.adr3ez.globalchallenges.api.model.challenge.Challenge;
 import sk.adr3ez.globalchallenges.api.util.log.PluginLogger;
 import sk.adr3ez.globalchallenges.api.util.log.PluginSettings;
@@ -133,6 +136,8 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
     @NotNull
     @Override
     public GameManager getGameManager() {
+        if (gameManager == null)
+            throw new IllegalStateException("Tried to access game manager while plugin is not loaded yet!");
         return gameManager;
     }
 
@@ -140,6 +145,13 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
     public void broadcast(@NotNull Component component) {
         for (Player player : getOnlinePlayers()) {
             adventure().player(player).sendMessage(component);
+        }
+    }
+
+    @Override
+    public void broadcastTitle(@NotNull Title title) {
+        for (Player player : getOnlinePlayers()) {
+            adventure().player(player).showTitle(title);
         }
     }
 
@@ -172,6 +184,13 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
                         .executes((sender, args) -> {
                             Objects.requireNonNull(gameManager).getLoadedChallenges().forEach(challenge ->
                                     sender.sendMessage("Loaded: " + challenge.getKey() + "/ (Class) " + challenge.getClass().getName()));
+                        })
+                )
+                .withSubcommand(new CommandAPICommand("reload")
+                        .withPermission("globalchallenges.admin")
+                        .executes((sender, args) -> {
+                            this.reload();
+                            sender.sendMessage("Reloaded!");
                         })
                 )
                 .withSubcommand(new CommandAPICommand("game")
@@ -232,20 +251,42 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
                         }))
                 .withSubcommand(new CommandAPICommand("join")
                         .withPermission("globalchallenges.join")
-                        .executesPlayer((sender, args) -> {
+                        .executesPlayer((player, args) -> {
                             //Join cmd
                             if (gameManager.getActiveChallenge().isPresent()) {
-                                sender.sendMessage("You've joined the game!");
-                                gameManager.getActiveChallenge().get().joinPlayer(sender.getUniqueId());
+
+                                ActiveChallenge activeChallenge = gameManager.getActiveChallenge().get();
+
+                                if (!activeChallenge.isJoined(player.getUniqueId())) {
+                                    player.sendMessage("You've joined the game!");
+                                    activeChallenge.joinPlayer(player.getUniqueId(), adventure().player(player));
+                                } else {
+                                    player.sendMessage("You already joined game!");
+                                }
+
                             } else {
-                                sender.sendMessage("No active game to join!");
+                                player.sendMessage("No active game to join!");
                             }
+                        }))
+                .withSubcommand(new CommandAPICommand("results")
+                        .executesPlayer((player, args) -> {
+                            adventure().player(player).openBook(Book.book(Component.text("Title"), Component.text("Author"),
+                                    MiniMessage.miniMessage().deserialize("<b><color:#245a6a>1:</b> <color:#009c15>Adr3ez_ <gray>(3 min 25 sec)")));
                         }))
                 .executes((sender, args) -> {
                             Bukkit.getServer().dispatchCommand(sender, "glch help");
                         }
                 )
                 .register();
+    }
+
+    private void reload() {
+        try {
+            configurationFile.reload();
+            gameManager.getChallengesFile().reload();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static class ConsoleColors {

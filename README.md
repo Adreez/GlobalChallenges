@@ -42,3 +42,4 @@ repositories {
 dependencies {
     implementation 'com.example:GlobalChallenges:1.0.0' // Replace with the actual version
 }
+```
