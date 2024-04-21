@@ -28,8 +28,9 @@ storage:
 
   # Mysql setup
   data:
-    hostname: "localhost"
+    hostname: localhost
     database: "globalchallenges"
+    port: 3306
     username: "root"
     password: ""
 

@@ -7,9 +7,12 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import sk.adr3ez.globalchallenges.api.GlobalChallenges;
+import sk.adr3ez.globalchallenges.core.database.PlayerData;
+import sk.adr3ez.globalchallenges.core.database.PlayerDataDAO;
 
 public class BlockListener implements Listener {
 
@@ -31,6 +34,16 @@ public class BlockListener implements Listener {
     void destroy(BlockBreakEvent event) {
         Location loc = event.getBlock().getLocation();
         remove(event.getBlock().getLocation());
+    }
+
+    @EventHandler
+    void join(PlayerJoinEvent event) {
+        PlayerDataDAO playerDataDAO = new PlayerDataDAO();
+        PlayerData playerData = new PlayerData(event.getPlayer().getUniqueId(), event.getPlayer().getName());
+
+        //Hibernate.initialize(playerData.getUuid());
+
+        playerDataDAO.saveOrUpdate(playerData);
     }
 
 
