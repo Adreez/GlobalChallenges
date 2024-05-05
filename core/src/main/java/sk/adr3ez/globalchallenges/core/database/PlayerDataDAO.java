@@ -1,52 +1,55 @@
 package sk.adr3ez.globalchallenges.core.database;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.PersistenceException;
+import sk.adr3ez.globalchallenges.core.database.entity.DBPlayer;
 
 public class PlayerDataDAO {
 
-    public void saveOrUpdate(PlayerData playerData) {
-        EntityManager entityManager = new DatabaseManager().getEntityManager();
+    public void saveOrUpdate(DBPlayer DBPlayer) {
+        EntityManager entityManager = DatabaseManager.getEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
 
         try {
-            entityManager.getTransaction().begin();
-            entityManager.merge(playerData);
-            entityManager.getTransaction().commit();
-        } catch (Exception ex) {
-            if (entityManager.getTransaction().isActive()) {
-                entityManager.getTransaction().rollback();
+            transaction.begin();
+            entityManager.merge(DBPlayer);
+            transaction.commit();
+        } catch (PersistenceException e) {
+            if (transaction.isActive()) {
+                transaction.rollback();
             }
-            ex.printStackTrace();
+            e.printStackTrace(); // Handle or log the exception appropriately
         } finally {
             entityManager.close();
         }
     }
 
-    public PlayerData findByUUID(String uuid) {
-        EntityManager entityManager = new DatabaseManager().getEntityManager();
+    public DBPlayer findByUUID(String uuid) {
+        EntityManager entityManager = DatabaseManager.getEntityManager();
 
-        PlayerData playerData = null;
+        DBPlayer DBPlayer = null;
         try {
-            playerData = entityManager.find(PlayerData.class, uuid);
-        } catch (Exception ex) {
-            ex.printStackTrace();
+            DBPlayer = entityManager.find(DBPlayer.class, uuid);
+        } catch (Exception ignored) {
+
         } finally {
             entityManager.close();
         }
-        return playerData;
+        return DBPlayer;
     }
 
-    public void delete(PlayerData playerData) {
-        EntityManager entityManager = new DatabaseManager().getEntityManager();
+    public void delete(DBPlayer DBPlayer) {
+        EntityManager entityManager = DatabaseManager.getEntityManager();
 
         try {
             entityManager.getTransaction().begin();
-            entityManager.remove(entityManager.contains(playerData) ? playerData : entityManager.merge(playerData));
+            entityManager.remove(entityManager.contains(DBPlayer) ? DBPlayer : entityManager.merge(DBPlayer));
             entityManager.getTransaction().commit();
-        } catch (Exception ex) {
+        } catch (Exception ignored) {
             if (entityManager.getTransaction().isActive()) {
                 entityManager.getTransaction().rollback();
             }
-            ex.printStackTrace();
         } finally {
             entityManager.close();
         }

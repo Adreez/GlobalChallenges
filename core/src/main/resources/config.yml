@@ -19,12 +19,12 @@ file-version: 1
 ##########################################################################################
 # |-                                                                                  -| #
 # |- STORAGE                                                                          -| #
-# |-  » Types of storage: MySQL, SQLite                                               -| #
+# |-  » Types of storage: MySQL, SQLite, H2                                           -| #
 # |-                                                                                  -| #
 ##########################################################################################
 
 storage:
-  method: SQLite
+  method: H2
 
   # Mysql setup
   data:
@@ -34,9 +34,11 @@ storage:
     username: "root"
     password: ""
 
-    minimumConnections: 1
-    maximumConnections: 20
-    connectionTimeout: 2000
+    #Advanced pool settings
+    settings:
+      minimumConnections: 1
+      maximumConnections: 20
+      connectionTimeout: 2000
 
 
 ##########################################################################################
