@@ -31,7 +31,7 @@ import sk.adr3ez.globalchallenges.api.model.challenge.Challenge;
 import sk.adr3ez.globalchallenges.api.util.ConfigRoutes;
 import sk.adr3ez.globalchallenges.api.util.log.PluginLogger;
 import sk.adr3ez.globalchallenges.core.database.DatabaseManager;
-import sk.adr3ez.globalchallenges.core.database.PlayerDataDAO;
+import sk.adr3ez.globalchallenges.core.database.PlayerDAO;
 import sk.adr3ez.globalchallenges.core.database.entity.DBPlayer;
 import sk.adr3ez.globalchallenges.core.model.GameManagerAdapter;
 import sk.adr3ez.globalchallenges.spigot.util.BlockListener;
@@ -84,12 +84,12 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
 
     @EventHandler
     void join(PlayerJoinEvent event) {
-        PlayerDataDAO playerDataDAO = new PlayerDataDAO();
+        PlayerDAO playerDAO = new PlayerDAO();
         DBPlayer DBPlayer = new DBPlayer(event.getPlayer().getUniqueId(), event.getPlayer().getName());
 
         //Hibernate.initialize(playerData.getUuid());
 
-        playerDataDAO.saveOrUpdate(DBPlayer);
+        playerDAO.saveOrUpdate(DBPlayer);
     }
 
     @Override
