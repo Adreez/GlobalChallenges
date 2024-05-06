@@ -3,6 +3,7 @@ package sk.adr3ez.globalchallenges.core.database;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
+import org.jetbrains.annotations.ApiStatus;
 import sk.adr3ez.globalchallenges.api.GlobalChallenges;
 import sk.adr3ez.globalchallenges.api.GlobalChallengesProvider;
 import sk.adr3ez.globalchallenges.api.util.ConfigRoutes;
@@ -10,6 +11,7 @@ import sk.adr3ez.globalchallenges.api.util.ConfigRoutes;
 import java.util.HashMap;
 import java.util.Map;
 
+@ApiStatus.Obsolete
 public class DatabaseManager {
 
     private static final EntityManagerFactory emf = setupEntityManagerFactory();

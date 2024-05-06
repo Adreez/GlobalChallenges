@@ -39,7 +39,6 @@ public class CustomPersistenceUnitInfo implements jakarta.persistence.spi.Persis
         HikariDataSource dataSource = new HikariDataSource();
 
         String hostname = "localhost";
-        ;
         String database = "globalchallenges";
 
         dataSource.setJdbcUrl("jdbc:mysql://" + hostname + "/" + database);
@@ -56,7 +55,9 @@ public class CustomPersistenceUnitInfo implements jakarta.persistence.spi.Persis
 
     @Override
     public List<String> getManagedClassNames() {
-        return List.of("sk.adr3ez.globalchallenges.core.database.entity.DBPlayer");
+        return List.of("sk.adr3ez.globalchallenges.core.database.entity.DBPlayer", "sk.adr3ez.globalchallenges.core.database.entity.DBPlayerData",
+                "sk.adr3ez.globalchallenges.core.database.entity.DBGame",
+                "sk.adr3ez.globalchallenges.core.database.entity.DBServer");
     }
 
     @Override

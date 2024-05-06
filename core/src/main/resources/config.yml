@@ -35,10 +35,11 @@ storage:
     password: ""
 
     #Advanced pool settings
-    settings:
+    advanced:
       minimumConnections: 1
       maximumConnections: 20
       connectionTimeout: 2000
+      driverClassName: "com.mysql.cj.jdbc.Driver"
 
 
 ##########################################################################################

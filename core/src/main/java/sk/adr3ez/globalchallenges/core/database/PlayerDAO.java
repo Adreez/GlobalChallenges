@@ -18,8 +18,9 @@ public class PlayerDAO {
 
     public PlayerDAO() {
         Map<String, String> props = new HashMap<>();
-        props.put("hibernate.show_sql", "true");
+        props.put("hibernate.show_sql", "false"); //DEBUG
         props.put("hibernate.hbm2ddl.auto", "update"); // create, none, update
+        props.put("hibernate.dialect", "org.hibernate.dialect.MySQLDialect"); // create, none, update
         this.entityManagerFactory = new HibernatePersistenceProvider()
                 .createContainerEntityManagerFactory(new CustomPersistenceUnitInfo("GlobalChallenges"), props);
     }
