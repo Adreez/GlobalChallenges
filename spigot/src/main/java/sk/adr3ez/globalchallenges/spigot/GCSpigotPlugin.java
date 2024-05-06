@@ -140,7 +140,7 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
     @Override
     public GameManager getGameManager() {
         if (gameManager == null)
-            throw new IllegalStateException("Tried to access DBGame manager while plugin is not loaded yet!");
+            throw new IllegalStateException("Tried to access game manager while plugin is not loaded yet!");
         return gameManager;
     }
 
@@ -177,7 +177,7 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
                             adventure().sender(sender).sendMessage(MiniMessage.miniMessage().deserialize("""
                                     GlobalChallenges
                                     /glch help
-                                    /glch DBGame <action> <gameID>
+                                    /glch game <action> <gameID>
                                     /glch list
                                     """));
                         })
@@ -189,14 +189,7 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
                                     sender.sendMessage("Loaded: " + challenge.getKey() + "/ (Class) " + challenge.getClass().getName()));
                         })
                 )
-                .withSubcommand(new CommandAPICommand("reload")
-                        .withPermission("globalchallenges.admin")
-                        .executes((sender, args) -> {
-                            this.reload();
-                            sender.sendMessage("Reloaded!");
-                        })
-                )
-                .withSubcommand(new CommandAPICommand("DBGame")
+                .withSubcommand(new CommandAPICommand("game")
                         .withPermission("globalchallenges.admin")
                         .withArguments(new StringArgument("action")
                                 .setListed(true).replaceSuggestions(ArgumentSuggestions.strings("start", "end")))
@@ -212,39 +205,39 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
                                 case "start":
                                     if (gameManager.getActiveChallenge().isEmpty()) {
                                         if (args.getOptional("gameID").isPresent()) {
-                                            //Start exact DBGame
+                                            //Start exact game
 
                                             Challenge challenge = gameManager.getChallenge(args.getOptional("gameID").get().toString());
 
                                             if (challenge != null) {
-                                                sender.sendMessage("Start exact DBGame: " + challenge.getKey());
+                                                sender.sendMessage("Start exact game: " + challenge.getKey());
                                                 if (gameManager.start(challenge)) {
                                                     sender.sendMessage("Game started");
                                                 } else {
                                                     sender.sendMessage("Game failed to start");
                                                 }
                                             } else {
-                                                sender.sendMessage("This DBGame is not loaded!");
+                                                sender.sendMessage("This game is not loaded!");
                                             }
 
                                         } else {
                                             //Start random one
                                             gameManager.startRandom();
-                                            sender.sendMessage("Starting random DBGame");
+                                            sender.sendMessage("Starting random game");
                                         }
                                     } else {
                                         sender.sendMessage("To start the challenge you have to end active one or wait until it will be done automaticaly.");
                                     }
                                     break;
                                 case "end", "stop":
-                                    //End a DBGame if started
+                                    //End a game if started
                                     if (gameManager.getActiveChallenge().isPresent()) {
 
                                         gameManager.endActive();
 
-                                        sender.sendMessage("Stopping DBGame (Sender)");
+                                        sender.sendMessage("Stopping game (Sender)");
                                     } else {
-                                        sender.sendMessage("There's no active DBGame.");
+                                        sender.sendMessage("There's no active game.");
                                     }
                                     break;
                                 default:
