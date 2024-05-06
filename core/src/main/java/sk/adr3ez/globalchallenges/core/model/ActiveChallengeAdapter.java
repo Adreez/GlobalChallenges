@@ -91,8 +91,8 @@ public final class ActiveChallengeAdapter implements ActiveChallenge {
 
         players.put(uuid, cp);
 
-        Bukkit.getScheduler().runTaskAsynchronously(plugin.getJavaPlugin(),
-                () -> GlobalChallengesProvider.get().getDataManager().getStorage().addJoin(uuid));
+        /*Bukkit.getScheduler().runTaskAsynchronously(plugin.getJavaPlugin(),
+                () -> GlobalChallengesProvider.get().getDataManager().getStorage().addJoin(uuid));*/
     }
 
     @Override
