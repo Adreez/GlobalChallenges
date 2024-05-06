@@ -13,6 +13,7 @@ import sk.adr3ez.globalchallenges.api.GlobalChallengesProvider;
 import sk.adr3ez.globalchallenges.api.model.ChallengeType;
 import sk.adr3ez.globalchallenges.api.model.GameManager;
 import sk.adr3ez.globalchallenges.api.model.challenge.Challenge;
+import sk.adr3ez.globalchallenges.api.util.ConfigRoutes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -95,7 +96,7 @@ public class MineBlockChallenge extends Challenge {
         if (!gameManager.getActiveChallenge().get().isJoined(uuid))
             return;
 
-        if (!playerPlaced && GlobalChallengesProvider.get().getPluginSettings().monitorBlocks()) {
+        if (!playerPlaced && GlobalChallengesProvider.get().getConfiguration().getBoolean(ConfigRoutes.SETTINGS_MONITOR_BLOCKS.getRoute())) {
             Location location = event.getBlock().getLocation();
             int loc = location.hashCode();
             if (location.getChunk().getPersistentDataContainer().has(new NamespacedKey(GlobalChallengesProvider.get().getJavaPlugin(), Integer.toString(loc, 16))))

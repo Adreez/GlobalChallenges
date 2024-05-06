@@ -19,23 +19,27 @@ file-version: 1
 ##########################################################################################
 # |-                                                                                  -| #
 # |- STORAGE                                                                          -| #
-# |-  » Types of storage: MySQL, SQLite                                               -| #
+# |-  » Types of storage: MySQL, SQLite, H2                                           -| #
 # |-                                                                                  -| #
 ##########################################################################################
 
 storage:
-  method: SQLite
+  method: H2
 
   # Mysql setup
   data:
-    hostname: "localhost"
+    hostname: localhost
     database: "globalchallenges"
+    port: 3306
     username: "root"
     password: ""
 
-    minimumConnections: 1
-    maximumConnections: 20
-    connectionTimeout: 2000
+    #Advanced pool settings
+    advanced:
+      minimumConnections: 1
+      maximumConnections: 20
+      connectionTimeout: 2000
+      driverClassName: "com.mysql.cj.jdbc.Driver"
 
 
 ##########################################################################################

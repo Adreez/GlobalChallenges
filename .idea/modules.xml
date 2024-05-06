@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/GlobalChallenges.iml" filepath="$PROJECT_DIR$/.idea/modules/GlobalChallenges.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/api/GlobalChallenges.api.main.iml" filepath="$PROJECT_DIR$/.idea/modules/api/GlobalChallenges.api.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/api/GlobalChallenges.api.test.iml" filepath="$PROJECT_DIR$/.idea/modules/api/GlobalChallenges.api.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/core/GlobalChallenges.core.main.iml" filepath="$PROJECT_DIR$/.idea/modules/core/GlobalChallenges.core.main.iml" />
@@ -13,6 +14,9 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/api/IdeaProjects.GlobalChallenges.api.test.iml" filepath="$PROJECT_DIR$/.idea/modules/api/IdeaProjects.GlobalChallenges.api.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/core/IdeaProjects.GlobalChallenges.core.test.iml" filepath="$PROJECT_DIR$/.idea/modules/core/IdeaProjects.GlobalChallenges.core.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/spigot/IdeaProjects.GlobalChallenges.spigot.test.iml" filepath="$PROJECT_DIR$/.idea/modules/spigot/IdeaProjects.GlobalChallenges.spigot.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/api/adria.IdeaProjects.GlobalChallenges.api.test.iml" filepath="$PROJECT_DIR$/.idea/modules/api/adria.IdeaProjects.GlobalChallenges.api.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/core/adria.IdeaProjects.GlobalChallenges.core.test.iml" filepath="$PROJECT_DIR$/.idea/modules/core/adria.IdeaProjects.GlobalChallenges.core.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/spigot/adria.IdeaProjects.GlobalChallenges.spigot.test.iml" filepath="$PROJECT_DIR$/.idea/modules/spigot/adria.IdeaProjects.GlobalChallenges.spigot.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/sk.adr3ez.GlobalChallenges.main.iml" filepath="$PROJECT_DIR$/.idea/modules/sk.adr3ez.GlobalChallenges.main.iml" />
     </modules>
   </component>
