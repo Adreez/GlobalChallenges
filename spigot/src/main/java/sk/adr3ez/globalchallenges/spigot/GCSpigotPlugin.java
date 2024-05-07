@@ -25,12 +25,13 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import sk.adr3ez.globalchallenges.api.GlobalChallenges;
 import sk.adr3ez.globalchallenges.api.GlobalChallengesProvider;
+import sk.adr3ez.globalchallenges.api.database.DatabaseManager;
 import sk.adr3ez.globalchallenges.api.model.GameManager;
 import sk.adr3ez.globalchallenges.api.model.challenge.ActiveChallenge;
 import sk.adr3ez.globalchallenges.api.model.challenge.Challenge;
 import sk.adr3ez.globalchallenges.api.util.ConfigRoutes;
 import sk.adr3ez.globalchallenges.api.util.log.PluginLogger;
-import sk.adr3ez.globalchallenges.core.database.DatabaseManager;
+import sk.adr3ez.globalchallenges.core.database.DatabaseManagerImp;
 import sk.adr3ez.globalchallenges.core.database.PlayerDAO;
 import sk.adr3ez.globalchallenges.core.database.entity.DBPlayer;
 import sk.adr3ez.globalchallenges.core.model.GameManagerAdapter;
@@ -42,22 +43,19 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import java.util.logging.Level;
 
 public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges, Listener {
     private @Nullable BukkitAudiences adventure;
     private @Nullable YamlDocument configurationFile;
 
     private @Nullable GameManager gameManager;
+    private DatabaseManager databaseManager;
 
     @Override
     public void onEnable() {
         long startupTime = System.currentTimeMillis();
 
         getPluginLogger().info(ConsoleColors.format("&y[&cGlobalChallenges&y] &gInitializing plugin...&reset"));
-        java.util.logging.Logger.getLogger("org.hibernate").setLevel(Level.OFF);
-        //Logger.getLogger("org.hibernate").setLevel(Level.OFF);
-
 
         if (!getDataFolder().exists())
             getDataFolder().mkdirs();
@@ -73,6 +71,8 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
             getPluginLogger().warn("There was error with loading config.yml, please try to reload the plugin \n" + e);
         }
 
+        this.databaseManager = new DatabaseManagerImp(this);
+
         if (getConfiguration().getBoolean(ConfigRoutes.SETTINGS_MONITOR_BLOCKS.getRoute()))
             Bukkit.getPluginManager().registerEvents(new BlockListener(this), this);
 
@@ -84,12 +84,9 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
 
     @EventHandler
     void join(PlayerJoinEvent event) {
-        PlayerDAO playerDAO = new PlayerDAO();
         DBPlayer DBPlayer = new DBPlayer(event.getPlayer().getUniqueId(), event.getPlayer().getName());
 
-        //Hibernate.initialize(playerData.getUuid());
-
-        playerDAO.saveOrUpdate(DBPlayer);
+        PlayerDAO.saveOrUpdate(DBPlayer);
     }
 
     @Override
@@ -104,8 +101,7 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
             this.adventure.close();
             this.adventure = null;
         }
-        new DatabaseManager().close();
-
+        this.databaseManager.close();
         CommandAPI.unregister("globalchallenges");
     }
 
@@ -142,6 +138,11 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
         if (gameManager == null)
             throw new IllegalStateException("Tried to access game manager while plugin is not loaded yet!");
         return gameManager;
+    }
+
+    @Override
+    public @NotNull DatabaseManager getDatabaseManager() {
+        return this.databaseManager;
     }
 
     @Override

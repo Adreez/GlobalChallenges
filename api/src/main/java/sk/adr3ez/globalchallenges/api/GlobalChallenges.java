@@ -5,6 +5,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
+import sk.adr3ez.globalchallenges.api.database.DatabaseManager;
 import sk.adr3ez.globalchallenges.api.model.GameManager;
 import sk.adr3ez.globalchallenges.api.util.log.PluginLogger;
 
@@ -40,6 +41,9 @@ public interface GlobalChallenges {
     //DataManager getDataManager();
     @NotNull
     GameManager getGameManager();
+
+    @NotNull
+    DatabaseManager getDatabaseManager();
 
     //MessageManager - languages
 

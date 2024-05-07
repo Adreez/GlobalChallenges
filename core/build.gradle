@@ -8,14 +8,4 @@ repositories {
 dependencies {
     compileOnly project(':api')
     compileOnly "org.spigotmc:spigot-api:1.20.4-R0.1-SNAPSHOT"
-
-    // https://mvnrepository.com/artifact/org.hibernate.orm/hibernate-core
-    implementation 'org.hibernate.orm:hibernate-core:6.2.5.Final' //Includes jakarta
-
-    // https://mvnrepository.com/artifact/com.zaxxer/HikariCP
-    implementation 'com.zaxxer:HikariCP:5.1.0'
-
-
-    // https://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client
-    implementation 'org.mariadb.jdbc:mariadb-java-client:3.3.3'
 }
