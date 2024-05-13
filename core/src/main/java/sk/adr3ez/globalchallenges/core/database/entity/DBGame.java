@@ -31,4 +31,12 @@ public class DBGame {
 
     @Column(name = "game_end_time", columnDefinition = "DATETIME")
     private LocalDateTime endTime;
+
+    public DBGame() {}
+
+    public DBGame(String gameKey, String gameDescription, LocalDateTime startTime) {
+        this.gameKey = gameKey;
+        this.gameDescription = gameDescription;
+        this.startTime = startTime;
+    }
 }

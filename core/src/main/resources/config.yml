@@ -18,13 +18,13 @@ file-version: 1
 
 ##########################################################################################
 # |-                                                                                  -| #
-# |- STORAGE                                                                          -| #
-# |-  » Types of storage: MySQL, SQLite, H2                                           -| #
+# |- STORAGE & SERVER OPTIONS                                                         -| #
+# |-  » Types of storage: MYSQL, SQLITE                                               -| #
 # |-                                                                                  -| #
 ##########################################################################################
 
 storage:
-  method: H2
+  method: SQLITE
 
   # Mysql setup
   data:
@@ -41,6 +41,11 @@ storage:
       connectionTimeout: 2000
       driverClassName: "com.mysql.cj.jdbc.Driver"
 
+# You can set this value to your own server name or leave it as global.
+# If you have network with more different servers that are using GlobalChallenges
+# it is recommended to set this to different names in each config, so you will be able
+# to distinguish which game was played on which server.
+server_identifier: "global"
 
 ##########################################################################################
 # |-                                                                                  -| #

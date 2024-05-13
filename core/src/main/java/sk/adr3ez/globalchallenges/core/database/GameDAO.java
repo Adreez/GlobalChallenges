@@ -3,14 +3,14 @@ package sk.adr3ez.globalchallenges.core.database;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.PersistenceException;
-import org.bukkit.Bukkit;
+import org.hibernate.HibernateException;
 import sk.adr3ez.globalchallenges.api.GlobalChallenges;
 import sk.adr3ez.globalchallenges.api.GlobalChallengesProvider;
-import sk.adr3ez.globalchallenges.core.database.entity.DBPlayer;
+import sk.adr3ez.globalchallenges.core.database.entity.DBGame;
 
 import java.util.List;
 
-public final class PlayerDAO {
+public final class GameDAO {
 
     private static final GlobalChallenges globalChallenges;
 
@@ -18,60 +18,59 @@ public final class PlayerDAO {
         globalChallenges = GlobalChallengesProvider.get();
     }
 
-    public static void saveOrUpdate(DBPlayer player) {
+    public static void saveOrUpdate(DBGame game) {
         EntityManager entityManager = globalChallenges.getDatabaseManager().getEntityManager();
         EntityTransaction transaction = entityManager.getTransaction();
 
         try {
             transaction.begin();
-            entityManager.merge(player);
+            entityManager.merge(game);
             transaction.commit();
-        } catch (PersistenceException e) {
+        } catch (PersistenceException ignored) {
             if (transaction.isActive()) {
                 transaction.rollback();
             }
-            Bukkit.getLogger().warning(e.getMessage());
         } finally {
             entityManager.close();
         }
     }
 
-    public static DBPlayer findByUuid(String uuid) {
+    public static DBGame findById(String id) {
         EntityManager entityManager = globalChallenges.getDatabaseManager().getEntityManager();
         try {
-            return entityManager.find(DBPlayer.class, uuid);
+            return entityManager.find(DBGame.class, id);
         } finally {
             entityManager.close();
         }
     }
 
-    public static List<DBPlayer> findAll() {
+    public static List<DBGame> findAll() {
         EntityManager entityManager = globalChallenges.getDatabaseManager().getEntityManager();
         try {
-            return entityManager.createQuery("SELECT p FROM players p", DBPlayer.class).getResultList();
+            return entityManager.createQuery("SELECT g FROM games g", DBGame.class).getResultList();
         } finally {
             entityManager.close();
         }
     }
 
-    public static void delete(String uuid) {
+    public static void delete(String id) {
         EntityManager entityManager = globalChallenges.getDatabaseManager().getEntityManager();
         EntityTransaction transaction = entityManager.getTransaction();
 
         try {
             transaction.begin();
-            DBPlayer player = entityManager.find(DBPlayer.class, uuid);
-            if (player != null) {
-                entityManager.remove(player);
+            DBGame game = entityManager.find(DBGame.class, id);
+            if (game != null) {
+                entityManager.remove(game);
             }
             transaction.commit();
-        } catch (Exception e) {
+        } catch (HibernateException ignored) {
             if (transaction.isActive()) {
                 transaction.rollback();
             }
-            Bukkit.getLogger().warning(e.getMessage());
         } finally {
             entityManager.close();
         }
     }
+
 }

@@ -5,8 +5,12 @@ import jakarta.persistence.SharedCacheMode;
 import jakarta.persistence.ValidationMode;
 import jakarta.persistence.spi.ClassTransformer;
 import jakarta.persistence.spi.PersistenceUnitTransactionType;
+import org.sqlite.SQLiteDataSource;
+import sk.adr3ez.globalchallenges.api.GlobalChallengesProvider;
+import sk.adr3ez.globalchallenges.api.database.DatabaseManager;
 
 import javax.sql.DataSource;
+import java.io.File;
 import java.net.URL;
 import java.util.List;
 import java.util.Properties;
@@ -14,9 +18,11 @@ import java.util.Properties;
 public class CustomPersistenceUnitInfo implements jakarta.persistence.spi.PersistenceUnitInfo {
 
     private final String puName;
+    private final DatabaseManager databaseManager;
 
-    public CustomPersistenceUnitInfo(String puName) {
+    public CustomPersistenceUnitInfo(String puName, DatabaseManager databaseManager) {
         this.puName = puName;
+        this.databaseManager = databaseManager;
     }
 
     @Override
@@ -36,26 +42,42 @@ public class CustomPersistenceUnitInfo implements jakarta.persistence.spi.Persis
 
     @Override
     public DataSource getJtaDataSource() {
-        HikariDataSource dataSource = new HikariDataSource();
+        switch (databaseManager.getStorageMethod()) {
+            case MYSQL -> {
+                HikariDataSource dataSource = new HikariDataSource();
 
-        String hostname = "localhost";
-        String database = "globalchallenges";
+                String hostname = "localhost";
+                String database = "globalchallenges";
 
-        dataSource.setJdbcUrl("jdbc:mysql://" + hostname + "/" + database);
-        dataSource.setUsername("root");
-        dataSource.setPassword("");
-        dataSource.setMinimumIdle(1);
-        dataSource.setMaximumPoolSize(20);
-        dataSource.setConnectionTimeout(2000);
-        dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        dataSource.setPassword("");
+                dataSource.setJdbcUrl("jdbc:mysql://" + hostname + "/" + database);
+                dataSource.setUsername("root");
+                dataSource.setPassword("");
+                dataSource.setMinimumIdle(1);
+                dataSource.setMaximumPoolSize(20);
+                dataSource.setConnectionTimeout(2000);
+                dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
+                dataSource.setPassword("");
 
-        return dataSource;
+                return dataSource;
+            }
+            case H2 -> {
+                //TODO
+                return null;
+            }
+            default -> {
+                File dbFile = new File(GlobalChallengesProvider.get().getDataDirectory() + "/database.db");
+                SQLiteDataSource dataSource = new SQLiteDataSource();
+                dataSource.setDatabaseName(puName);
+                dataSource.setUrl("jdbc:sqlite:" + GlobalChallengesProvider.get().getDataDirectory() + "/database.db");
+                return dataSource;
+            }
+        }
     }
 
     @Override
     public List<String> getManagedClassNames() {
-        return List.of("sk.adr3ez.globalchallenges.core.database.entity.DBPlayer", "sk.adr3ez.globalchallenges.core.database.entity.DBPlayerData",
+        return List.of("sk.adr3ez.globalchallenges.core.database.entity.DBPlayer",
+                "sk.adr3ez.globalchallenges.core.database.entity.DBPlayerData",
                 "sk.adr3ez.globalchallenges.core.database.entity.DBGame",
                 "sk.adr3ez.globalchallenges.core.database.entity.DBServer");
     }

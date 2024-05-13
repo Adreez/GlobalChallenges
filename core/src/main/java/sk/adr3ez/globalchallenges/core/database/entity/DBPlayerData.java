@@ -13,15 +13,15 @@ public class DBPlayerData {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "data_id")
+    @Column(name = "data_id", nullable = false)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "game_id")
+    @JoinColumn(name = "game_id", nullable = false)
     private DBGame game;
 
     @ManyToOne
-    @JoinColumn(referencedColumnName = "uuid")
+    @JoinColumn(referencedColumnName = "uuid", nullable = false)
     private DBPlayer player;
 
     @Column(name = "finished")
