@@ -60,10 +60,6 @@ public class CustomPersistenceUnitInfo implements jakarta.persistence.spi.Persis
 
                 return dataSource;
             }
-            case H2 -> {
-                //TODO
-                return null;
-            }
             default -> {
                 File dbFile = new File(GlobalChallengesProvider.get().getDataDirectory() + "/database.db");
                 SQLiteDataSource dataSource = new SQLiteDataSource();

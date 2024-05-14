@@ -7,7 +7,7 @@ public enum StorageMethod {
 
     MYSQL("org.hibernate.dialect.MySQLDialect"),
     SQLITE("org.hibernate.community.dialect.SQLiteDialect"),
-    H2("org.hibernate.dialect.H2Dialect"),
+    //H2("org.hibernate.dialect.H2Dialect"),
     ;
 
     private final String driverClassName;
