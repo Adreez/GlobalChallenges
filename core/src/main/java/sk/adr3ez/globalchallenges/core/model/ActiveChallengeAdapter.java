@@ -14,7 +14,6 @@ import sk.adr3ez.globalchallenges.api.model.challenge.ActiveChallenge;
 import sk.adr3ez.globalchallenges.api.model.challenge.Challenge;
 import sk.adr3ez.globalchallenges.api.model.player.ChallengePlayer;
 import sk.adr3ez.globalchallenges.api.util.ConfigRoutes;
-import sk.adr3ez.globalchallenges.core.database.GameDAO;
 import sk.adr3ez.globalchallenges.core.database.PlayerDAO;
 import sk.adr3ez.globalchallenges.core.database.PlayerDataDAO;
 
@@ -46,8 +45,9 @@ public final class ActiveChallengeAdapter implements ActiveChallenge {
     private final DBGame dbGame;
 
 
-    public ActiveChallengeAdapter(@NotNull Challenge challenge) {
+    public ActiveChallengeAdapter(@NotNull Challenge challenge, DBGame dbGame) {
         this.challenge = challenge;
+        this.dbGame = dbGame;
 
         this.requiredScore = challenge.getRequiredScore();
         this.timeLeft = plugin.getConfiguration().getInt(ConfigRoutes.SETTINGS_CHALLENGE_TIME.getRoute());
@@ -61,7 +61,6 @@ public final class ActiveChallengeAdapter implements ActiveChallenge {
                 plugin.getGameManager().endActive();
             timeLeft -= 1;
         }, 0, 20);
-        dbGame = GameDAO.saveOrUpdate(new DBGame(challenge.getKey(), challenge.getDescription(), LocalDateTime.now()));
     }
 
     @NotNull

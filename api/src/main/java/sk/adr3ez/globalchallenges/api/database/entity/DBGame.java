@@ -35,9 +35,10 @@ public class DBGame {
     public DBGame() {
     }
 
-    public DBGame(String gameKey, String gameDescription, LocalDateTime startTime) {
+    public DBGame(String gameKey, String gameDescription, DBServer server, LocalDateTime startTime) {
         this.gameKey = gameKey;
         this.gameDescription = gameDescription;
+        this.server = server;
         this.startTime = startTime;
     }
 }
