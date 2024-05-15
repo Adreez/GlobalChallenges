@@ -14,12 +14,39 @@ public interface ActiveChallenge {
     @NotNull
     Challenge getChallenge();
 
+    /**
+     * Getter for ID which is used in database
+     *
+     * @return Long id
+     */
+    Long getId();
+
+    /**
+     * Required score for each player to end their challenge
+     *
+     * @return double
+     */
     Double getRequiredScore();
 
+    /**
+     * Time in seconds
+     *
+     * @return integer
+     */
     Integer getTimeLeft();
 
+    /**
+     * Time in millis
+     *
+     * @return long
+     */
     Long getStartTime();
 
+    /**
+     * List of all players that joined challenge
+     *
+     * @return List<UUID>
+     */
     List<UUID> getJoinedPlayers();
 
     Optional<ChallengePlayer> getPlayer(@NotNull UUID uuid);

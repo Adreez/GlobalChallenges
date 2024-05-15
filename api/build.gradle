@@ -8,9 +8,13 @@ dependencies {
 
     // https://mvnrepository.com/artifact/org.hibernate.orm/hibernate-core
     compileOnlyApi 'org.hibernate.orm:hibernate-core:6.2.5.Final' //Includes jakarta
-    
+
     // https://mvnrepository.com/artifact/com.zaxxer/HikariCP
     compileOnlyApi 'com.zaxxer:HikariCP:5.1.0'
+
+    // https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc
+    compileOnlyApi 'org.xerial:sqlite-jdbc:3.45.3.0'
+
 
     api('net.kyori:adventure-api:4.17.0') {
         exclude(module: 'adventure-bom')

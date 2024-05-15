@@ -17,9 +17,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -32,11 +30,10 @@ import sk.adr3ez.globalchallenges.api.model.challenge.Challenge;
 import sk.adr3ez.globalchallenges.api.util.ConfigRoutes;
 import sk.adr3ez.globalchallenges.api.util.log.PluginLogger;
 import sk.adr3ez.globalchallenges.core.database.DatabaseManagerImp;
-import sk.adr3ez.globalchallenges.core.database.PlayerDAO;
-import sk.adr3ez.globalchallenges.core.database.entity.DBPlayer;
 import sk.adr3ez.globalchallenges.core.model.GameManagerAdapter;
 import sk.adr3ez.globalchallenges.spigot.util.BlockListener;
 import sk.adr3ez.globalchallenges.spigot.util.SpigotLogger;
+import sk.adr3ez.globalchallenges.spigot.util.UtilListener;
 
 import java.io.File;
 import java.io.IOException;
@@ -73,6 +70,7 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
 
         this.databaseManager = new DatabaseManagerImp(this);
 
+        Bukkit.getPluginManager().registerEvents(new UtilListener(), this); // Setup utility listener
         if (getConfiguration().getBoolean(ConfigRoutes.SETTINGS_MONITOR_BLOCKS.getRoute()))
             Bukkit.getPluginManager().registerEvents(new BlockListener(this), this);
 
@@ -80,13 +78,6 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
 
         setupCommands();
         getPluginLogger().info(ConsoleColors.format("&y[&cGlobalChallenges&y] &gPlugin has been loaded (" + (System.currentTimeMillis() - startupTime) + " ms)&reset"));
-    }
-
-    @EventHandler
-    void join(PlayerJoinEvent event) {
-        DBPlayer DBPlayer = new DBPlayer(event.getPlayer().getUniqueId(), event.getPlayer().getName());
-
-        PlayerDAO.saveOrUpdate(DBPlayer);
     }
 
     @Override

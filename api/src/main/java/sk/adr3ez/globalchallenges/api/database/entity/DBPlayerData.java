@@ -1,7 +1,8 @@
-package sk.adr3ez.globalchallenges.core.database.entity;
+package sk.adr3ez.globalchallenges.api.database.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
@@ -13,7 +14,7 @@ public class DBPlayerData {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "data_id", nullable = false)
+    @Column(name = "data_id")
     private Long id;
 
     @ManyToOne
@@ -25,22 +26,26 @@ public class DBPlayerData {
     private DBPlayer player;
 
     @Column(name = "finished")
+    @Setter
     private boolean finished;
 
     @Column(name = "time_joined", columnDefinition = "DATETIME")
     private LocalDateTime timeJoined;
 
     @Column(name = "time_finished", columnDefinition = "DATETIME")
+    @Setter
     private LocalDateTime timeFinished;
 
     @Column(name = "position")
+    @Setter
     private int position;
 
     public DBPlayerData() {
     }
 
-    public DBPlayerData(DBGame DBGame, DBPlayer player) {
-        this.game = DBGame;
-        this.player = player;
+    public DBPlayerData(DBGame dbGame, DBPlayer dbPlayer, LocalDateTime timeJoined) {
+        this.game = dbGame;
+        this.player = dbPlayer;
+        this.timeJoined = timeJoined;
     }
 }

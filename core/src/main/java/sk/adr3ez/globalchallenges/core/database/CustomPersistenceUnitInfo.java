@@ -72,10 +72,10 @@ public class CustomPersistenceUnitInfo implements jakarta.persistence.spi.Persis
 
     @Override
     public List<String> getManagedClassNames() {
-        return List.of("sk.adr3ez.globalchallenges.core.database.entity.DBPlayer",
-                "sk.adr3ez.globalchallenges.core.database.entity.DBPlayerData",
-                "sk.adr3ez.globalchallenges.core.database.entity.DBGame",
-                "sk.adr3ez.globalchallenges.core.database.entity.DBServer");
+        return List.of("sk.adr3ez.globalchallenges.api.database.entity.DBPlayer",
+                "sk.adr3ez.globalchallenges.api.database.entity.DBPlayerData",
+                "sk.adr3ez.globalchallenges.api.database.entity.DBGame",
+                "sk.adr3ez.globalchallenges.api.database.entity.DBServer");
     }
 
     @Override

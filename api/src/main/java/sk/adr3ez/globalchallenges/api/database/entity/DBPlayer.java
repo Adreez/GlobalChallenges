@@ -1,4 +1,4 @@
-package sk.adr3ez.globalchallenges.core.database.entity;
+package sk.adr3ez.globalchallenges.api.database.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;

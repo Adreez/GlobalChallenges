@@ -6,8 +6,9 @@ import jakarta.persistence.PersistenceException;
 import org.bukkit.Bukkit;
 import sk.adr3ez.globalchallenges.api.GlobalChallenges;
 import sk.adr3ez.globalchallenges.api.GlobalChallengesProvider;
-import sk.adr3ez.globalchallenges.core.database.entity.DBPlayer;
+import sk.adr3ez.globalchallenges.api.database.entity.DBPlayer;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 public final class PlayerDAO {
@@ -18,13 +19,16 @@ public final class PlayerDAO {
         globalChallenges = GlobalChallengesProvider.get();
     }
 
-    public static void saveOrUpdate(DBPlayer player) {
+    @Nullable
+    public static DBPlayer saveOrUpdate(DBPlayer player) {
         EntityManager entityManager = globalChallenges.getDatabaseManager().getEntityManager();
         EntityTransaction transaction = entityManager.getTransaction();
 
+        DBPlayer result = null;
+
         try {
             transaction.begin();
-            entityManager.merge(player);
+            result = entityManager.merge(player);
             transaction.commit();
         } catch (PersistenceException e) {
             if (transaction.isActive()) {
@@ -34,6 +38,7 @@ public final class PlayerDAO {
         } finally {
             entityManager.close();
         }
+        return result;
     }
 
     public static DBPlayer findByUuid(String uuid) {

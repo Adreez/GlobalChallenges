@@ -13,6 +13,7 @@ import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.jetbrains.annotations.NotNull;
 import sk.adr3ez.globalchallenges.api.GlobalChallenges;
 import sk.adr3ez.globalchallenges.api.GlobalChallengesProvider;
+import sk.adr3ez.globalchallenges.api.database.entity.DBPlayerData;
 import sk.adr3ez.globalchallenges.api.util.ConfigRoutes;
 
 import java.util.UUID;
@@ -32,14 +33,17 @@ public class ChallengePlayer {
 
     private Audience audience;
 
+    private DBPlayerData dbPlayerData;
+
     @Setter(AccessLevel.NONE)
     private final Double requiredScore = plugin.getGameManager().getActiveChallenge().get().getRequiredScore();
 
     private Long finishTime = 0L;
 
-    public ChallengePlayer(UUID uuid, Audience audience) {
+    public ChallengePlayer(UUID uuid, Audience audience, DBPlayerData dbPlayerData) {
         this.uuid = uuid;
         this.audience = audience;
+        this.dbPlayerData = dbPlayerData;
 
         //Show bossbar
         bossBar = BossBar.bossBar(MiniMessage.miniMessage().deserialize(plugin.getConfiguration().getString(ConfigRoutes.PLAYER_ACTIVE_BOSSBAR.getRoute()))

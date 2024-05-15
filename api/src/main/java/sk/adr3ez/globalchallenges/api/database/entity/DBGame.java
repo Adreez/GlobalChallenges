@@ -1,4 +1,4 @@
-package sk.adr3ez.globalchallenges.core.database.entity;
+package sk.adr3ez.globalchallenges.api.database.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -32,7 +32,8 @@ public class DBGame {
     @Column(name = "game_end_time", columnDefinition = "DATETIME")
     private LocalDateTime endTime;
 
-    public DBGame() {}
+    public DBGame() {
+    }
 
     public DBGame(String gameKey, String gameDescription, LocalDateTime startTime) {
         this.gameKey = gameKey;
