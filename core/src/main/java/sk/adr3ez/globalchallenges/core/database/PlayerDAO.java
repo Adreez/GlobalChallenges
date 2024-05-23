@@ -10,6 +10,7 @@ import sk.adr3ez.globalchallenges.api.database.entity.DBPlayer;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.UUID;
 
 public final class PlayerDAO {
 
@@ -39,6 +40,10 @@ public final class PlayerDAO {
             entityManager.close();
         }
         return result;
+    }
+
+    public static DBPlayer findByUuid(final UUID uuid) {
+        return findByUuid(uuid.toString());
     }
 
     public static DBPlayer findByUuid(String uuid) {

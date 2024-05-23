@@ -2,7 +2,9 @@ package sk.adr3ez.globalchallenges.api.database.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -19,8 +21,16 @@ public class DBPlayer {
     @Column(name = "nick")
     private String nick;
 
+    @Setter
     @OneToMany(mappedBy = "player")
     private Set<DBPlayerData> playerData;
+
+    public void addPlayerData(DBPlayerData playerData) {
+        if (this.playerData == null) {
+            this.playerData = new HashSet<>();
+        }
+        this.playerData.add(playerData);
+    }
 
 
     public DBPlayer() {
@@ -33,7 +43,7 @@ public class DBPlayer {
 
     @Override
     public String toString() {
-        return "PlayerData{" +
+        return "Player{" +
                 "uuid='" + uuid + '\'' +
                 ", username='" + nick + '\'' +
                 '}';
