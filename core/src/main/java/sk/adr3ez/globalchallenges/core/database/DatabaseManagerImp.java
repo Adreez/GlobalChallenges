@@ -3,10 +3,8 @@ package sk.adr3ez.globalchallenges.core.database;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import org.hibernate.jpa.HibernatePersistenceProvider;
-import org.jetbrains.annotations.NotNull;
 import sk.adr3ez.globalchallenges.api.GlobalChallenges;
 import sk.adr3ez.globalchallenges.api.database.DatabaseManager;
-import sk.adr3ez.globalchallenges.api.database.entity.DBServer;
 import sk.adr3ez.globalchallenges.api.util.ConfigRoutes;
 import sk.adr3ez.globalchallenges.api.util.StorageMethod;
 
@@ -22,8 +20,6 @@ public final class DatabaseManagerImp implements DatabaseManager {
     private final GlobalChallenges globalChallenges;
 
     private StorageMethod storageMethod = StorageMethod.SQLITE;
-
-    private final DBServer dbServer;
 
     public DatabaseManagerImp(GlobalChallenges globalChallenges) {
         this.globalChallenges = globalChallenges;
@@ -42,8 +38,6 @@ public final class DatabaseManagerImp implements DatabaseManager {
             storageMethod = StorageMethod.SQLITE;
         }
         this.entityManagerFactory = createEntityManagerFactory();
-
-        this.dbServer = ServerDAO.saveOrUpdate(new DBServer(globalChallenges.getConfiguration().getString(ConfigRoutes.SERVER_ID.getRoute())));
     }
 
     @Override
@@ -54,12 +48,6 @@ public final class DatabaseManagerImp implements DatabaseManager {
     @Override
     public StorageMethod getStorageMethod() {
         return storageMethod;
-    }
-
-    @NotNull
-    @Override
-    public DBServer getDatabaseServer() {
-        return dbServer;
     }
 
     @Override

@@ -16,10 +16,6 @@ public class DBGame {
     @Column(name = "game_id")
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "server_id")
-    private DBServer server;
-
     @Column(name = "game_key")
     private String gameKey;
 
@@ -35,10 +31,9 @@ public class DBGame {
     public DBGame() {
     }
 
-    public DBGame(String gameKey, String gameDescription, DBServer server, LocalDateTime startTime) {
+    public DBGame(String gameKey, String gameDescription, LocalDateTime startTime) {
         this.gameKey = gameKey;
         this.gameDescription = gameDescription;
-        this.server = server;
         this.startTime = startTime;
     }
 }
