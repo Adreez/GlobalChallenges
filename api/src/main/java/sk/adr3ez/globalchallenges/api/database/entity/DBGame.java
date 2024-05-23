@@ -2,6 +2,8 @@ package sk.adr3ez.globalchallenges.api.database.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import sk.adr3ez.globalchallenges.api.GlobalChallengesProvider;
+import sk.adr3ez.globalchallenges.api.util.ConfigRoutes;
 
 import java.time.LocalDateTime;
 
@@ -15,6 +17,8 @@ public class DBGame {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "game_id")
     private Long id;
+
+    private String server;
 
     @Column(name = "game_key")
     private String gameKey;
@@ -35,5 +39,8 @@ public class DBGame {
         this.gameKey = gameKey;
         this.gameDescription = gameDescription;
         this.startTime = startTime;
+
+        //Fetch server name from config
+        this.server = GlobalChallengesProvider.get().getConfiguration().getString(ConfigRoutes.SERVER_ID.getRoute());
     }
 }
