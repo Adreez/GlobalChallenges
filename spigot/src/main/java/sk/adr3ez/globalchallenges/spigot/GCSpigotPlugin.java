@@ -58,7 +58,6 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
             getDataFolder().mkdirs();
 
         this.adventure = BukkitAudiences.create(this);
-        this.gameManager = new GameManagerAdapter(this);
 
         try {
             configurationFile = YamlDocument.create(new File(getDataFolder(), "config.yml"), Objects.requireNonNull(getResource("config.yml")),
@@ -69,6 +68,8 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
         }
 
         this.databaseManager = new DatabaseManagerImp(this);
+
+        this.gameManager = new GameManagerAdapter(this);
 
         Bukkit.getPluginManager().registerEvents(new UtilListener(), this); // Setup utility listener
         if (getConfiguration().getBoolean(ConfigRoutes.SETTINGS_MONITOR_BLOCKS.getRoute()))
