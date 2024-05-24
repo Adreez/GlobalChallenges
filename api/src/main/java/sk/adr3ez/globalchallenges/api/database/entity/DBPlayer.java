@@ -4,8 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 
@@ -22,14 +22,12 @@ public class DBPlayer {
     private String nick;
 
     @Setter
-    @OneToMany(mappedBy = "player")
-    private Set<DBPlayerData> playerData;
+    @OneToMany(mappedBy = "player", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<DBPlayerData> playerData = new ArrayList<>();
 
     public void addPlayerData(DBPlayerData playerData) {
-        if (this.playerData == null) {
-            this.playerData = new HashSet<>();
-        }
         this.playerData.add(playerData);
+        playerData.setPlayer(this);
     }
 
 
@@ -46,6 +44,7 @@ public class DBPlayer {
         return "Player{" +
                 "uuid='" + uuid + '\'' +
                 ", username='" + nick + '\'' +
+                ", playerData=" + (playerData != null ? playerData.toString() : "[]") +
                 '}';
     }
 

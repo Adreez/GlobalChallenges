@@ -1,12 +1,11 @@
 package sk.adr3ez.globalchallenges.core.database;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityTransaction;
-import jakarta.persistence.PersistenceException;
+import jakarta.persistence.*;
 import org.hibernate.HibernateException;
 import sk.adr3ez.globalchallenges.api.GlobalChallenges;
 import sk.adr3ez.globalchallenges.api.GlobalChallengesProvider;
 import sk.adr3ez.globalchallenges.api.database.entity.DBGame;
+import sk.adr3ez.globalchallenges.api.database.entity.DBPlayerData;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -39,7 +38,8 @@ public final class GameDAO {
         return returnObject;
     }
 
-    public static DBGame findById(String id) {
+    @Nullable
+    public static DBGame findById(Long id) {
         EntityManager entityManager = globalChallenges.getDatabaseManager().getEntityManager();
         try {
             return entityManager.find(DBGame.class, id);
@@ -48,10 +48,39 @@ public final class GameDAO {
         }
     }
 
+    public static DBGame getLast() {
+        EntityManager entityManager = globalChallenges.getDatabaseManager().getEntityManager();
+
+        try {
+            Query query = entityManager.createQuery("SELECT MAX(e.id) FROM DBGame e");
+            Long id = (Long) query.getSingleResult();
+            return findById(id);
+        } finally {
+            entityManager.close();
+        }
+
+    }
+
     public static List<DBGame> findAll() {
         EntityManager entityManager = globalChallenges.getDatabaseManager().getEntityManager();
         try {
             return entityManager.createQuery("SELECT g FROM games g", DBGame.class).getResultList();
+        } finally {
+            entityManager.close();
+        }
+    }
+
+    /**
+     * Gets all playerData for specified game
+     *
+     * @param gameId ID of the game you want to find
+     * @return List<DBPlayerData>
+     */
+    public static List<DBPlayerData> getPlayerData(final Long gameId) {
+        EntityManager entityManager = globalChallenges.getDatabaseManager().getEntityManager();
+        try {
+            TypedQuery<DBPlayerData> query = entityManager.createQuery("SELECT e.game FROM DBPlayerData e", DBPlayerData.class);
+            return query.getResultList();
         } finally {
             entityManager.close();
         }

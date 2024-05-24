@@ -3,11 +3,8 @@ package sk.adr3ez.globalchallenges.core.challenges;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerExpChangeEvent;
 import org.jetbrains.annotations.NotNull;
-import sk.adr3ez.globalchallenges.api.model.ChallengeType;
 import sk.adr3ez.globalchallenges.api.model.GameManager;
 import sk.adr3ez.globalchallenges.api.model.challenge.Challenge;
-
-import java.util.List;
 
 public class ExperienceGatheredChallenge extends Challenge {
     public ExperienceGatheredChallenge(@NotNull GameManager gameManager) {
@@ -22,12 +19,7 @@ public class ExperienceGatheredChallenge extends Challenge {
 
     @Override
     public boolean canLoad() {
-        return true;
-    }
-
-    @Override
-    public List<ChallengeType> getTypes() {
-        return List.of(ChallengeType.values());
+        return false;
     }
 
     @Override

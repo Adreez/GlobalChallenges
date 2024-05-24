@@ -6,10 +6,8 @@ import org.bukkit.event.Listener;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import sk.adr3ez.globalchallenges.api.GlobalChallengesProvider;
-import sk.adr3ez.globalchallenges.api.model.ChallengeType;
 import sk.adr3ez.globalchallenges.api.model.GameManager;
 
-import java.util.List;
 import java.util.UUID;
 
 public abstract class Challenge implements Listener {
@@ -41,8 +39,7 @@ public abstract class Challenge implements Listener {
     @ApiStatus.Internal
     public abstract boolean canLoad();
 
-    public abstract List<ChallengeType> getTypes();
-
+    @NotNull
     public abstract Double getRequiredScore();
 
     @NotNull

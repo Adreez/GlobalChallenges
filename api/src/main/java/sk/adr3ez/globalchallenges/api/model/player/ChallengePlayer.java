@@ -33,7 +33,7 @@ public class ChallengePlayer {
 
     private Audience audience;
 
-    private DBPlayerData dbPlayerData;
+    private final DBPlayerData dbPlayerData;
 
     @Setter(AccessLevel.NONE)
     private final Double requiredScore = plugin.getGameManager().getActiveChallenge().get().getRequiredScore();
@@ -45,10 +45,12 @@ public class ChallengePlayer {
         this.audience = audience;
         this.dbPlayerData = dbPlayerData;
 
-        //Show bossbar
-        bossBar = BossBar.bossBar(MiniMessage.miniMessage().deserialize(plugin.getConfiguration().getString(ConfigRoutes.PLAYER_ACTIVE_BOSSBAR.getRoute()))
-                , 0f, BossBar.Color.PURPLE, BossBar.Overlay.PROGRESS);
-        audience.showBossBar(bossBar);
+        bossBar = BossBar.bossBar(MiniMessage.miniMessage().deserialize(plugin.getConfiguration().getString(ConfigRoutes.PLAYER_ACTIVE_BOSSBAR.getRoute()),
+                        Placeholder.parsed("score", String.valueOf(score)),
+                        Placeholder.parsed("needed", String.valueOf(requiredScore)),
+                        Placeholder.component("time_left", Component.text(plugin.getGameManager().getActiveChallenge().get().getTimeLeft()))),
+                0f, BossBar.Color.PURPLE, BossBar.Overlay.PROGRESS);
+        this.audience.showBossBar(bossBar);
     }
 
 

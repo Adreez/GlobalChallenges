@@ -10,7 +10,6 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import sk.adr3ez.globalchallenges.api.GlobalChallengesProvider;
-import sk.adr3ez.globalchallenges.api.model.ChallengeType;
 import sk.adr3ez.globalchallenges.api.model.GameManager;
 import sk.adr3ez.globalchallenges.api.model.challenge.Challenge;
 import sk.adr3ez.globalchallenges.api.util.ConfigRoutes;
@@ -41,11 +40,6 @@ public class MineBlockChallenge extends Challenge {
     @Override
     public boolean canLoad() {
         return true;
-    }
-
-    @Override
-    public List<ChallengeType> getTypes() {
-        return List.of(ChallengeType.values());
     }
 
     @Override

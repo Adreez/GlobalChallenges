@@ -2,7 +2,6 @@ package sk.adr3ez.globalchallenges.core.challenges;
 
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.jetbrains.annotations.NotNull;
-import sk.adr3ez.globalchallenges.api.model.ChallengeType;
 import sk.adr3ez.globalchallenges.api.model.GameManager;
 import sk.adr3ez.globalchallenges.api.model.challenge.Challenge;
 
@@ -27,12 +26,7 @@ public class PlayersKilledChallenge extends Challenge {
 
     @Override
     public boolean canLoad() {
-        return true;
-    }
-
-    @Override
-    public List<ChallengeType> getTypes() {
-        return List.of(ChallengeType.TOP_SCORES_WIN);
+        return false;
     }
 
     @Override

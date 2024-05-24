@@ -23,6 +23,7 @@ public class DBPlayerData {
 
     @ManyToOne
     @JoinColumn(referencedColumnName = "uuid", nullable = false)
+    @Setter
     private DBPlayer player;
 
     @Column(name = "finished")
@@ -47,5 +48,14 @@ public class DBPlayerData {
         this.game = dbGame;
         this.player = dbPlayer;
         this.timeJoined = timeJoined;
+
+        this.finished = false;
+    }
+
+    public DBPlayerData(DBGame dbGame, LocalDateTime timeJoined) {
+        this.game = dbGame;
+        this.timeJoined = timeJoined;
+
+        this.finished = false;
     }
 }

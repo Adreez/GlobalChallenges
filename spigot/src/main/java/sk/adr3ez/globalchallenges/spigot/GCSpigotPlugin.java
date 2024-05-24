@@ -9,6 +9,7 @@ import dev.dejvokep.boostedyaml.settings.updater.UpdaterSettings;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.ArgumentSuggestions;
+import dev.jorel.commandapi.arguments.LongArgument;
 import dev.jorel.commandapi.arguments.StringArgument;
 import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
@@ -24,12 +25,15 @@ import org.jetbrains.annotations.Nullable;
 import sk.adr3ez.globalchallenges.api.GlobalChallenges;
 import sk.adr3ez.globalchallenges.api.GlobalChallengesProvider;
 import sk.adr3ez.globalchallenges.api.database.DatabaseManager;
+import sk.adr3ez.globalchallenges.api.database.entity.DBGame;
+import sk.adr3ez.globalchallenges.api.database.entity.DBPlayerData;
 import sk.adr3ez.globalchallenges.api.model.GameManager;
 import sk.adr3ez.globalchallenges.api.model.challenge.ActiveChallenge;
 import sk.adr3ez.globalchallenges.api.model.challenge.Challenge;
 import sk.adr3ez.globalchallenges.api.util.ConfigRoutes;
 import sk.adr3ez.globalchallenges.api.util.log.PluginLogger;
 import sk.adr3ez.globalchallenges.core.database.DatabaseManagerImp;
+import sk.adr3ez.globalchallenges.core.database.GameDAO;
 import sk.adr3ez.globalchallenges.core.model.GameManagerAdapter;
 import sk.adr3ez.globalchallenges.spigot.util.BlockListener;
 import sk.adr3ez.globalchallenges.spigot.util.SpigotLogger;
@@ -38,6 +42,7 @@ import sk.adr3ez.globalchallenges.spigot.util.UtilListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
@@ -258,9 +263,34 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
                             }
                         }))
                 .withSubcommand(new CommandAPICommand("results")
+                        .withOptionalArguments(new LongArgument("gameID"))
                         .executesPlayer((player, args) -> {
-                            adventure().player(player).openBook(Book.book(Component.text("Title"), Component.text("Author"),
-                                    MiniMessage.miniMessage().deserialize("<b><color:#245a6a>1:</b> <color:#009c15>Adr3ez_ <gray>(3 min 25 sec)")));
+                            if (args.getOptional("gameID").isPresent()) {
+                                //Get game by id
+
+                                DBGame game = GameDAO.findById((Long) args.get("gameID"));
+                                if (game == null)
+                                    player.sendMessage("Game not found");
+                                Bukkit.broadcastMessage(game.toString());
+
+                            } else {
+                                //Get last
+                                DBGame last = GameDAO.getLast();
+
+                                if (last == null)
+                                    player.sendMessage("No game has been found!");
+
+                                List<DBPlayerData> list = GameDAO.getPlayerData(last.getId());
+
+                                if (!list.isEmpty())
+                                    player.sendMessage("Found " + list.size() + " players!");
+                                else
+                                    player.sendMessage("No game found!");
+
+                                Bukkit.broadcastMessage(last.toString());
+                                adventure().player(player).openBook(Book.book(Component.text("Title"), Component.text("Author"),
+                                        MiniMessage.miniMessage().deserialize("<b><color:#245a6a>1:</b> <color:#009c15>Adr3ez_ <gray>(3 min 25 sec)")));
+                            }
                         }))
                 .executes((sender, args) -> {
                             Bukkit.getServer().dispatchCommand(sender, "glch help");

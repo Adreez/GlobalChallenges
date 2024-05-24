@@ -63,4 +63,5 @@ public interface ActiveChallenge {
     void handleEnd();
 
     void finishPlayer(UUID uuid);
+
 }
