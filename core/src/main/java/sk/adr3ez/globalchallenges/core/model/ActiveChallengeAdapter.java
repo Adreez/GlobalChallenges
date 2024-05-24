@@ -135,16 +135,15 @@ public final class ActiveChallengeAdapter implements ActiveChallenge {
                 finished++;
         }
 
-        challenge.handleEnd();
-        players.clear();
-        this.challenge = null;
-        players = null;
-
         dbGame.setEndTime(LocalDateTime.now());
         dbGame.setPlayersJoined(players.size());
         dbGame.setPlayersFinished(finished);
 
         GameDAO.saveOrUpdate(dbGame);
+
+        challenge.handleEnd();
+        this.challenge = null;
+        players = null;
     }
 
     //Count for the position in which player has finished
@@ -155,7 +154,6 @@ public final class ActiveChallengeAdapter implements ActiveChallenge {
     public void finishPlayer(UUID uuid) {
         ChallengePlayer challengePlayer = this.players.get(uuid);
         challengePlayer.getAudience().hideBossBar(challengePlayer.getBossBar());
-        this.players.remove(uuid);
 
         DBPlayerData playerData = challengePlayer.getDbPlayerData();
 
