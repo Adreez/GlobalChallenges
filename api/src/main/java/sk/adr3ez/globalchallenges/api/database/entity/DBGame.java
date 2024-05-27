@@ -36,11 +36,11 @@ public class DBGame {
 
     @Column(name = "players_joined")
     @Setter
-    private int playersJoined;
+    private int playersJoined = 0;
 
     @Column(name = "players_finished")
     @Setter
-    private int playersFinished;
+    private int playersFinished = 0;
 
     public DBGame() {
     }
