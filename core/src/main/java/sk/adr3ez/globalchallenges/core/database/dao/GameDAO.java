@@ -70,6 +70,12 @@ public final class GameDAO {
         }
     }
 
+    /**
+     * Gets all playerData for specified game
+     *
+     * @param gameId ID of the game you want to find
+     * @return List<DBPlayerData>
+     */
     public static List<DBPlayerData> getPlayerData(final Long gameId) {
         return getPlayerData(findById(gameId));
     }
@@ -77,7 +83,7 @@ public final class GameDAO {
     /**
      * Gets all playerData for specified game
      *
-     * @param gameId ID of the game you want to find
+     * @param dbGame Saved game
      * @return List<DBPlayerData>
      */
     public static List<DBPlayerData> getPlayerData(DBGame dbGame) {

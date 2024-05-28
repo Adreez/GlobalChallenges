@@ -1,4 +1,4 @@
-package sk.adr3ez.globalchallenges.core.database;
+package sk.adr3ez.globalchallenges.core.database.dao;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;

@@ -7,7 +7,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import sk.adr3ez.globalchallenges.api.GlobalChallengesProvider;
 import sk.adr3ez.globalchallenges.api.database.entity.DBPlayer;
-import sk.adr3ez.globalchallenges.core.database.PlayerDAO;
+import sk.adr3ez.globalchallenges.core.database.dao.PlayerDAO;
 
 //Utility listeners for spigot can be found here
 public class UtilListener implements Listener {

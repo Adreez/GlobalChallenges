@@ -14,12 +14,12 @@ import sk.adr3ez.globalchallenges.api.model.challenge.ActiveChallenge;
 import sk.adr3ez.globalchallenges.api.model.challenge.Challenge;
 import sk.adr3ez.globalchallenges.api.model.player.ChallengePlayer;
 import sk.adr3ez.globalchallenges.api.util.ConfigRoutes;
-import sk.adr3ez.globalchallenges.core.database.GameDAO;
-import sk.adr3ez.globalchallenges.core.database.PlayerDAO;
+import sk.adr3ez.globalchallenges.core.database.dao.GameDAO;
+import sk.adr3ez.globalchallenges.core.database.dao.PlayerDAO;
 
+import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.*;
 
 public final class ActiveChallengeAdapter implements ActiveChallenge {
@@ -27,6 +27,7 @@ public final class ActiveChallengeAdapter implements ActiveChallenge {
     private final GlobalChallenges plugin = GlobalChallengesProvider.get();
 
     private Map<UUID, ChallengePlayer> players = new HashMap<>();
+    private Map<UUID, ChallengePlayer> finishedPlayers = new HashMap<>();
 
     @NotNull
     private Challenge challenge;
@@ -90,7 +91,9 @@ public final class ActiveChallengeAdapter implements ActiveChallenge {
 
     @Override
     public List<UUID> getJoinedPlayers() {
-        return new ArrayList<>(players.keySet());
+        ArrayList<UUID> list = new ArrayList<>(players.keySet());
+        list.addAll(finishedPlayers.keySet());
+        return list;
     }
 
     @Override
@@ -105,20 +108,20 @@ public final class ActiveChallengeAdapter implements ActiveChallenge {
         DBPlayer dbPlayer = PlayerDAO.findByUuid(uuid.toString());
 
         ChallengePlayer challengePlayer = new ChallengePlayer(uuid, audience,
-                new DBPlayerData(dbGame, dbPlayer, LocalDateTime.now()));
+                new DBPlayerData(dbGame, dbPlayer, Timestamp.from(Instant.now())));
 
         players.put(uuid, challengePlayer);
     }
 
     @Override
     public int countPlayers() {
-        return players.size();
+        return players.size() + finishedPlayers.size();
     }
 
     @NotNull
     @Override
     public boolean isJoined(@NotNull UUID uuid) {
-        return this.players.containsKey(uuid);
+        return this.players.containsKey(uuid) || this.finishedPlayers.containsKey(uuid);
     }
 
     @Override
@@ -127,23 +130,28 @@ public final class ActiveChallengeAdapter implements ActiveChallenge {
         timer.cancel();
         bossBarTask.cancel();
 
-        int finished = 0;
         //Handle players that did not finish
         for (ChallengePlayer challengePlayer : players.values()) {
-            finishPlayer(challengePlayer.getUuid());
-            if (challengePlayer.finished())
-                finished++;
+            UUID uuid = challengePlayer.getUuid();
+
+            if (!finishedPlayers.containsKey(uuid))
+                finishPlayer(uuid);
+
+            challengePlayer.getAudience().hideBossBar(challengePlayer.getBossBar());
         }
 
         dbGame.setEndTime(LocalDateTime.now());
         dbGame.setPlayersJoined(players.size());
-        dbGame.setPlayersFinished(finished);
+        dbGame.setPlayersFinished(finishedPlayers.size());
 
         GameDAO.saveOrUpdate(dbGame);
+
+        //TODO Handle rewards
 
         challenge.handleEnd();
         this.challenge = null;
         players = null;
+        finishedPlayers = null;
     }
 
     //Count for the position in which player has finished
@@ -153,23 +161,21 @@ public final class ActiveChallengeAdapter implements ActiveChallenge {
     @Override
     public void finishPlayer(UUID uuid) {
         ChallengePlayer challengePlayer = this.players.get(uuid);
-        challengePlayer.getAudience().hideBossBar(challengePlayer.getBossBar());
 
         DBPlayerData playerData = challengePlayer.getDbPlayerData();
 
         if (challengePlayer.finished()) {
+            players.remove(uuid);
+            finishedPlayers.put(uuid, challengePlayer);
 
             playerData.setPosition(finishCount);
             playerData.setFinished(true);
-            playerData.setTimeFinished(LocalDateTime.ofInstant(Instant.ofEpochMilli(challengePlayer.getFinishTime()),
-                    ZoneId.systemDefault()));
+            playerData.setTimeFinished(Timestamp.from(Instant.ofEpochMilli(challengePlayer.getFinishTime())));
             finishCount++;
-
         }
 
         DBPlayer dbPlayer = PlayerDAO.findByUuid(uuid);
         dbPlayer.addPlayerData(playerData);
-        Bukkit.broadcastMessage(dbPlayer.toString());
         PlayerDAO.saveOrUpdate(dbPlayer);
 
     }

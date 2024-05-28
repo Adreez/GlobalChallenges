@@ -6,8 +6,8 @@ import org.jetbrains.annotations.NotNull;
 import sk.adr3ez.globalchallenges.api.model.GameManager;
 import sk.adr3ez.globalchallenges.api.model.challenge.Challenge;
 
-public class ExperienceGatheredChallenge extends Challenge {
-    public ExperienceGatheredChallenge(@NotNull GameManager gameManager) {
+public class ExperienceGatheredAbstractChallenge extends Challenge {
+    public ExperienceGatheredAbstractChallenge(@NotNull GameManager gameManager) {
         super(gameManager);
     }
 

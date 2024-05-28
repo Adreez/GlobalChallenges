@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 
 
 @Getter
@@ -30,12 +30,12 @@ public class DBPlayerData {
     @Setter
     private boolean finished;
 
-    @Column(name = "time_joined", columnDefinition = "DATETIME")
-    private LocalDateTime timeJoined;
+    @Column(name = "time_joined", columnDefinition = "TIMESTAMP", nullable = false)
+    private Timestamp timeJoined;
 
-    @Column(name = "time_finished", columnDefinition = "DATETIME")
+    @Column(name = "time_finished", columnDefinition = "TIMESTAMP")
     @Setter
-    private LocalDateTime timeFinished;
+    private Timestamp timeFinished;
 
     @Column(name = "position")
     @Setter
@@ -44,7 +44,7 @@ public class DBPlayerData {
     public DBPlayerData() {
     }
 
-    public DBPlayerData(DBGame dbGame, DBPlayer dbPlayer, LocalDateTime timeJoined) {
+    public DBPlayerData(DBGame dbGame, DBPlayer dbPlayer, Timestamp timeJoined) {
         this.game = dbGame;
         this.player = dbPlayer;
         this.timeJoined = timeJoined;
@@ -52,7 +52,7 @@ public class DBPlayerData {
         this.finished = false;
     }
 
-    public DBPlayerData(DBGame dbGame, LocalDateTime timeJoined) {
+    public DBPlayerData(DBGame dbGame, Timestamp timeJoined) {
         this.game = dbGame;
         this.timeJoined = timeJoined;
 
