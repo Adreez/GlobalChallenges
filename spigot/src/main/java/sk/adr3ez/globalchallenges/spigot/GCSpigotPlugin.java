@@ -33,8 +33,9 @@ import sk.adr3ez.globalchallenges.api.model.challenge.Challenge;
 import sk.adr3ez.globalchallenges.api.util.ConfigRoutes;
 import sk.adr3ez.globalchallenges.api.util.log.PluginLogger;
 import sk.adr3ez.globalchallenges.core.database.DatabaseManagerImp;
-import sk.adr3ez.globalchallenges.core.database.GameDAO;
+import sk.adr3ez.globalchallenges.core.database.dao.GameDAO;
 import sk.adr3ez.globalchallenges.core.model.GameManagerAdapter;
+import sk.adr3ez.globalchallenges.core.model.TimeUtils;
 import sk.adr3ez.globalchallenges.spigot.util.BlockListener;
 import sk.adr3ez.globalchallenges.spigot.util.SpigotLogger;
 import sk.adr3ez.globalchallenges.spigot.util.UtilListener;
@@ -42,6 +43,7 @@ import sk.adr3ez.globalchallenges.spigot.util.UtilListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -265,32 +267,51 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
                 .withSubcommand(new CommandAPICommand("results")
                         .withOptionalArguments(new LongArgument("gameID"))
                         .executesPlayer((player, args) -> {
+                            DBGame game;
                             if (args.getOptional("gameID").isPresent()) {
-                                //Get game by id
-
-                                DBGame game = GameDAO.findById((Long) args.get("gameID"));
-                                if (game == null)
-                                    player.sendMessage("Game not found");
-                                Bukkit.broadcastMessage(game.toString());
-
+                                game = GameDAO.findById((Long) args.get("gameID"));
                             } else {
-                                //Get last
-                                DBGame last = GameDAO.getLast();
-
-                                if (last == null)
-                                    player.sendMessage("No game has been found!");
-
-                                List<DBPlayerData> list = GameDAO.getPlayerData(last.getId());
-
-                                if (!list.isEmpty())
-                                    player.sendMessage("Found " + list.size() + " players!");
-                                else
-                                    player.sendMessage("No game found!");
-
-                                Bukkit.broadcastMessage(last.toString());
-                                adventure().player(player).openBook(Book.book(Component.text("Title"), Component.text("Author"),
-                                        MiniMessage.miniMessage().deserialize("<b><color:#245a6a>1:</b> <color:#009c15>Adr3ez_ <gray>(3 min 25 sec)")));
+                                game = GameDAO.getLast();
                             }
+                            if (game == null) {
+                                player.sendMessage("No game has been found!");
+                                return;
+                            }
+                            List<DBPlayerData> list = GameDAO.getPlayerData(game.getId());
+
+                            if (!list.isEmpty())
+                                player.sendMessage("Found " + list.size() + " players!");
+                            else {
+                                player.sendMessage("Game does not have any data!");
+                                return;
+                            }
+
+                            list.sort(Comparator.comparingInt(DBPlayerData::getPosition));
+
+                            System.out.println(list);
+
+                            StringBuilder result = new StringBuilder();
+                            for (DBPlayerData playerData : list) { //<- Line 300
+                                Bukkit.broadcastMessage(playerData.getTimeJoined().toString());
+                                Bukkit.broadcastMessage(playerData.getTimeFinished().toString());
+                                result.append("<br><b><color:#245a6a>").append(playerData.getPosition()).append(":</b>")
+                                        .append("<color:#009c15> ").append(playerData.getPlayer().getNick())
+                                        .append("\n<gray>  »").append(playerData.getTimeFinished() != null ?
+                                                TimeUtils.format(playerData.getTimeFinished().getTime() - playerData.getTimeJoined().getTime())
+                                                : "Not finished");
+                            }
+
+                            adventure().player(player).openBook(Book.book(Component.text("Results"), Component.text("Author"),
+                                    MiniMessage.miniMessage().deserialize("""
+                                             <b><color:#245a6a>Game id:</b> %game_id%
+                                            \s
+                                             <b><color:#245a6a>Played:</b> %played%
+                                             <b><color:#245a6a>Finished:</b> %finished%
+                                            \s
+                                             Results:
+                                            """.replaceAll("%game_id%", String.valueOf(game.getId()))
+                                            .replaceAll("%played%", String.valueOf(game.getPlayersJoined()))
+                                            .replaceAll("%finished%", String.valueOf(game.getPlayersFinished())) + result)));
                         }))
                 .executes((sender, args) -> {
                             Bukkit.getServer().dispatchCommand(sender, "glch help");

@@ -1,4 +1,4 @@
-package sk.adr3ez.globalchallenges.core.database;
+package sk.adr3ez.globalchallenges.core.database.dao;
 
 import jakarta.persistence.*;
 import org.hibernate.HibernateException;
@@ -70,21 +70,31 @@ public final class GameDAO {
         }
     }
 
+    public static List<DBPlayerData> getPlayerData(final Long gameId) {
+        return getPlayerData(findById(gameId));
+    }
+
     /**
      * Gets all playerData for specified game
      *
      * @param gameId ID of the game you want to find
      * @return List<DBPlayerData>
      */
-    public static List<DBPlayerData> getPlayerData(final Long gameId) {
+    public static List<DBPlayerData> getPlayerData(DBGame dbGame) {
         EntityManager entityManager = globalChallenges.getDatabaseManager().getEntityManager();
         try {
-            TypedQuery<DBPlayerData> query = entityManager.createQuery("SELECT e.game FROM DBPlayerData e", DBPlayerData.class);
+            // Correct query to select DBPlayerData entities where the game matches the provided DBGame entity
+            TypedQuery<DBPlayerData> query = entityManager.createQuery(
+                    "SELECT e FROM DBPlayerData e WHERE e.game = :game", DBPlayerData.class);
+            // Set the parameter with the DBGame entity
+            query.setParameter("game", dbGame);
+
             return query.getResultList();
         } finally {
             entityManager.close();
         }
     }
+
 
     public static void delete(String id) {
         EntityManager entityManager = globalChallenges.getDatabaseManager().getEntityManager();
