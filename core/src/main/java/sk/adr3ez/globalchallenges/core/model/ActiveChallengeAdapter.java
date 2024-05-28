@@ -12,7 +12,7 @@ import sk.adr3ez.globalchallenges.api.database.entity.DBPlayer;
 import sk.adr3ez.globalchallenges.api.database.entity.DBPlayerData;
 import sk.adr3ez.globalchallenges.api.model.challenge.ActiveChallenge;
 import sk.adr3ez.globalchallenges.api.model.challenge.Challenge;
-import sk.adr3ez.globalchallenges.api.model.player.ChallengePlayer;
+import sk.adr3ez.globalchallenges.api.model.player.ActivePlayer;
 import sk.adr3ez.globalchallenges.api.util.ConfigRoutes;
 import sk.adr3ez.globalchallenges.core.database.dao.GameDAO;
 import sk.adr3ez.globalchallenges.core.database.dao.PlayerDAO;
@@ -26,8 +26,8 @@ public final class ActiveChallengeAdapter implements ActiveChallenge {
 
     private final GlobalChallenges plugin = GlobalChallengesProvider.get();
 
-    private Map<UUID, ChallengePlayer> players = new HashMap<>();
-    private Map<UUID, ChallengePlayer> finishedPlayers = new HashMap<>();
+    private Map<UUID, ActivePlayer> players = new HashMap<>();
+    private Map<UUID, ActivePlayer> finishedPlayers = new HashMap<>();
 
     @NotNull
     private Challenge challenge;
@@ -49,16 +49,25 @@ public final class ActiveChallengeAdapter implements ActiveChallenge {
         this.challenge = challenge;
         this.dbGame = GameDAO.saveOrUpdate(dbGame);
 
-        this.requiredScore = challenge.getRequiredScore();
+        if (challenge.canBeUnlimited()) {
+            if (Math.random() > 0.5) {
+                requiredScore = -1.0;
+            } else
+                this.requiredScore = challenge.getRequiredScore();
+        } else {
+            this.requiredScore = challenge.getRequiredScore();
+        }
+
         this.timeLeft = plugin.getConfiguration().getInt(ConfigRoutes.SETTINGS_CHALLENGE_TIME.getRoute());
 
         bossBarTask = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin.getJavaPlugin(), () -> {
-            for (ChallengePlayer challengePlayer : players.values())
-                challengePlayer.updateBossbar();
+            for (ActivePlayer activePlayer : players.values())
+                activePlayer.updateBossbar();
+            for (ActivePlayer activePlayer : finishedPlayers.values())
+                activePlayer.updateBossbar();
         }, 20, 20);
         this.timer = Bukkit.getScheduler().runTaskTimer(plugin.getJavaPlugin(), () -> {
-            if (timeLeft <= 0)
-                plugin.getGameManager().endActive();
+            if (timeLeft <= 0) plugin.getGameManager().endActive();
             timeLeft -= 1;
         }, 0, 20);
     }
@@ -66,22 +75,22 @@ public final class ActiveChallengeAdapter implements ActiveChallenge {
     @NotNull
     @Override
     public Challenge getChallenge() {
-        return challenge;
+        return this.challenge;
     }
 
     @Override
-    public Long getId() {
-        return dbGame.getId();
+    public DBGame getDbGame() {
+        return this.dbGame;
     }
 
     @Override
     public Double getRequiredScore() {
-        return requiredScore;
+        return this.requiredScore;
     }
 
     @Override
     public Integer getTimeLeft() {
-        return timeLeft;
+        return this.timeLeft;
     }
 
     @Override
@@ -90,16 +99,18 @@ public final class ActiveChallengeAdapter implements ActiveChallenge {
     }
 
     @Override
-    public List<UUID> getJoinedPlayers() {
-        ArrayList<UUID> list = new ArrayList<>(players.keySet());
-        list.addAll(finishedPlayers.keySet());
+    public List<ActivePlayer> getJoinedPlayers() {
+        ArrayList<ActivePlayer> list = new ArrayList<>(players.values());
+        list.addAll(finishedPlayers.values());
         return list;
     }
 
     @Override
-    public Optional<ChallengePlayer> getPlayer(@NotNull UUID uuid) {
+    public Optional<ActivePlayer> getPlayer(@NotNull UUID uuid) {
         if (players.containsKey(uuid))
             return Optional.of(players.get(uuid));
+        else if (finishedPlayers.containsKey(uuid))
+            return Optional.of(finishedPlayers.get(uuid));
         return Optional.empty();
     }
 
@@ -107,10 +118,11 @@ public final class ActiveChallengeAdapter implements ActiveChallenge {
     public void joinPlayer(@NotNull UUID uuid, @NotNull Audience audience) {
         DBPlayer dbPlayer = PlayerDAO.findByUuid(uuid.toString());
 
-        ChallengePlayer challengePlayer = new ChallengePlayer(uuid, audience,
-                new DBPlayerData(dbGame, dbPlayer, Timestamp.from(Instant.now())));
+        ActivePlayer activePlayer = new ActivePlayer(uuid, audience,
+                new DBPlayerData(dbGame, dbPlayer, Timestamp.from(Instant.now())),
+                this);
 
-        players.put(uuid, challengePlayer);
+        players.put(uuid, activePlayer);
     }
 
     @Override
@@ -124,24 +136,43 @@ public final class ActiveChallengeAdapter implements ActiveChallenge {
         return this.players.containsKey(uuid) || this.finishedPlayers.containsKey(uuid);
     }
 
+    @NotNull
+    @Override
+    public boolean isFinished(@NotNull UUID uuid) {
+        return false;
+    }
+
     @Override
     @ApiStatus.Internal
     public void handleEnd() {
         timer.cancel();
         bossBarTask.cancel();
 
+        ArrayList<ActivePlayer> list = new ArrayList<>(players.values());
+        list.sort(Comparator.comparingDouble(ActivePlayer::getScore));
+        if (requiredScore == -1) {
+            list.sort(Comparator.comparingDouble(ActivePlayer::getScore));
+
+            for (ActivePlayer activePlayer : list) {
+                activePlayer.setFinished(activePlayer.getScore() > 0);
+                activePlayer.setFinishTime(System.currentTimeMillis());
+                finishPlayer(activePlayer.getUuid());
+            }
+        }
         //Handle players that did not finish
-        for (ChallengePlayer challengePlayer : players.values()) {
-            UUID uuid = challengePlayer.getUuid();
+        list.addAll(finishedPlayers.values());
+        for (ActivePlayer activePlayer : list) {
+            UUID uuid = activePlayer.getUuid();
 
             if (!finishedPlayers.containsKey(uuid))
                 finishPlayer(uuid);
 
-            challengePlayer.getAudience().hideBossBar(challengePlayer.getBossBar());
+            activePlayer.getAudience().hideBossBar(activePlayer.getBossBar());
         }
 
+
         dbGame.setEndTime(LocalDateTime.now());
-        dbGame.setPlayersJoined(players.size());
+        dbGame.setPlayersJoined(players.size() + finishedPlayers.size());
         dbGame.setPlayersFinished(finishedPlayers.size());
 
         GameDAO.saveOrUpdate(dbGame);
@@ -160,19 +191,18 @@ public final class ActiveChallengeAdapter implements ActiveChallenge {
 
     @Override
     public void finishPlayer(UUID uuid) {
-        ChallengePlayer challengePlayer = this.players.get(uuid);
+        ActivePlayer activePlayer = this.players.get(uuid);
 
-        DBPlayerData playerData = challengePlayer.getDbPlayerData();
+        DBPlayerData playerData = activePlayer.getDbPlayerData();
 
-        if (challengePlayer.finished()) {
-            players.remove(uuid);
-            finishedPlayers.put(uuid, challengePlayer);
-
+        if (activePlayer.finished()) {
             playerData.setPosition(finishCount);
             playerData.setFinished(true);
-            playerData.setTimeFinished(Timestamp.from(Instant.ofEpochMilli(challengePlayer.getFinishTime())));
+            playerData.setTimeFinished(Timestamp.from(Instant.ofEpochMilli(activePlayer.getFinishTime())));
             finishCount++;
         }
+        players.remove(uuid);
+        finishedPlayers.put(uuid, activePlayer);
 
         DBPlayer dbPlayer = PlayerDAO.findByUuid(uuid);
         dbPlayer.addPlayerData(playerData);

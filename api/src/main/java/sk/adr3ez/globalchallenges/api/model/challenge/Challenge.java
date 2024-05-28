@@ -42,6 +42,10 @@ public abstract class Challenge implements Listener {
     @NotNull
     public abstract Double getRequiredScore();
 
+    public boolean canBeUnlimited() {
+        return gameManager.getChallengesFile().getBoolean("challenges." + getKey() + ".unlimited_score");
+    }
+
     @NotNull
     public String getName() {
         return gameManager.getChallengesFile().getString("challenges." + getKey() + ".name");
@@ -76,8 +80,7 @@ public abstract class Challenge implements Listener {
     }
 
     protected void addScore(UUID uuid, Double value) {
-        if (gameManager.getActiveChallenge().isPresent() && gameManager.getActiveChallenge().get().isJoined(uuid))
-            gameManager.getActiveChallenge().get().getPlayer(uuid).get().addScore(value);
+        gameManager.getActiveChallenge().ifPresent(activeChallenge -> activeChallenge.getPlayer(uuid).ifPresent(player -> player.addScore(value)));
     }
 
     protected Double getScore(UUID uuid) {
@@ -89,11 +92,6 @@ public abstract class Challenge implements Listener {
     protected void setScore(UUID uuid, Double value) {
         if (gameManager.getActiveChallenge().isPresent() && gameManager.getActiveChallenge().get().isJoined(uuid))
             gameManager.getActiveChallenge().get().getPlayer(uuid).get().setScore(value);
-    }
-
-    protected void removeScore(UUID uuid, Double value) {
-        if (gameManager.getActiveChallenge().isPresent() && gameManager.getActiveChallenge().get().isJoined(uuid))
-            gameManager.getActiveChallenge().get().getPlayer(uuid).get().removeScore(value);
     }
 
     protected boolean onChallengeStart() {

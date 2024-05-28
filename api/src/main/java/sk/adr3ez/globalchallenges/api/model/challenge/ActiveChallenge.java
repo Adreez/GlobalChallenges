@@ -1,9 +1,9 @@
 package sk.adr3ez.globalchallenges.api.model.challenge;
 
 import net.kyori.adventure.audience.Audience;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
-import sk.adr3ez.globalchallenges.api.model.player.ChallengePlayer;
+import sk.adr3ez.globalchallenges.api.database.entity.DBGame;
+import sk.adr3ez.globalchallenges.api.model.player.ActivePlayer;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,17 +15,12 @@ public interface ActiveChallenge {
     Challenge getChallenge();
 
     /**
-     * Getter for ID which is used in database
+     * Getter database object of running game
      *
      * @return Long id
      */
-    Long getId();
+    DBGame getDbGame();
 
-    /**
-     * Required score for each player to end their challenge
-     *
-     * @return double
-     */
     Double getRequiredScore();
 
     /**
@@ -47,11 +42,13 @@ public interface ActiveChallenge {
      *
      * @return List<UUID>
      */
-    List<UUID> getJoinedPlayers();
+    List<ActivePlayer> getJoinedPlayers();
 
-    Optional<ChallengePlayer> getPlayer(@NotNull UUID uuid);
+    Optional<ActivePlayer> getPlayer(@NotNull UUID uuid);
 
     void joinPlayer(@NotNull UUID uuid, @NotNull Audience audience);
+
+    void finishPlayer(UUID uuid);
 
     @NotNull
     int countPlayers();
@@ -59,9 +56,8 @@ public interface ActiveChallenge {
     @NotNull
     boolean isJoined(@NotNull UUID uuid);
 
-    @ApiStatus.Internal
+    @NotNull
+    boolean isFinished(@NotNull UUID uuid);
+
     void handleEnd();
-
-    void finishPlayer(UUID uuid);
-
 }

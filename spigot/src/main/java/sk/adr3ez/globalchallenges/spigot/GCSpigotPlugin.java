@@ -31,21 +31,18 @@ import sk.adr3ez.globalchallenges.api.model.GameManager;
 import sk.adr3ez.globalchallenges.api.model.challenge.ActiveChallenge;
 import sk.adr3ez.globalchallenges.api.model.challenge.Challenge;
 import sk.adr3ez.globalchallenges.api.util.ConfigRoutes;
+import sk.adr3ez.globalchallenges.api.util.TimeUtils;
 import sk.adr3ez.globalchallenges.api.util.log.PluginLogger;
 import sk.adr3ez.globalchallenges.core.database.DatabaseManagerImp;
 import sk.adr3ez.globalchallenges.core.database.dao.GameDAO;
 import sk.adr3ez.globalchallenges.core.model.GameManagerAdapter;
-import sk.adr3ez.globalchallenges.core.model.TimeUtils;
 import sk.adr3ez.globalchallenges.spigot.util.BlockListener;
 import sk.adr3ez.globalchallenges.spigot.util.SpigotLogger;
 import sk.adr3ez.globalchallenges.spigot.util.UtilListener;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges, Listener {
@@ -289,16 +286,23 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
                             list.sort(Comparator.comparingInt(DBPlayerData::getPosition));
 
                             System.out.println(list);
-
+                            ArrayList<DBPlayerData> notFinished = new ArrayList<>();
                             StringBuilder result = new StringBuilder();
                             for (DBPlayerData playerData : list) { //<- Line 300
-                                Bukkit.broadcastMessage(playerData.getTimeJoined().toString());
-                                Bukkit.broadcastMessage(playerData.getTimeFinished().toString());
-                                result.append("<br><b><color:#245a6a>").append(playerData.getPosition()).append(":</b>")
-                                        .append("<color:#009c15> ").append(playerData.getPlayer().getNick())
-                                        .append("\n<gray>  »").append(playerData.getTimeFinished() != null ?
-                                                TimeUtils.format(playerData.getTimeFinished().getTime() - playerData.getTimeJoined().getTime())
-                                                : "Not finished");
+                                if (playerData.isFinished())
+                                    result.append("<br><b><color:#245a6a>").append(playerData.getPosition() == 0 ? "N/A" : playerData.getPosition()).append(":</b>")
+                                            .append("<color:#009c15> ").append(playerData.getPlayer().getNick())
+                                            .append("\n<gray>  »").append(playerData.getTimeFinished() != null ?
+                                                    TimeUtils.formatMillis(playerData.getTimeFinished().getTime() - playerData.getTimeJoined().getTime())
+                                                    : "Not finished");
+                                else
+                                    notFinished.add(playerData);
+                            }
+                            if (!notFinished.isEmpty()) {
+                                result.append("<br><black><b>Not finished:</b>");
+                                for (DBPlayerData playerData : notFinished) {
+                                    result.append("<br><color:#009c15> ").append(playerData.getPlayer().getNick());
+                                }
                             }
 
                             adventure().player(player).openBook(Book.book(Component.text("Results"), Component.text("Author"),

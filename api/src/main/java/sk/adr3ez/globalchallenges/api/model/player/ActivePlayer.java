@@ -1,6 +1,5 @@
 package sk.adr3ez.globalchallenges.api.model.player;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import net.kyori.adventure.audience.Audience;
@@ -14,83 +13,96 @@ import org.jetbrains.annotations.NotNull;
 import sk.adr3ez.globalchallenges.api.GlobalChallenges;
 import sk.adr3ez.globalchallenges.api.GlobalChallengesProvider;
 import sk.adr3ez.globalchallenges.api.database.entity.DBPlayerData;
+import sk.adr3ez.globalchallenges.api.model.challenge.ActiveChallenge;
 import sk.adr3ez.globalchallenges.api.util.ConfigRoutes;
+import sk.adr3ez.globalchallenges.api.util.TimeUtils;
 
 import java.util.UUID;
 
-@Getter
-@Setter
-public class ChallengePlayer {
+public final class ActivePlayer {
 
-    @Setter(AccessLevel.NONE)
-    @Getter(AccessLevel.NONE)
-    private GlobalChallenges plugin = GlobalChallengesProvider.get();
 
+    private final GlobalChallenges plugin = GlobalChallengesProvider.get();
+    private final ActiveChallenge activeChallenge;
+
+    @Getter
+    @Setter
     private Double score = 0D;
+
+    @Getter
+    @Setter
     private BossBar bossBar;
 
-    private UUID uuid;
+    @Getter
+    private final UUID uuid;
 
-    private Audience audience;
+    @Getter
+    private final Audience audience;
 
+    @Getter
     private final DBPlayerData dbPlayerData;
 
-    @Setter(AccessLevel.NONE)
-    private final Double requiredScore = plugin.getGameManager().getActiveChallenge().get().getRequiredScore();
-
+    @Getter
+    @Setter
     private Long finishTime = 0L;
 
-    public ChallengePlayer(UUID uuid, Audience audience, DBPlayerData dbPlayerData) {
+    @Getter
+    @Setter
+    private boolean finished = false;
+
+    public ActivePlayer(UUID uuid, Audience audience, DBPlayerData dbPlayerData, ActiveChallenge activeChallenge) {
         this.uuid = uuid;
         this.audience = audience;
         this.dbPlayerData = dbPlayerData;
+        this.activeChallenge = activeChallenge;
 
         bossBar = BossBar.bossBar(MiniMessage.miniMessage().deserialize(plugin.getConfiguration().getString(ConfigRoutes.PLAYER_ACTIVE_BOSSBAR.getRoute()),
                         Placeholder.parsed("score", String.valueOf(score)),
-                        Placeholder.parsed("needed", String.valueOf(requiredScore)),
-                        Placeholder.component("time_left", Component.text(plugin.getGameManager().getActiveChallenge().get().getTimeLeft()))),
+                        Placeholder.parsed("needed", String.valueOf(activeChallenge.getRequiredScore())),
+                        Placeholder.component("time_left", Component.text(TimeUtils.formatMillis(activeChallenge.getTimeLeft() * 1000)))),
                 0f, BossBar.Color.PURPLE, BossBar.Overlay.PROGRESS);
         this.audience.showBossBar(bossBar);
     }
-
 
     public void addScore(@NotNull Double value) {
         this.score += value;
         audience.playSound(Sound.sound(Key.key("block.note_block.bell"), Sound.Source.MUSIC, 0.4f, 1f));
 
-        if (score < requiredScore)
+        //Return so game will be running until the challenge is ended
+        if (activeChallenge.getRequiredScore() == -1)
             return;
 
-        finishTime = System.currentTimeMillis();
-        bossBar.color(BossBar.Color.GREEN);
-        bossBar.progress(1F);
-    }
+        if (score < activeChallenge.getRequiredScore())
+            return;
 
-    public void removeScore(@NotNull Double value) {
-        this.score -= value;
+        if (!finished) {
+            finished = true;
+            finishTime = System.currentTimeMillis();
+            bossBar.color(BossBar.Color.GREEN);
+            bossBar.progress(1F);
+            activeChallenge.finishPlayer(uuid);
+        }
     }
 
     public void updateBossbar() {
         if (finished()) {
             bossBar.name(MiniMessage.miniMessage().deserialize(plugin.getConfiguration().getString(ConfigRoutes.PLAYER_FINISHED_BOSSBAR.getRoute()),
-                    Placeholder.component("time_left", Component.text(plugin.getGameManager().getActiveChallenge().get().getTimeLeft())),
-                    Placeholder.component("finished_time", Component.text(finishTime - plugin.getGameManager().getActiveChallenge().get().getStartTime()))
+                    Placeholder.component("time_left", Component.text(TimeUtils.formatMillis(activeChallenge.getTimeLeft() * 1000))),
+                    Placeholder.component("finished_time", Component.text(TimeUtils.formatMillis(finishTime - activeChallenge.getStartTime())))
             ));
         } else {
-            float status = (float) (score / requiredScore);
-            if (status > 1)
+            float status = (float) (score / activeChallenge.getRequiredScore());
+            if (status > 1 || status < 0)
                 status = 1;
             bossBar.name(MiniMessage.miniMessage().deserialize(plugin.getConfiguration().getString(ConfigRoutes.PLAYER_ACTIVE_BOSSBAR.getRoute()),
                     Placeholder.parsed("score", String.valueOf(score)),
-                    Placeholder.parsed("needed", String.valueOf(requiredScore)),
-                    Placeholder.component("time_left", Component.text(plugin.getGameManager().getActiveChallenge().get().getTimeLeft()))));
+                    Placeholder.parsed("needed", String.valueOf(activeChallenge.getRequiredScore())),
+                    Placeholder.component("time_left", Component.text(TimeUtils.formatMillis(activeChallenge.getTimeLeft() * 1000)))));
             bossBar.progress(status);
         }
     }
 
     public boolean finished() {
-        return finishTime > 0;
+        return finished;
     }
-
-
 }

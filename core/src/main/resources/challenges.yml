@@ -18,6 +18,7 @@ challenges:
     name: "Mine block"
     description: "<gray><i>Mine a <yellow>%block%"
     enabled: true
+    unlimited_score: true
 
     #If you want to cancel blocks placed by player, you can leave this to false but
     #monitor_blocks in config.yml has to be enabled!
@@ -33,16 +34,19 @@ challenges:
     name: "Gather experience"
     description: "<gray><i>Gather <yellow>%value%<gray><i> experience"
     enabled: true
+    unlimited_score: true
 
   players_killed:
     name: "Kill players"
     description: "<gray><i>Kill as much unique players as you can!"
     enabled: true
+    unlimited_score: true
 
   harvest_crops:
     name: "Harvest crops"
     description: "<gray><i>Harvest as much crops as possible"
     enabled: true
+    unlimited_score: true
 
     list:
       - wheat

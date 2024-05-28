@@ -1,9 +1,9 @@
-package sk.adr3ez.globalchallenges.core.model;
+package sk.adr3ez.globalchallenges.api.util;
 
 public class TimeUtils {
 
 
-    public static String format(long milliseconds) {
+    public static String formatMillis(long milliseconds) {
         if (milliseconds < 0) {
             throw new IllegalArgumentException("Milliseconds cannot be negative");
         }
