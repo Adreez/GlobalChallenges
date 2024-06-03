@@ -39,18 +39,40 @@ public abstract class Challenge implements Listener {
     @ApiStatus.Internal
     public abstract boolean canLoad();
 
+    /**
+     * Get required score of the challenge which player have to do.
+     *
+     * @return Double
+     */
     @NotNull
     public abstract Double getRequiredScore();
 
+    /**
+     * If challenge is unlimited, it means that there is no max value player
+     * can get during challenge. The required value is set to -1 and player
+     * with the highest value will win the challenge.
+     *
+     * @return boolean
+     */
     public boolean canBeUnlimited() {
         return gameManager.getChallengesFile().getBoolean("challenges." + getKey() + ".unlimited_score");
     }
 
+    /**
+     * Get raw name of the challenge
+     *
+     * @return String
+     */
     @NotNull
     public String getName() {
         return gameManager.getChallengesFile().getString("challenges." + getKey() + ".name");
     }
 
+    /**
+     * Get raw description of challenge.
+     *
+     * @return String
+     */
     @NotNull
     public String getDescription() {
         return gameManager.getChallengesFile().getString("challenges." + getKey() + ".description");
@@ -65,6 +87,11 @@ public abstract class Challenge implements Listener {
         return gameManager.getChallengesFile().getBoolean("challenges." + getKey() + ".enabled");
     }
 
+    /**
+     * This is internal method to initialize challenge
+     *
+     * @return boolean if successful
+     */
     @ApiStatus.Internal
     public boolean handleStart() {
         Bukkit.getPluginManager().registerEvents(this, GlobalChallengesProvider.get().getJavaPlugin());
@@ -72,6 +99,9 @@ public abstract class Challenge implements Listener {
         return this.onChallengeStart();
     }
 
+    /**
+     * This is internal method to handle end of a challenge
+     */
     @ApiStatus.Internal
     public void handleEnd() {
         HandlerList.unregisterAll(this);
@@ -79,25 +109,53 @@ public abstract class Challenge implements Listener {
         this.onChallengeEnd();
     }
 
+    /**
+     * This method will add specific amount of value to the active player account
+     *
+     * @param uuid  player unique id
+     * @param value how much value do you want to add
+     */
     protected void addScore(UUID uuid, Double value) {
         gameManager.getActiveChallenge().ifPresent(activeChallenge -> activeChallenge.getPlayer(uuid).ifPresent(player -> player.addScore(value)));
     }
 
+    /**
+     * Get the score of any player
+     *
+     * @param uuid unique id of player
+     * @return Double value
+     */
     protected Double getScore(UUID uuid) {
         if (gameManager.getActiveChallenge().isPresent() && gameManager.getActiveChallenge().get().isJoined(uuid))
             return gameManager.getActiveChallenge().get().getPlayer(uuid).get().getScore();
         return 0D;
     }
 
+    /**
+     * Set the score to any player that is online and is playing game
+     *
+     * @param uuid  unique id of player
+     * @param value value you wish to set
+     */
     protected void setScore(UUID uuid, Double value) {
         if (gameManager.getActiveChallenge().isPresent() && gameManager.getActiveChallenge().get().isJoined(uuid))
             gameManager.getActiveChallenge().get().getPlayer(uuid).get().setScore(value);
     }
 
+    /**
+     * You can override this method to make your own pre-start checks
+     * if your challenge can be started. Useful if your challenge requires
+     * dependencies.
+     *
+     * @return boolean if successful
+     */
     protected boolean onChallengeStart() {
         return true;
     }
 
+    /**
+     * You can override this method to handle your end-challenge calls.
+     */
     protected void onChallengeEnd() {
     }
 
