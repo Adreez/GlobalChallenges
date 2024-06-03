@@ -150,7 +150,7 @@ messages:
   commands:
     no_exist: "This command does not exist!"
     start:
-      started: "Game has been <green><u>successfuly</green></u> started."
+      started: "Game has been <green><u>successfuly</green><reset> started."
       failed: "Failed to start game."
       not_loaded: "This game is not loaded!"
       random: "Starting random game."

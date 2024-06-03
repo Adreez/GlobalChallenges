@@ -149,9 +149,8 @@ public final class ActiveChallengeAdapter implements ActiveChallenge {
         bossBarTask.cancel();
 
         ArrayList<ActivePlayer> list = new ArrayList<>(players.values());
-        list.sort(Comparator.comparingDouble(ActivePlayer::getScore));
+        list.sort(Comparator.comparingDouble(ActivePlayer::getScore).reversed());
         if (requiredScore == -1) {
-            list.sort(Comparator.comparingDouble(ActivePlayer::getScore));
 
             for (ActivePlayer activePlayer : list) {
                 activePlayer.setFinished(activePlayer.getScore() > 0);
@@ -177,7 +176,6 @@ public final class ActiveChallengeAdapter implements ActiveChallenge {
 
         GameDAO.saveOrUpdate(dbGame);
 
-        //TODO Handle rewards
         for (ActivePlayer activePlayer : finishedPlayers.values()) {
             if (activePlayer.finished()) {
                 if (plugin.getConfiguration().getInt("rewards.position." + activePlayer.getDbPlayerData().getPosition()) != null) {
@@ -190,7 +188,6 @@ public final class ActiveChallengeAdapter implements ActiveChallenge {
             for (String s : plugin.getConfiguration().getStringList("rewards.join")) {
                 Bukkit.dispatchCommand(Bukkit.getServer().getConsoleSender(), s.replaceAll("%player%", activePlayer.getName()));
             }
-
         }
 
         challenge.handleEnd();
