@@ -18,7 +18,6 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -45,7 +44,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
-public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges, Listener {
+public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges {
     private @Nullable BukkitAudiences adventure;
     private @Nullable YamlDocument configurationFile;
 
@@ -76,10 +75,9 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
         this.gameManager = new GameManagerAdapter(this);
 
         Bukkit.getPluginManager().registerEvents(new UtilListener(), this); // Setup utility listener
+
         if (getConfiguration().getBoolean(ConfigRoutes.SETTINGS_MONITOR_BLOCKS.getRoute()))
             Bukkit.getPluginManager().registerEvents(new BlockListener(this), this);
-
-        Bukkit.getPluginManager().registerEvents(this, this);
 
         setupCommands();
         getPluginLogger().info(ConsoleColors.format("&y[&cGlobalChallenges&y] &gPlugin has been loaded (" + (System.currentTimeMillis() - startupTime) + " ms)&reset"));
