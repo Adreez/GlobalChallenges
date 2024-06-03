@@ -16,6 +16,7 @@ import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.title.Title;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -80,6 +81,7 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
             Bukkit.getPluginManager().registerEvents(new BlockListener(this), this);
 
         setupCommands();
+        Metrics metrics = new Metrics(this, 22132);
         getPluginLogger().info(ConsoleColors.format("&y[&cGlobalChallenges&y] &gPlugin has been loaded (" + (System.currentTimeMillis() - startupTime) + " ms)&reset"));
     }
 
