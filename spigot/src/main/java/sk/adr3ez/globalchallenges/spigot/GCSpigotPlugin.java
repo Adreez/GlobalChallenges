@@ -264,58 +264,60 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
                 .withSubcommand(new CommandAPICommand("results")
                         .withOptionalArguments(new LongArgument("gameID"))
                         .executesPlayer((player, args) -> {
-                            DBGame game;
-                            if (args.getOptional("gameID").isPresent()) {
-                                game = GameDAO.findById((Long) args.get("gameID"));
-                            } else {
-                                game = GameDAO.getLast();
-                            }
-                            if (game == null) {
-                                player.sendMessage("No game has been found!");
-                                return;
-                            }
-                            List<DBPlayerData> list = GameDAO.getPlayerData(game.getId());
-
-                            if (!list.isEmpty())
-                                player.sendMessage("Found " + list.size() + " players!");
-                            else {
-                                player.sendMessage("Game does not have any data!");
-                                return;
-                            }
-
-                            list.sort(Comparator.comparingInt(DBPlayerData::getPosition));
-
-                            System.out.println(list);
-                            ArrayList<DBPlayerData> notFinished = new ArrayList<>();
-                            StringBuilder result = new StringBuilder();
-                            for (DBPlayerData playerData : list) { //<- Line 300
-                                if (playerData.isFinished())
-                                    result.append("<br><b><color:#245a6a>").append(playerData.getPosition() == 0 ? "N/A" : playerData.getPosition()).append(":</b>")
-                                            .append("<color:#009c15> ").append(playerData.getPlayer().getNick())
-                                            .append("\n<gray>  »").append(playerData.getTimeFinished() != null ?
-                                                    TimeUtils.formatMillis(playerData.getTimeFinished().getTime() - playerData.getTimeJoined().getTime())
-                                                    : "Not finished");
-                                else
-                                    notFinished.add(playerData);
-                            }
-                            if (!notFinished.isEmpty()) {
-                                result.append("<br><black><b>Not finished:</b>");
-                                for (DBPlayerData playerData : notFinished) {
-                                    result.append("<br><color:#009c15> ").append(playerData.getPlayer().getNick());
+                            Bukkit.getScheduler().runTaskAsynchronously(this, runnable -> {
+                                DBGame game;
+                                if (args.getOptional("gameID").isPresent()) {
+                                    game = GameDAO.findById((Long) args.get("gameID"));
+                                } else {
+                                    game = GameDAO.getLast();
                                 }
-                            }
+                                if (game == null) {
+                                    player.sendMessage("No game has been found!");
+                                    return;
+                                }
+                                List<DBPlayerData> list = GameDAO.getPlayerData(game.getId());
 
-                            adventure().player(player).openBook(Book.book(Component.text("Results"), Component.text("Author"),
-                                    MiniMessage.miniMessage().deserialize("""
-                                             <b><color:#245a6a>Game id:</b> %game_id%
-                                            \s
-                                             <b><color:#245a6a>Played:</b> %played%
-                                             <b><color:#245a6a>Finished:</b> %finished%
-                                            \s
-                                             Results:
-                                            """.replaceAll("%game_id%", String.valueOf(game.getId()))
-                                            .replaceAll("%played%", String.valueOf(game.getPlayersJoined()))
-                                            .replaceAll("%finished%", String.valueOf(game.getPlayersFinished())) + result)));
+                                if (!list.isEmpty())
+                                    player.sendMessage("Found " + list.size() + " players!");
+                                else {
+                                    player.sendMessage("Game does not have any data!");
+                                    return;
+                                }
+
+                                list.sort(Comparator.comparingInt(DBPlayerData::getPosition));
+
+
+                                ArrayList<DBPlayerData> notFinished = new ArrayList<>();
+                                StringBuilder result = new StringBuilder();
+                                for (DBPlayerData playerData : list) { //<- Line 300
+                                    if (playerData.isFinished())
+                                        result.append("<br><b><color:#245a6a>").append(playerData.getPosition() == 0 ? "N/A" : playerData.getPosition()).append(":</b>")
+                                                .append("<color:#009c15> ").append(playerData.getPlayer().getNick())
+                                                .append("\n<gray>  »").append(playerData.getTimeFinished() != null ?
+                                                        TimeUtils.formatMillis(playerData.getTimeFinished().getTime() - playerData.getTimeJoined().getTime())
+                                                        : "Not finished");
+                                    else
+                                        notFinished.add(playerData);
+                                }
+                                if (!notFinished.isEmpty()) {
+                                    result.append("<br><black><b>Not finished:</b>");
+                                    for (DBPlayerData playerData : notFinished) {
+                                        result.append("<br><color:#009c15> ").append(playerData.getPlayer().getNick());
+                                    }
+                                }
+
+                                adventure().player(player).openBook(Book.book(Component.text("Results"), Component.text("Author"),
+                                        MiniMessage.miniMessage().deserialize("""
+                                                 <b><color:#245a6a>Game id:</b> %game_id%
+                                                \s
+                                                 <b><color:#245a6a>Played:</b> %played%
+                                                 <b><color:#245a6a>Finished:</b> %finished%
+                                                \s
+                                                 Results:
+                                                """.replaceAll("%game_id%", String.valueOf(game.getId()))
+                                                .replaceAll("%played%", String.valueOf(game.getPlayersJoined()))
+                                                .replaceAll("%finished%", String.valueOf(game.getPlayersFinished())) + result)));
+                            });
                         }))
                 .executes((sender, args) -> {
                             Bukkit.getServer().dispatchCommand(sender, "glch help");
