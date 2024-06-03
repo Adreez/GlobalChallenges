@@ -115,10 +115,10 @@ public final class ActiveChallengeAdapter implements ActiveChallenge {
     }
 
     @Override
-    public void joinPlayer(@NotNull UUID uuid, @NotNull Audience audience) {
+    public void joinPlayer(@NotNull UUID uuid, @NotNull String name, @NotNull Audience audience) {
         DBPlayer dbPlayer = PlayerDAO.findByUuid(uuid.toString());
 
-        ActivePlayer activePlayer = new ActivePlayer(uuid, audience,
+        ActivePlayer activePlayer = new ActivePlayer(uuid, name, audience,
                 new DBPlayerData(dbGame, dbPlayer, Timestamp.from(Instant.now())),
                 this);
 
@@ -178,7 +178,20 @@ public final class ActiveChallengeAdapter implements ActiveChallenge {
         GameDAO.saveOrUpdate(dbGame);
 
         //TODO Handle rewards
-        
+        for (ActivePlayer activePlayer : finishedPlayers.values()) {
+            if (activePlayer.finished()) {
+                if (plugin.getConfiguration().getInt("rewards.position." + activePlayer.getDbPlayerData().getPosition()) != null) {
+                    for (String s : plugin.getConfiguration().getStringList("rewards.position." + activePlayer.getDbPlayerData().getPosition())) {
+                        Bukkit.dispatchCommand(Bukkit.getServer().getConsoleSender(), s.replaceAll("%player%", activePlayer.getName()));
+                    }
+                }
+            }
+
+            for (String s : plugin.getConfiguration().getStringList("rewards.join")) {
+                Bukkit.dispatchCommand(Bukkit.getServer().getConsoleSender(), s.replaceAll("%player%", activePlayer.getName()));
+            }
+
+        }
 
         challenge.handleEnd();
         this.challenge = null;
@@ -193,6 +206,7 @@ public final class ActiveChallengeAdapter implements ActiveChallenge {
     @Override
     public void finishPlayer(UUID uuid) {
         ActivePlayer activePlayer = this.players.get(uuid);
+        players.remove(uuid);
 
         DBPlayerData playerData = activePlayer.getDbPlayerData();
 
@@ -202,12 +216,13 @@ public final class ActiveChallengeAdapter implements ActiveChallenge {
             playerData.setTimeFinished(Timestamp.from(Instant.ofEpochMilli(activePlayer.getFinishTime())));
             finishCount++;
         }
-        players.remove(uuid);
-        finishedPlayers.put(uuid, activePlayer);
+
+        activePlayer.setDbPlayerData(playerData);
 
         DBPlayer dbPlayer = PlayerDAO.findByUuid(uuid);
         dbPlayer.addPlayerData(playerData);
         PlayerDAO.saveOrUpdate(dbPlayer);
 
+        finishedPlayers.put(uuid, activePlayer);
     }
 }

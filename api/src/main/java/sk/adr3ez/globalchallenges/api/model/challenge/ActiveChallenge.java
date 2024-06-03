@@ -46,7 +46,7 @@ public interface ActiveChallenge {
 
     Optional<ActivePlayer> getPlayer(@NotNull UUID uuid);
 
-    void joinPlayer(@NotNull UUID uuid, @NotNull Audience audience);
+    void joinPlayer(@NotNull UUID uuid, @NotNull String name, @NotNull Audience audience);
 
     void finishPlayer(UUID uuid);
 

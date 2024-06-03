@@ -37,10 +37,14 @@ public final class ActivePlayer {
     private final UUID uuid;
 
     @Getter
+    private final String name;
+
+    @Getter
     private final Audience audience;
 
     @Getter
-    private final DBPlayerData dbPlayerData;
+    @Setter
+    private DBPlayerData dbPlayerData;
 
     @Getter
     @Setter
@@ -50,8 +54,9 @@ public final class ActivePlayer {
     @Setter
     private boolean finished = false;
 
-    public ActivePlayer(UUID uuid, Audience audience, DBPlayerData dbPlayerData, ActiveChallenge activeChallenge) {
+    public ActivePlayer(UUID uuid, String name, Audience audience, DBPlayerData dbPlayerData, ActiveChallenge activeChallenge) {
         this.uuid = uuid;
+        this.name = name;
         this.audience = audience;
         this.dbPlayerData = dbPlayerData;
         this.activeChallenge = activeChallenge;

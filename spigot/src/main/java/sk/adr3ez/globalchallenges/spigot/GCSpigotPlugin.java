@@ -246,7 +246,7 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
 
                                 if (!activeChallenge.isJoined(player.getUniqueId())) {
                                     adventure.player(player).sendMessage(MiniMessage.miniMessage().deserialize(configurationFile.getString(ConfigRoutes.MESSAGES_COMMANDS_JOIN_SUCCESSFUL.getRoute())));
-                                    activeChallenge.joinPlayer(player.getUniqueId(), adventure().player(player));
+                                    activeChallenge.joinPlayer(player.getUniqueId(), player.getName(), adventure().player(player));
                                 } else {
                                     adventure.player(player).sendMessage(MiniMessage.miniMessage().deserialize(configurationFile.getString(ConfigRoutes.MESSAGES_COMMANDS_JOIN_ALREADYJOINED.getRoute())));
                                 }

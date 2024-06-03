@@ -67,6 +67,31 @@ settings:
 
 ##########################################################################################
 # |-                                                                                  -| #
+# |- REWARDS                                                                          -| #
+# |-  » After game will finish all players will get some type of reward.              -| #
+# |-                                                                                  -| #
+# |-  NOTE: All rewards are given after game is finished!                             -| #
+# |-                                                                                  -| #
+##########################################################################################
+
+rewards:
+  # If position is occupied player will get these rewards.
+  # You can specify as much as you would like.
+  position:
+    1:
+      - "eco give %player% 1000"
+      - "give %player% minecraft:diamond_block 1"
+    2:
+      - "eco give %player% 500"
+      - "give %player% minecraft:diamond 5"
+
+  # This type of reward will be given to all players that have joined the game.
+  # You can leave empty.
+  join:
+    - "give %player% minecraft:diamond 1"
+
+##########################################################################################
+# |-                                                                                  -| #
 # |- MESSAGES & SOUNDS                                                                -| #
 # |-  » All messages are formatted using MiniMessage                                  -| #
 # |-  » You can find docs at: https://docs.advntr.dev/minimessage/format.html         -| #
