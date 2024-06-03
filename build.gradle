@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'sk.adr3ez'
-version = '1.0.0'
+version = '1.0.0-BETA'
 
 ext {
     targetJavaVersion = 17
@@ -61,7 +61,7 @@ subprojects {
 
         implementation group: 'org.jetbrains', name: 'annotations', version: '24.1.0'
         annotationProcessor group: 'org.jetbrains', name: 'annotations', version: '24.1.0'
-        
+
     }
 }
 
