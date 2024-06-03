@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.reflections.Reflections;
 import sk.adr3ez.globalchallenges.api.GlobalChallenges;
+import sk.adr3ez.globalchallenges.api.database.entity.DBGame;
 import sk.adr3ez.globalchallenges.api.model.GameManager;
 import sk.adr3ez.globalchallenges.api.model.challenge.ActiveChallenge;
 import sk.adr3ez.globalchallenges.api.model.challenge.Challenge;
@@ -15,6 +16,7 @@ import sk.adr3ez.globalchallenges.api.util.ConfigRoutes;
 import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.*;
 
 public class GameManagerAdapter implements GameManager {
@@ -44,7 +46,6 @@ public class GameManagerAdapter implements GameManager {
         Set<Class<? extends Challenge>> classes = new HashSet<>();
 
         Reflections reflector = new Reflections("sk.adr3ez.globalchallenges.core.challenges");
-
         try {
             classes = reflector.getSubTypesOf(Challenge.class);
         } catch (Exception ignored) {
@@ -100,7 +101,8 @@ public class GameManagerAdapter implements GameManager {
         if (!challenge.handleStart())
             return false;
 
-        activeChallenge = Optional.of(new ActiveChallengeAdapter(challenge));
+        DBGame dbGame = new DBGame(challenge.getKey(), challenge.getDescription(), LocalDateTime.now());
+        activeChallenge = Optional.of(new ActiveChallengeAdapter(challenge, dbGame));
 
         plugin.broadcast(MiniMessage.miniMessage().deserialize(String.join("<br>", plugin.getConfiguration().getStringList(ConfigRoutes.MESSAGES_BROADCAST_GAMESTART_CHAT.getRoute()))
                 .replaceAll("%description%", challenge.getDescription())

@@ -8,7 +8,6 @@
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.26/8f8cf0372abf564913e9796623aac4c8ea44025a/lombok-1.18.26.jar" />
         </processorPath>
         <module name="adria.IdeaProjects.GlobalChallenges.spigot.test" />
-        <module name="sk.adr3ez.GlobalChallenges.test" />
         <module name="adria.IdeaProjects.GlobalChallenges.core.test" />
         <module name="adria.IdeaProjects.GlobalChallenges.api.test" />
       </profile>
@@ -18,10 +17,9 @@
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.26/8f8cf0372abf564913e9796623aac4c8ea44025a/lombok-1.18.26.jar" />
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains/annotations/24.1.0/7af6a669488450c4a07c2c3254e2151df42d7d04/annotations-24.1.0.jar" />
         </processorPath>
+        <module name="GlobalChallenges.api.main" />
         <module name="GlobalChallenges.spigot.main" />
         <module name="GlobalChallenges.core.main" />
-        <module name="IdeaProjects.GlobalChallenges.main" />
-        <module name="GlobalChallenges.api.main" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="17" />

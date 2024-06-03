@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/GlobalChallenges.iml" filepath="$PROJECT_DIR$/.idea/modules/GlobalChallenges.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/api/GlobalChallenges.api.main.iml" filepath="$PROJECT_DIR$/.idea/modules/api/GlobalChallenges.api.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/api/GlobalChallenges.api.test.iml" filepath="$PROJECT_DIR$/.idea/modules/api/GlobalChallenges.api.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/core/GlobalChallenges.core.main.iml" filepath="$PROJECT_DIR$/.idea/modules/core/GlobalChallenges.core.main.iml" />

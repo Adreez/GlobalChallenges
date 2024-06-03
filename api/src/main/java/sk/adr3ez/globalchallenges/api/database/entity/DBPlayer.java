@@ -1,9 +1,11 @@
-package sk.adr3ez.globalchallenges.core.database.entity;
+package sk.adr3ez.globalchallenges.api.database.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 
@@ -19,8 +21,14 @@ public class DBPlayer {
     @Column(name = "nick")
     private String nick;
 
-    @OneToMany(mappedBy = "player")
-    private Set<DBPlayerData> playerData;
+    @Setter
+    @OneToMany(mappedBy = "player", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<DBPlayerData> playerData = new ArrayList<>();
+
+    public void addPlayerData(DBPlayerData playerData) {
+        this.playerData.add(playerData);
+        playerData.setPlayer(this);
+    }
 
 
     public DBPlayer() {
@@ -33,9 +41,10 @@ public class DBPlayer {
 
     @Override
     public String toString() {
-        return "PlayerData{" +
+        return "Player{" +
                 "uuid='" + uuid + '\'' +
                 ", username='" + nick + '\'' +
+                ", playerData=" + (playerData != null ? playerData.toString() : "[]") +
                 '}';
     }
 

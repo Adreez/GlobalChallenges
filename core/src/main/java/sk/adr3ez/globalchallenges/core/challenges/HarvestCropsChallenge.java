@@ -6,12 +6,10 @@ import org.bukkit.block.data.Ageable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerHarvestBlockEvent;
 import org.jetbrains.annotations.NotNull;
-import sk.adr3ez.globalchallenges.api.model.ChallengeType;
 import sk.adr3ez.globalchallenges.api.model.GameManager;
 import sk.adr3ez.globalchallenges.api.model.challenge.Challenge;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class HarvestCropsChallenge extends Challenge {
 
@@ -29,17 +27,12 @@ public class HarvestCropsChallenge extends Challenge {
 
     @Override
     public boolean canLoad() {
-        return true;
-    }
-
-    @Override
-    public List<ChallengeType> getTypes() {
-        return List.of(ChallengeType.TOP_SCORES_WIN, ChallengeType.FINISH);
+        return false;
     }
 
     @Override
     public Double getRequiredScore() {
-        return null;
+        return 1D;
     }
 
     @Override

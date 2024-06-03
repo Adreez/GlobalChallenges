@@ -9,6 +9,7 @@ import dev.dejvokep.boostedyaml.settings.updater.UpdaterSettings;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.ArgumentSuggestions;
+import dev.jorel.commandapi.arguments.LongArgument;
 import dev.jorel.commandapi.arguments.StringArgument;
 import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
@@ -17,53 +18,49 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import sk.adr3ez.globalchallenges.api.GlobalChallenges;
 import sk.adr3ez.globalchallenges.api.GlobalChallengesProvider;
+import sk.adr3ez.globalchallenges.api.database.DatabaseManager;
+import sk.adr3ez.globalchallenges.api.database.entity.DBGame;
+import sk.adr3ez.globalchallenges.api.database.entity.DBPlayerData;
 import sk.adr3ez.globalchallenges.api.model.GameManager;
 import sk.adr3ez.globalchallenges.api.model.challenge.ActiveChallenge;
 import sk.adr3ez.globalchallenges.api.model.challenge.Challenge;
 import sk.adr3ez.globalchallenges.api.util.ConfigRoutes;
+import sk.adr3ez.globalchallenges.api.util.TimeUtils;
 import sk.adr3ez.globalchallenges.api.util.log.PluginLogger;
-import sk.adr3ez.globalchallenges.core.database.DatabaseManager;
-import sk.adr3ez.globalchallenges.core.database.PlayerDAO;
-import sk.adr3ez.globalchallenges.core.database.entity.DBPlayer;
+import sk.adr3ez.globalchallenges.core.database.DatabaseManagerImp;
+import sk.adr3ez.globalchallenges.core.database.dao.GameDAO;
 import sk.adr3ez.globalchallenges.core.model.GameManagerAdapter;
 import sk.adr3ez.globalchallenges.spigot.util.BlockListener;
 import sk.adr3ez.globalchallenges.spigot.util.SpigotLogger;
+import sk.adr3ez.globalchallenges.spigot.util.UtilListener;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.logging.Level;
 
-public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges, Listener {
+public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges {
     private @Nullable BukkitAudiences adventure;
     private @Nullable YamlDocument configurationFile;
 
     private @Nullable GameManager gameManager;
+    private DatabaseManager databaseManager;
 
     @Override
     public void onEnable() {
         long startupTime = System.currentTimeMillis();
 
         getPluginLogger().info(ConsoleColors.format("&y[&cGlobalChallenges&y] &gInitializing plugin...&reset"));
-        java.util.logging.Logger.getLogger("org.hibernate").setLevel(Level.OFF);
-        //Logger.getLogger("org.hibernate").setLevel(Level.OFF);
-
 
         if (!getDataFolder().exists())
             getDataFolder().mkdirs();
 
         this.adventure = BukkitAudiences.create(this);
-        this.gameManager = new GameManagerAdapter(this);
 
         try {
             configurationFile = YamlDocument.create(new File(getDataFolder(), "config.yml"), Objects.requireNonNull(getResource("config.yml")),
@@ -73,23 +70,17 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
             getPluginLogger().warn("There was error with loading config.yml, please try to reload the plugin \n" + e);
         }
 
+        this.databaseManager = new DatabaseManagerImp(this);
+
+        this.gameManager = new GameManagerAdapter(this);
+
+        Bukkit.getPluginManager().registerEvents(new UtilListener(), this); // Setup utility listener
+
         if (getConfiguration().getBoolean(ConfigRoutes.SETTINGS_MONITOR_BLOCKS.getRoute()))
             Bukkit.getPluginManager().registerEvents(new BlockListener(this), this);
 
-        Bukkit.getPluginManager().registerEvents(this, this);
-
         setupCommands();
         getPluginLogger().info(ConsoleColors.format("&y[&cGlobalChallenges&y] &gPlugin has been loaded (" + (System.currentTimeMillis() - startupTime) + " ms)&reset"));
-    }
-
-    @EventHandler
-    void join(PlayerJoinEvent event) {
-        PlayerDAO playerDAO = new PlayerDAO();
-        DBPlayer DBPlayer = new DBPlayer(event.getPlayer().getUniqueId(), event.getPlayer().getName());
-
-        //Hibernate.initialize(playerData.getUuid());
-
-        playerDAO.saveOrUpdate(DBPlayer);
     }
 
     @Override
@@ -104,8 +95,7 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
             this.adventure.close();
             this.adventure = null;
         }
-        new DatabaseManager().close();
-
+        this.databaseManager.close();
         CommandAPI.unregister("globalchallenges");
     }
 
@@ -145,6 +135,11 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
     }
 
     @Override
+    public @NotNull DatabaseManager getDatabaseManager() {
+        return this.databaseManager;
+    }
+
+    @Override
     public void broadcast(@NotNull Component component) {
         for (Player player : getOnlinePlayers()) {
             adventure().player(player).sendMessage(component);
@@ -174,21 +169,18 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
                 .withSubcommand(new CommandAPICommand("help")
                         .withPermission("globalchallenges.admin")
                         .executes((sender, args) -> {
-                            adventure().sender(sender).sendMessage(MiniMessage.miniMessage().deserialize("""
-                                    GlobalChallenges
-                                    /glch help
-                                    /glch game <action> <gameID>
-                                    /glch list
-                                    """));
+                            for (String s : configurationFile.getStringList(ConfigRoutes.MESSAGES_COMMANDS_HELP.getRoute())) {
+                                adventure.sender(sender).sendMessage(MiniMessage.miniMessage().deserialize(s));
+                            }
                         })
                 )
-                .withSubcommand(new CommandAPICommand("list")
+                /*.withSubcommand(new CommandAPICommand("list")
                         .withPermission("globalchallenges.admin")
                         .executes((sender, args) -> {
                             Objects.requireNonNull(gameManager).getLoadedChallenges().forEach(challenge ->
-                                    sender.sendMessage("Loaded: " + challenge.getKey() + "/ (Class) " + challenge.getClass().getName()));
+                                    sender.sendMessage("Loaded games: " + challenge.getKey() + "/ (Class) " + challenge.getClass().getName()));
                         })
-                )
+                )*/
                 .withSubcommand(new CommandAPICommand("game")
                         .withPermission("globalchallenges.admin")
                         .withArguments(new StringArgument("action")
@@ -210,23 +202,22 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
                                             Challenge challenge = gameManager.getChallenge(args.getOptional("gameID").get().toString());
 
                                             if (challenge != null) {
-                                                sender.sendMessage("Start exact game: " + challenge.getKey());
                                                 if (gameManager.start(challenge)) {
-                                                    sender.sendMessage("Game started");
+                                                    adventure.sender(sender).sendMessage(MiniMessage.miniMessage().deserialize(configurationFile.getString(ConfigRoutes.MESSAGES_COMMANDS_START_STARTED.getRoute())));
                                                 } else {
-                                                    sender.sendMessage("Game failed to start");
+                                                    adventure.sender(sender).sendMessage(MiniMessage.miniMessage().deserialize(ConfigRoutes.MESSAGES_COMMANDS_START_FAILED.getRoute()));
                                                 }
                                             } else {
-                                                sender.sendMessage("This game is not loaded!");
+                                                adventure.sender(sender).sendMessage(MiniMessage.miniMessage().deserialize(configurationFile.getString(ConfigRoutes.MESSAGES_COMMANDS_START_NOTLOADED.getRoute())));
                                             }
 
                                         } else {
                                             //Start random one
                                             gameManager.startRandom();
-                                            sender.sendMessage("Starting random game");
+                                            adventure.sender(sender).sendMessage(MiniMessage.miniMessage().deserialize(configurationFile.getString(ConfigRoutes.MESSAGES_COMMANDS_START_RANDOM.getRoute())));
                                         }
                                     } else {
-                                        sender.sendMessage("To start the challenge you have to end active one or wait until it will be done automaticaly.");
+                                        adventure.sender(sender).sendMessage(MiniMessage.miniMessage().deserialize(configurationFile.getString(ConfigRoutes.MESSAGES_COMMANDS_START_ALREADYSTARTED.getRoute())));
                                     }
                                     break;
                                 case "end", "stop":
@@ -235,13 +226,13 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
 
                                         gameManager.endActive();
 
-                                        sender.sendMessage("Stopping game (Sender)");
+                                        adventure.sender(sender).sendMessage(MiniMessage.miniMessage().deserialize(configurationFile.getString(ConfigRoutes.MESSAGES_COMMANDS_STOP_SUCCESSFUL.getRoute())));
                                     } else {
-                                        sender.sendMessage("There's no active game.");
+                                        adventure.sender(sender).sendMessage(MiniMessage.miniMessage().deserialize(configurationFile.getString(ConfigRoutes.MESSAGES_COMMANDS_STOP_NOACTIVE.getRoute())));
                                     }
                                     break;
                                 default:
-                                    sender.sendMessage("This command does not exist!");
+                                    adventure.sender(sender).sendMessage(MiniMessage.miniMessage().deserialize(configurationFile.getString(ConfigRoutes.MESSAGES_COMMANDS_NOEXIST.getRoute())));
                                     break;
                             }
                         }))
@@ -254,20 +245,71 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
                                 ActiveChallenge activeChallenge = gameManager.getActiveChallenge().get();
 
                                 if (!activeChallenge.isJoined(player.getUniqueId())) {
-                                    player.sendMessage("You've joined the DBGame!");
-                                    activeChallenge.joinPlayer(player.getUniqueId(), adventure().player(player));
+                                    adventure.player(player).sendMessage(MiniMessage.miniMessage().deserialize(configurationFile.getString(ConfigRoutes.MESSAGES_COMMANDS_JOIN_SUCCESSFUL.getRoute())));
+                                    activeChallenge.joinPlayer(player.getUniqueId(), player.getName(), adventure().player(player));
                                 } else {
-                                    player.sendMessage("You already joined DBGame!");
+                                    adventure.player(player).sendMessage(MiniMessage.miniMessage().deserialize(configurationFile.getString(ConfigRoutes.MESSAGES_COMMANDS_JOIN_ALREADYJOINED.getRoute())));
                                 }
 
                             } else {
-                                player.sendMessage("No active DBGame to join!");
+                                adventure.player(player).sendMessage(MiniMessage.miniMessage().deserialize(configurationFile.getString(ConfigRoutes.MESSAGES_COMMANDS_JOIN_FAILED.getRoute())));
                             }
                         }))
                 .withSubcommand(new CommandAPICommand("results")
+                        .withOptionalArguments(new LongArgument("gameID"))
                         .executesPlayer((player, args) -> {
-                            adventure().player(player).openBook(Book.book(Component.text("Title"), Component.text("Author"),
-                                    MiniMessage.miniMessage().deserialize("<b><color:#245a6a>1:</b> <color:#009c15>Adr3ez_ <gray>(3 min 25 sec)")));
+                            Bukkit.getScheduler().runTaskAsynchronously(this, runnable -> {
+                                DBGame game;
+                                if (args.getOptional("gameID").isPresent()) {
+                                    game = GameDAO.findById((Long) args.get("gameID"));
+                                } else {
+                                    game = GameDAO.getLast();
+                                }
+                                if (game == null) {
+                                    adventure.player(player).sendMessage(MiniMessage.miniMessage().deserialize(configurationFile.getString(ConfigRoutes.MESSAGES_COMMANDS_RESULTS_GAMENOTFOUND.getRoute())));
+                                    return;
+                                }
+                                List<DBPlayerData> list = GameDAO.getPlayerData(game.getId());
+
+                                if (list.isEmpty()) {
+                                    adventure.player(player).sendMessage(MiniMessage.miniMessage().deserialize(configurationFile.getString(ConfigRoutes.MESSAGES_COMMANDS_RESULTS_NODATA.getRoute())));
+                                    return;
+                                }
+
+                                list.sort(Comparator.comparingInt(DBPlayerData::getPosition));
+
+
+                                ArrayList<DBPlayerData> notFinished = new ArrayList<>();
+                                StringBuilder result = new StringBuilder();
+                                for (DBPlayerData playerData : list) { //<- Line 300
+                                    if (playerData.isFinished())
+                                        result.append("<br><b><color:#245a6a>").append(playerData.getPosition() == 0 ? "N/A" : playerData.getPosition()).append(":</b>")
+                                                .append("<color:#009c15> ").append(playerData.getPlayer().getNick())
+                                                .append("\n<gray>  »").append(playerData.getTimeFinished() != null ?
+                                                        TimeUtils.formatMillis(playerData.getTimeFinished().getTime() - playerData.getTimeJoined().getTime())
+                                                        : "Not finished");
+                                    else
+                                        notFinished.add(playerData);
+                                }
+                                if (!notFinished.isEmpty()) {
+                                    result.append("<br><black><b>Not finished:</b>");
+                                    for (DBPlayerData playerData : notFinished) {
+                                        result.append("<br><color:#009c15> ").append(playerData.getPlayer().getNick());
+                                    }
+                                }
+
+                                adventure().player(player).openBook(Book.book(Component.text("Results"), Component.text("GlobalChallenges"),
+                                        MiniMessage.miniMessage().deserialize("""
+                                                 <b><color:#245a6a>Game id:</b> %game_id%
+                                                \s
+                                                 <b><color:#245a6a>Played:</b> %played%
+                                                 <b><color:#245a6a>Finished:</b> %finished%
+                                                \s
+                                                 Results:
+                                                """.replaceAll("%game_id%", String.valueOf(game.getId()))
+                                                .replaceAll("%played%", String.valueOf(game.getPlayersJoined()))
+                                                .replaceAll("%finished%", String.valueOf(game.getPlayersFinished())) + result)));
+                            });
                         }))
                 .executes((sender, args) -> {
                             Bukkit.getServer().dispatchCommand(sender, "glch help");

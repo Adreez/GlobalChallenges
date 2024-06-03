@@ -1,43 +1,13 @@
-repositories {
-    mavenCentral()
-    maven {
-        name = "spigotmc-repo"
-        url = "https://hub.spigotmc.org/nexus/content/repositories/snapshots/"
-    }
-    maven {
-        name = "sonatype"
-        url = "https://oss.sonatype.org/content/groups/public/"
-    }
-    //cmdAPI
-    maven { url = "https://repo.codemc.org/repository/maven-public/" }
-}
-
 dependencies {
+    implementation project(':api')
+    implementation project(':core')
+
     compileOnly "org.spigotmc:spigot-api:1.20.4-R0.1-SNAPSHOT"
+    compileOnly "dev.jorel:commandapi-bukkit-core:9.3.0"
 
     implementation "net.kyori:adventure-platform-bukkit:4.3.2"
     implementation "net.kyori:adventure-text-minimessage:4.14.0"
 
-    //cmdAPI
-    compileOnly "dev.jorel:commandapi-bukkit-core:9.3.0"
-
-    implementation project(':api')
-    implementation project(':core')
-}
-
-java {
-    def javaVersion = JavaVersion.toVersion(targetJavaVersion)
-    sourceCompatibility = javaVersion
-    targetCompatibility = javaVersion
-    if (JavaVersion.current() < javaVersion) {
-        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
-    }
-}
-
-tasks.withType(JavaCompile).configureEach {
-    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
-        options.release = targetJavaVersion
-    }
 }
 
 processResources {
@@ -50,15 +20,17 @@ processResources {
 }
 
 shadowJar {
-    //relocate 'sk.adr3ez.alib', 'sk.adr3ez.darkauth.alib'
-    /*relocate 'dev.dejvokep.boostedyaml', 'sk.adr3ez.libs.boostedyaml'
-    relocate 'com', 'sk.adr3ez.libs.com'
-    relocate 'net', 'sk.adr3ez.libs.net'
-    relocate 'org', 'sk.adr3ez.libs.org'
-    relocate 'javax', 'sk.adr3ez.libs.javax'
-    relocate 'javassist', 'sk.adr3ez.libs.javassist'
-    relocate 'jakarta', 'sk.adr3ez.libs.jakarta'
-    relocate 'google', 'sk.adr3ez.libs.google'*/
-
     archiveFileName.set("GlobalChallenges-Spigot-${rootProject.version}.jar")
+
+    exclude 'waffle/**'
+    exclude 'org/**'
+    exclude 'net/bytebuddy/**'
+    exclude 'jakarta/**'
+    exclude 'com/**'
+
+    relocate 'dev.dejvokep.boostedyaml', 'sk.adr3ez.libs.boostedyaml'
+}
+
+artifacts {
+    archives shadowJar
 }
