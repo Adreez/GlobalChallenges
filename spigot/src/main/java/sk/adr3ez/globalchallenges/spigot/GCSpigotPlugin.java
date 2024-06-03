@@ -176,13 +176,13 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
                             }
                         })
                 )
-                .withSubcommand(new CommandAPICommand("list")
+                /*.withSubcommand(new CommandAPICommand("list")
                         .withPermission("globalchallenges.admin")
                         .executes((sender, args) -> {
                             Objects.requireNonNull(gameManager).getLoadedChallenges().forEach(challenge ->
                                     sender.sendMessage("Loaded games: " + challenge.getKey() + "/ (Class) " + challenge.getClass().getName()));
                         })
-                )
+                )*/
                 .withSubcommand(new CommandAPICommand("game")
                         .withPermission("globalchallenges.admin")
                         .withArguments(new StringArgument("action")
@@ -205,21 +205,21 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
 
                                             if (challenge != null) {
                                                 if (gameManager.start(challenge)) {
-                                                    sender.sendMessage(configurationFile.getString(ConfigRoutes.MESSAGES_COMMANDS_START_STARTED.getRoute()));
+                                                    adventure.sender(sender).sendMessage(MiniMessage.miniMessage().deserialize(configurationFile.getString(ConfigRoutes.MESSAGES_COMMANDS_START_STARTED.getRoute())));
                                                 } else {
-                                                    sender.sendMessage(configurationFile.getString(ConfigRoutes.MESSAGES_COMMANDS_START_FAILED.getRoute()));
+                                                    adventure.sender(sender).sendMessage(MiniMessage.miniMessage().deserialize(ConfigRoutes.MESSAGES_COMMANDS_START_FAILED.getRoute()));
                                                 }
                                             } else {
-                                                sender.sendMessage(configurationFile.getString(ConfigRoutes.MESSAGES_COMMANDS_START_NOTLOADED.getRoute()));
+                                                adventure.sender(sender).sendMessage(MiniMessage.miniMessage().deserialize(configurationFile.getString(ConfigRoutes.MESSAGES_COMMANDS_START_NOTLOADED.getRoute())));
                                             }
 
                                         } else {
                                             //Start random one
                                             gameManager.startRandom();
-                                            sender.sendMessage(configurationFile.getString(ConfigRoutes.MESSAGES_COMMANDS_START_RANDOM.getRoute()));
+                                            adventure.sender(sender).sendMessage(MiniMessage.miniMessage().deserialize(configurationFile.getString(ConfigRoutes.MESSAGES_COMMANDS_START_RANDOM.getRoute())));
                                         }
                                     } else {
-                                        sender.sendMessage(configurationFile.getString(ConfigRoutes.MESSAGES_COMMANDS_START_ALREADYSTARTED.getRoute()));
+                                        adventure.sender(sender).sendMessage(MiniMessage.miniMessage().deserialize(configurationFile.getString(ConfigRoutes.MESSAGES_COMMANDS_START_ALREADYSTARTED.getRoute())));
                                     }
                                     break;
                                 case "end", "stop":
@@ -228,13 +228,13 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
 
                                         gameManager.endActive();
 
-                                        sender.sendMessage(configurationFile.getString(ConfigRoutes.MESSAGES_COMMANDS_STOP_SUCCESSFUL.getRoute()));
+                                        adventure.sender(sender).sendMessage(MiniMessage.miniMessage().deserialize(configurationFile.getString(ConfigRoutes.MESSAGES_COMMANDS_STOP_SUCCESSFUL.getRoute())));
                                     } else {
-                                        sender.sendMessage(configurationFile.getString(ConfigRoutes.MESSAGES_COMMANDS_STOP_NOACTIVE.getRoute()));
+                                        adventure.sender(sender).sendMessage(MiniMessage.miniMessage().deserialize(configurationFile.getString(ConfigRoutes.MESSAGES_COMMANDS_STOP_NOACTIVE.getRoute())));
                                     }
                                     break;
                                 default:
-                                    sender.sendMessage(configurationFile.getString(ConfigRoutes.MESSAGES_COMMANDS_NOEXIST.getRoute()));
+                                    adventure.sender(sender).sendMessage(MiniMessage.miniMessage().deserialize(configurationFile.getString(ConfigRoutes.MESSAGES_COMMANDS_NOEXIST.getRoute())));
                                     break;
                             }
                         }))
@@ -247,14 +247,14 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
                                 ActiveChallenge activeChallenge = gameManager.getActiveChallenge().get();
 
                                 if (!activeChallenge.isJoined(player.getUniqueId())) {
-                                    player.sendMessage(configurationFile.getString(ConfigRoutes.MESSAGES_COMMANDS_JOIN_SUCCESSFUL.getRoute()));
+                                    adventure.player(player).sendMessage(MiniMessage.miniMessage().deserialize(configurationFile.getString(ConfigRoutes.MESSAGES_COMMANDS_JOIN_SUCCESSFUL.getRoute())));
                                     activeChallenge.joinPlayer(player.getUniqueId(), adventure().player(player));
                                 } else {
-                                    player.sendMessage(configurationFile.getString(ConfigRoutes.MESSAGES_COMMANDS_JOIN_ALREADYJOINED.getRoute()));
+                                    adventure.player(player).sendMessage(MiniMessage.miniMessage().deserialize(configurationFile.getString(ConfigRoutes.MESSAGES_COMMANDS_JOIN_ALREADYJOINED.getRoute())));
                                 }
 
                             } else {
-                                player.sendMessage(configurationFile.getString(ConfigRoutes.MESSAGES_COMMANDS_JOIN_FAILED.getRoute()));
+                                adventure.player(player).sendMessage(MiniMessage.miniMessage().deserialize(configurationFile.getString(ConfigRoutes.MESSAGES_COMMANDS_JOIN_FAILED.getRoute())));
                             }
                         }))
                 .withSubcommand(new CommandAPICommand("results")
@@ -268,13 +268,13 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
                                     game = GameDAO.getLast();
                                 }
                                 if (game == null) {
-                                    player.sendMessage(configurationFile.getString(ConfigRoutes.MESSAGES_COMMANDS_RESULTS_GAMENOTFOUND.getRoute()));
+                                    adventure.player(player).sendMessage(MiniMessage.miniMessage().deserialize(configurationFile.getString(ConfigRoutes.MESSAGES_COMMANDS_RESULTS_GAMENOTFOUND.getRoute())));
                                     return;
                                 }
                                 List<DBPlayerData> list = GameDAO.getPlayerData(game.getId());
 
                                 if (list.isEmpty()) {
-                                    player.sendMessage(configurationFile.getString(ConfigRoutes.MESSAGES_COMMANDS_RESULTS_NODATA.getRoute()));
+                                    adventure.player(player).sendMessage(MiniMessage.miniMessage().deserialize(configurationFile.getString(ConfigRoutes.MESSAGES_COMMANDS_RESULTS_NODATA.getRoute())));
                                     return;
                                 }
 
