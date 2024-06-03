@@ -122,6 +122,32 @@ messages:
         fadein: 500
         stay: 3000
         fadeout: 500
+  commands:
+    no_exist: "This command does not exist!"
+    start:
+      started: "Game has been <green><u>successfuly</green></u> started."
+      failed: "Failed to start game."
+      not_loaded: "This game is not loaded!"
+      random: "Starting random game."
+      already_started: "To start the challenge you have to end active one or wait until it will be done automaticaly."
+    stop:
+      successful: "Stopping game."
+      no_active: "There is no active game!"
+    join:
+      successful: "You've joined the game ;)"
+      already_joined: "You have already joined the game!"
+      failed: "You have to wait until game is started, before you join. :)"
+    results:
+      game_not_found: "Game you are looking for does not exist!"
+      no_data: "Game you are looking for has no data!"
+    help:
+      - "<dark_gray><st>------|<reset> <gradient:#245A6A:#D48C93><b>ɢʟᴏʙᴀʟᴄʜᴀʟʟᴇɴɢᴇs</b></gradient> <yellow>Commands: <dark_gray><st>|------<reset>  "
+      - " <dark_gray>• <white>/glch <yellow>help <dark_gray>• <gray>Shows this message"
+      - " <dark_gray>• <white>/glch <yellow>game <aqua>[start|end] <game> <dark_gray>• <gray>Start or end challenge"
+      - " <dark_gray>• <white>/glch <yellow>results <aqua><game_id> <dark_gray>• <gray>See results of any game"
+      - " <dark_gray>• <white>/glch <yellow>join <dark_gray>• <gray>Join running game"
+      - "<aqua>[required] <optional>"
+
   player:
     active_bossbar: "<dark_grey>•|• <grey>(Time left) <color:#d6ff7d><time_left></color> <dark_grey>•|• <gradient:#245A6A:#D48C93><b>ɢʟᴏʙᴀʟᴄʜᴀʟʟᴇɴɢᴇs</b></gradient> <dark_grey>•|• <color:#d6ff7d><score>/<needed></color> <grey>(score) <dark_grey>•|• "
     finished_bossbar: "<dark_grey>•|• <grey>(Time left) <color:#d6ff7d><time_left></color> <dark_grey>•|• <gradient:#245A6A:#D48C93><b>ɢʟᴏʙᴀʟᴄʜᴀʟʟᴇɴɢᴇs</b></gradient> <dark_grey>•|• <color:green>finished</color> <grey>(in <finished_time> sec) <dark_grey>•|•"

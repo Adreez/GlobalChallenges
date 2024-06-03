@@ -178,6 +178,7 @@ public final class ActiveChallengeAdapter implements ActiveChallenge {
         GameDAO.saveOrUpdate(dbGame);
 
         //TODO Handle rewards
+        
 
         challenge.handleEnd();
         this.challenge = null;

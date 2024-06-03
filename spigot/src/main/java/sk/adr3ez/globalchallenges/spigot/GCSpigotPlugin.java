@@ -171,19 +171,16 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
                 .withSubcommand(new CommandAPICommand("help")
                         .withPermission("globalchallenges.admin")
                         .executes((sender, args) -> {
-                            adventure().sender(sender).sendMessage(MiniMessage.miniMessage().deserialize("""
-                                    GlobalChallenges
-                                    /glch help
-                                    /glch game <action> <gameID>
-                                    /glch list
-                                    """));
+                            for (String s : configurationFile.getStringList(ConfigRoutes.MESSAGES_COMMANDS_HELP.getRoute())) {
+                                adventure.sender(sender).sendMessage(MiniMessage.miniMessage().deserialize(s));
+                            }
                         })
                 )
                 .withSubcommand(new CommandAPICommand("list")
                         .withPermission("globalchallenges.admin")
                         .executes((sender, args) -> {
                             Objects.requireNonNull(gameManager).getLoadedChallenges().forEach(challenge ->
-                                    sender.sendMessage("Loaded: " + challenge.getKey() + "/ (Class) " + challenge.getClass().getName()));
+                                    sender.sendMessage("Loaded games: " + challenge.getKey() + "/ (Class) " + challenge.getClass().getName()));
                         })
                 )
                 .withSubcommand(new CommandAPICommand("game")
@@ -207,23 +204,22 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
                                             Challenge challenge = gameManager.getChallenge(args.getOptional("gameID").get().toString());
 
                                             if (challenge != null) {
-                                                sender.sendMessage("Start exact game: " + challenge.getKey());
                                                 if (gameManager.start(challenge)) {
-                                                    sender.sendMessage("Game started");
+                                                    sender.sendMessage(configurationFile.getString(ConfigRoutes.MESSAGES_COMMANDS_START_STARTED.getRoute()));
                                                 } else {
-                                                    sender.sendMessage("Game failed to start");
+                                                    sender.sendMessage(configurationFile.getString(ConfigRoutes.MESSAGES_COMMANDS_START_FAILED.getRoute()));
                                                 }
                                             } else {
-                                                sender.sendMessage("This game is not loaded!");
+                                                sender.sendMessage(configurationFile.getString(ConfigRoutes.MESSAGES_COMMANDS_START_NOTLOADED.getRoute()));
                                             }
 
                                         } else {
                                             //Start random one
                                             gameManager.startRandom();
-                                            sender.sendMessage("Starting random game");
+                                            sender.sendMessage(configurationFile.getString(ConfigRoutes.MESSAGES_COMMANDS_START_RANDOM.getRoute()));
                                         }
                                     } else {
-                                        sender.sendMessage("To start the challenge you have to end active one or wait until it will be done automaticaly.");
+                                        sender.sendMessage(configurationFile.getString(ConfigRoutes.MESSAGES_COMMANDS_START_ALREADYSTARTED.getRoute()));
                                     }
                                     break;
                                 case "end", "stop":
@@ -232,13 +228,13 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
 
                                         gameManager.endActive();
 
-                                        sender.sendMessage("Stopping game (Sender)");
+                                        sender.sendMessage(configurationFile.getString(ConfigRoutes.MESSAGES_COMMANDS_STOP_SUCCESSFUL.getRoute()));
                                     } else {
-                                        sender.sendMessage("There's no active game.");
+                                        sender.sendMessage(configurationFile.getString(ConfigRoutes.MESSAGES_COMMANDS_STOP_NOACTIVE.getRoute()));
                                     }
                                     break;
                                 default:
-                                    sender.sendMessage("This command does not exist!");
+                                    sender.sendMessage(configurationFile.getString(ConfigRoutes.MESSAGES_COMMANDS_NOEXIST.getRoute()));
                                     break;
                             }
                         }))
@@ -251,14 +247,14 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
                                 ActiveChallenge activeChallenge = gameManager.getActiveChallenge().get();
 
                                 if (!activeChallenge.isJoined(player.getUniqueId())) {
-                                    player.sendMessage("You've joined the DBGame!");
+                                    player.sendMessage(configurationFile.getString(ConfigRoutes.MESSAGES_COMMANDS_JOIN_SUCCESSFUL.getRoute()));
                                     activeChallenge.joinPlayer(player.getUniqueId(), adventure().player(player));
                                 } else {
-                                    player.sendMessage("You already joined DBGame!");
+                                    player.sendMessage(configurationFile.getString(ConfigRoutes.MESSAGES_COMMANDS_JOIN_ALREADYJOINED.getRoute()));
                                 }
 
                             } else {
-                                player.sendMessage("No active DBGame to join!");
+                                player.sendMessage(configurationFile.getString(ConfigRoutes.MESSAGES_COMMANDS_JOIN_FAILED.getRoute()));
                             }
                         }))
                 .withSubcommand(new CommandAPICommand("results")
@@ -272,15 +268,13 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
                                     game = GameDAO.getLast();
                                 }
                                 if (game == null) {
-                                    player.sendMessage("No game has been found!");
+                                    player.sendMessage(configurationFile.getString(ConfigRoutes.MESSAGES_COMMANDS_RESULTS_GAMENOTFOUND.getRoute()));
                                     return;
                                 }
                                 List<DBPlayerData> list = GameDAO.getPlayerData(game.getId());
 
-                                if (!list.isEmpty())
-                                    player.sendMessage("Found " + list.size() + " players!");
-                                else {
-                                    player.sendMessage("Game does not have any data!");
+                                if (list.isEmpty()) {
+                                    player.sendMessage(configurationFile.getString(ConfigRoutes.MESSAGES_COMMANDS_RESULTS_NODATA.getRoute()));
                                     return;
                                 }
 
@@ -306,7 +300,7 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
                                     }
                                 }
 
-                                adventure().player(player).openBook(Book.book(Component.text("Results"), Component.text("Author"),
+                                adventure().player(player).openBook(Book.book(Component.text("Results"), Component.text("GlobalChallenges"),
                                         MiniMessage.miniMessage().deserialize("""
                                                  <b><color:#245a6a>Game id:</b> %game_id%
                                                 \s
