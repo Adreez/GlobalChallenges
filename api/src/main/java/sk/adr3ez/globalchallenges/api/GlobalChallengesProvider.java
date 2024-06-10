@@ -6,7 +6,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * This is provider class of GlobalChallenges plugin
  */
-public class GlobalChallengesProvider {
+public final class GlobalChallengesProvider {
 
 
     @Nullable
