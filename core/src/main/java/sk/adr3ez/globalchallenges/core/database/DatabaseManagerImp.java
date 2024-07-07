@@ -2,6 +2,7 @@ package sk.adr3ez.globalchallenges.core.database;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.PersistenceException;
 import org.hibernate.jpa.HibernatePersistenceProvider;
 import sk.adr3ez.globalchallenges.api.GlobalChallenges;
 import sk.adr3ez.globalchallenges.api.database.DatabaseManager;
@@ -15,7 +16,7 @@ import java.util.logging.Level;
 
 public final class DatabaseManagerImp implements DatabaseManager {
 
-    private EntityManagerFactory entityManagerFactory;
+    private final EntityManagerFactory entityManagerFactory;
 
     private final GlobalChallenges globalChallenges;
 
@@ -32,11 +33,6 @@ public final class DatabaseManagerImp implements DatabaseManager {
             globalChallenges.getPluginLogger().warn("FAILED to identify storage-method in config.yml! Please check your configuration. Setting default method to SQLITE.");
         }
 
-        this.entityManagerFactory = createEntityManagerFactory();
-
-        if (!entityManagerFactory.isOpen()) {
-            storageMethod = StorageMethod.SQLITE;
-        }
         this.entityManagerFactory = createEntityManagerFactory();
     }
 
@@ -63,7 +59,13 @@ public final class DatabaseManagerImp implements DatabaseManager {
 
         java.util.logging.Logger.getLogger("org.hibernate").setLevel(Level.OFF);
 
-        return new HibernatePersistenceProvider()
-                .createContainerEntityManagerFactory(new CustomPersistenceUnitInfo("GlobalChallenges", this), props);
+        EntityManagerFactory managerFactory;
+        try {
+            managerFactory = new HibernatePersistenceProvider()
+                    .createContainerEntityManagerFactory(new CustomPersistenceUnitInfo("GlobalChallenges", this), props);
+        } catch (PersistenceException ignored) {
+            return null;
+        }
+        return managerFactory;
     }
 }

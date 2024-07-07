@@ -6,7 +6,7 @@ import lombok.Setter;
 import sk.adr3ez.globalchallenges.api.GlobalChallengesProvider;
 import sk.adr3ez.globalchallenges.api.util.ConfigRoutes;
 
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 
 
 @Getter
@@ -27,12 +27,12 @@ public class DBGame {
     @Column(name = "game_description")
     private String gameDescription;
 
-    @Column(name = "game_start_time", columnDefinition = "DATETIME")
-    private LocalDateTime startTime;
+    @Column(name = "game_start_time", columnDefinition = "TIMESTAMP")
+    private Timestamp startTime;
 
-    @Column(name = "game_end_time", columnDefinition = "DATETIME")
+    @Column(name = "game_end_time", columnDefinition = "TIMESTAMP")
     @Setter
-    private LocalDateTime endTime;
+    private Timestamp endTime;
 
     @Column(name = "players_joined")
     @Setter
@@ -45,7 +45,7 @@ public class DBGame {
     public DBGame() {
     }
 
-    public DBGame(String gameKey, String gameDescription, LocalDateTime startTime) {
+    public DBGame(String gameKey, String gameDescription, Timestamp startTime) {
         this.gameKey = gameKey;
         this.gameDescription = gameDescription;
         this.startTime = startTime;

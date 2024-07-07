@@ -15,6 +15,7 @@ import sk.adr3ez.globalchallenges.api.util.ConfigRoutes;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -101,7 +102,7 @@ public class GameManagerAdapter implements GameManager {
         if (!challenge.handleStart())
             return false;
 
-        DBGame dbGame = new DBGame(challenge.getKey(), challenge.getDescription(), LocalDateTime.now());
+        DBGame dbGame = new DBGame(challenge.getKey(), challenge.getDescription(), Timestamp.valueOf(LocalDateTime.now()));
         activeChallenge = Optional.of(new ActiveChallengeAdapter(challenge, dbGame));
 
         plugin.broadcast(MiniMessage.miniMessage().deserialize(String.join("<br>", plugin.getConfiguration().getStringList(ConfigRoutes.MESSAGES_BROADCAST_GAMESTART_CHAT.getRoute()))

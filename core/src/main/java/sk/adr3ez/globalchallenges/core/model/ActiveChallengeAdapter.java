@@ -170,7 +170,7 @@ public final class ActiveChallengeAdapter implements ActiveChallenge {
         }
 
 
-        dbGame.setEndTime(LocalDateTime.now());
+        dbGame.setEndTime(Timestamp.valueOf(LocalDateTime.now()));
         dbGame.setPlayersJoined(players.size() + finishedPlayers.size());
         dbGame.setPlayersFinished(finishedPlayers.size());
 

@@ -1,10 +1,12 @@
 package sk.adr3ez.globalchallenges.core.database;
 
 import com.zaxxer.hikari.HikariDataSource;
+import dev.dejvokep.boostedyaml.YamlDocument;
 import jakarta.persistence.SharedCacheMode;
 import jakarta.persistence.ValidationMode;
 import jakarta.persistence.spi.ClassTransformer;
 import jakarta.persistence.spi.PersistenceUnitTransactionType;
+import org.jetbrains.annotations.NotNull;
 import org.sqlite.SQLiteDataSource;
 import sk.adr3ez.globalchallenges.api.GlobalChallengesProvider;
 import sk.adr3ez.globalchallenges.api.database.DatabaseManager;
@@ -43,22 +45,8 @@ public class CustomPersistenceUnitInfo implements jakarta.persistence.spi.Persis
     @Override
     public DataSource getJtaDataSource() {
         switch (databaseManager.getStorageMethod()) {
-            case MYSQL -> {
-                HikariDataSource dataSource = new HikariDataSource();
-
-                String hostname = "localhost";
-                String database = "globalchallenges";
-
-                dataSource.setJdbcUrl("jdbc:mysql://" + hostname + "/" + database);
-                dataSource.setUsername("root");
-                dataSource.setPassword("");
-                dataSource.setMinimumIdle(1);
-                dataSource.setMaximumPoolSize(20);
-                dataSource.setConnectionTimeout(2000);
-                dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
-                dataSource.setPassword("");
-
-                return dataSource;
+            case MYSQL, POSTGRE -> {
+                return getDataSource();
             }
             default -> {
                 File dbFile = new File(GlobalChallengesProvider.get().getDataDirectory() + "/database.db");
@@ -68,6 +56,53 @@ public class CustomPersistenceUnitInfo implements jakarta.persistence.spi.Persis
                 return dataSource;
             }
         }
+    }
+
+    private @NotNull HikariDataSource getDataSource() {
+        HikariDataSource dataSource = new HikariDataSource();
+
+        YamlDocument config = GlobalChallengesProvider.get().getConfiguration();
+
+        String hostname = config.getString("storage.data.hostname");
+        String database = config.getString("storage.data.database");
+
+        switch (databaseManager.getStorageMethod()) {
+            case MYSQL -> {
+                dataSource.setJdbcUrl("jdbc:mysql://" + hostname + "/" + database);
+                dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
+            }
+            case POSTGRE -> {
+                dataSource.setJdbcUrl("jdbc:postgresql://" + hostname + "/" + database);
+                dataSource.setDriverClassName("org.postgresql.Driver");
+            }
+        }
+
+        dataSource.setUsername(config.getString("storage.data.username"));
+        dataSource.setPassword(config.getString("storage.data.password"));
+        dataSource.addDataSourceProperty("useSSL", config.getBoolean("storage.data.useSSL", false));
+        dataSource.setMinimumIdle(1);
+        dataSource.setMaximumPoolSize(20);
+        dataSource.setConnectionTimeout(2000);
+        return dataSource;
+    }
+
+    private @NotNull HikariDataSource getHikariDataSource() {
+        HikariDataSource dataSource = new HikariDataSource();
+
+        YamlDocument config = GlobalChallengesProvider.get().getConfiguration();
+
+        String hostname = config.getString("storage.data.hostname");
+        String database = config.getString("storage.data.database");
+
+        dataSource.setJdbcUrl("jdbc:mysql://" + hostname + "/" + database);
+        dataSource.setUsername(config.getString("storage.data.username"));
+        dataSource.setPassword(config.getString("storage.data.password"));
+        dataSource.addDataSourceProperty("useSSL", config.getBoolean("storage.data.useSSL", false));
+        dataSource.setMinimumIdle(1);
+        dataSource.setMaximumPoolSize(20);
+        dataSource.setConnectionTimeout(2000);
+        dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
+        return dataSource;
     }
 
     @Override

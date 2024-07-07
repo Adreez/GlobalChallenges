@@ -19,7 +19,7 @@ file-version: 1
 ##########################################################################################
 # |-                                                                                  -| #
 # |- STORAGE & SERVER OPTIONS                                                         -| #
-# |-  » Types of storage: MYSQL, SQLITE                                               -| #
+# |-  » Types of storage: MYSQL, SQLITE, POSTGRE                                      -| #
 # |-                                                                                  -| #
 ##########################################################################################
 
@@ -28,11 +28,11 @@ storage:
 
   # Mysql setup
   data:
-    hostname: localhost
+    hostname: localhost:3306
     database: "globalchallenges"
-    port: 3306
     username: "root"
     password: ""
+    useSSL: false
 
     #Advanced pool settings
     advanced:
