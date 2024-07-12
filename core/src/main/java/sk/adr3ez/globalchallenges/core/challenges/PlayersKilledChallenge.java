@@ -26,7 +26,7 @@ public class PlayersKilledChallenge extends Challenge {
 
     @Override
     public boolean canLoad() {
-        return false;
+        return true;
     }
 
     @Override
