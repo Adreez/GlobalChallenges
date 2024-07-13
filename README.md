@@ -1,6 +1,8 @@
 <h1 align="center">GlobalChallenges Minecraft Plugin</h1>
 
-GlobalChallenges is a Minecraft plugin designed to add global challenges and tasks to enhance the gameplay experience. This README.md file provides essential information on installing the plugin, system requirements, developer API, and additional resources.
+GlobalChallenges is a Minecraft plugin designed to add global challenges and tasks to enhance the gameplay experience.
+This README.md file provides essential information on installing the plugin, system requirements, developer API, and
+additional resources.
 
 ## Installation
 
@@ -11,16 +13,17 @@ GlobalChallenges is a Minecraft plugin designed to add global challenges and tas
 ### Steps
 
 1. **Download:**
-   - Download the latest version of GlobalChallenges from the [Releases page](https://github.com/your-username/GlobalChallenges/releases).
+    - Download the latest version of GlobalChallenges from
+      the [Releases page](https://github.com/your-username/GlobalChallenges/releases).
 
 2. **Installation:**
-   - Place the downloaded JAR file into your server's `plugins` directory.
+    - Place the downloaded JAR file into your server's `plugins` directory.
 
 3. **Configuration:**
-   - Customize the plugin settings in the `config.yml` file located in the `plugins/GlobalChallenges` folder.
+    - Customize the plugin settings in the `config.yml` file located in the `plugins/GlobalChallenges` folder.
 
 4. **Restart:**
-   - Restart your Minecraft server to apply the changes.
+    - Restart your Minecraft server to apply the changes.
 
 ## Wiki
 
@@ -34,10 +37,8 @@ To add GlobalChallenges to your Gradle project, include the following dependency
 
 ```groovy
 repositories {
-    repositories {
-			mavenCentral()
-			maven { url 'https://jitpack.io' }
-		}
+    mavenCentral()
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {

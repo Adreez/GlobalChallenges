@@ -128,7 +128,7 @@ public class HarvestCropsChallenge extends Challenge {
     public void blockPlaceEvent(BlockPlaceEvent event) {
         int blockHash = event.getBlock().getLocation().hashCode();
 
-        if (event.getBlock().getType() == material)
+        if (event.getBlock().getType() == material && PlantAges.valueOf(material.toString().toUpperCase()).getMaximumAge() == 0)
             blocks.add(blockHash);
     }
 

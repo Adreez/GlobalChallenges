@@ -58,7 +58,6 @@ challenges:
       - CACTUS
       - COCOA
       - SUGAR_CANE
-      - SEA_PICKLE
       - NETHER_WART
       - PITCHER_CROP
       - SWEET_BERRY_BUSH #Has to be bush in case you want to detect also this type of crop
