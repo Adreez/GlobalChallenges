@@ -7,7 +7,6 @@ import org.bukkit.block.data.Ageable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerHarvestBlockEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.jetbrains.annotations.NotNull;
@@ -95,6 +94,9 @@ public class HarvestCropsChallenge extends Challenge {
             if (ageable.getAge() < plantAge.getMaximumAge())
                 return;
 
+        if (blocks.contains(blockHash))
+            blocks.remove(blockHash);
+
         addScore(event.getPlayer().getUniqueId(), 1D);
 
     }
@@ -117,20 +119,14 @@ public class HarvestCropsChallenge extends Challenge {
             blocks.add(event.getClickedBlock().getLocation().hashCode());
     }
 
-    @EventHandler
-    public void blockBreakEvent(BlockBreakEvent event) {
-        int blockHash = event.getBlock().getLocation().hashCode();
-        if (blocks.contains(blockHash))
-            blocks.remove(blockHash);
-    }
-
+    /* Commented out because it blocks all farming
     @EventHandler
     public void blockPlaceEvent(BlockPlaceEvent event) {
         int blockHash = event.getBlock().getLocation().hashCode();
 
         if (event.getBlock().getType() == material)
             blocks.add(blockHash);
-    }
+    }*/
 
     @Getter
     public enum PlantAges {

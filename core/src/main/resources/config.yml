@@ -165,6 +165,9 @@ messages:
     results:
       game_not_found: "Game you are looking for does not exist!"
       no_data: "Game you are looking for has no data!"
+    reload:
+      successful: "Plugin has been <green><u>successfuly<reset> reloaded! Some parts of the plugin will require server restart!"
+
     help:
       - "<dark_gray><st>------|<reset> <gradient:#245A6A:#D48C93><b>ɢʟᴏʙᴀʟᴄʜᴀʟʟᴇɴɢᴇs</b></gradient> <yellow>Commands: <dark_gray><st>|------<reset>  "
       - " <dark_gray>• <white>/glch <yellow>help <dark_gray>• <gray>Shows this message"

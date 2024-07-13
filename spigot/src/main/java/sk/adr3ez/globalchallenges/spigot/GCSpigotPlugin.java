@@ -7,6 +7,7 @@ import dev.dejvokep.boostedyaml.settings.general.GeneralSettings;
 import dev.dejvokep.boostedyaml.settings.loader.LoaderSettings;
 import dev.dejvokep.boostedyaml.settings.updater.UpdaterSettings;
 import dev.jorel.commandapi.CommandAPI;
+import dev.jorel.commandapi.CommandAPIBukkitConfig;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.ArgumentSuggestions;
 import dev.jorel.commandapi.arguments.LongArgument;
@@ -80,6 +81,7 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
         if (getConfiguration().getBoolean(ConfigRoutes.SETTINGS_MONITOR_BLOCKS.getRoute()))
             Bukkit.getPluginManager().registerEvents(new BlockListener(this), this);
 
+        CommandAPI.onEnable();
         setupCommands();
         Metrics metrics = new Metrics(this, 22132);
         getPluginLogger().info(ConsoleColors.format("&y[&cGlobalChallenges&y] &gPlugin has been loaded (" + (System.currentTimeMillis() - startupTime) + " ms)&reset"));
@@ -89,6 +91,7 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
     public void onLoad() {
         Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
         GlobalChallengesProvider.set(this);
+        CommandAPI.onLoad(new CommandAPIBukkitConfig(this).verboseOutput(false)); // Load with verbose output
     }
 
     @Override
@@ -97,6 +100,7 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
             this.adventure.close();
             this.adventure = null;
         }
+        CommandAPI.onDisable();
         this.databaseManager.close();
         CommandAPI.unregister("globalchallenges");
     }
@@ -183,6 +187,17 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
                                     sender.sendMessage("Loaded games: " + challenge.getKey() + "/ (Class) " + challenge.getClass().getName()));
                         })
                 )*/
+                .withSubcommand(new CommandAPICommand("reload")
+                        .withPermission("globalchallenges.admin")
+                        .executes((commandSender, commandArguments) -> {
+                            try {
+                                getConfiguration().reload();
+                                gameManager.getChallengesFile().reload();
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                            adventure.sender(commandSender).sendMessage(MiniMessage.miniMessage().deserialize(getConfiguration().getString("messages.commands.reload.successful")));
+                        }))
                 .withSubcommand(new CommandAPICommand("game")
                         .withPermission("globalchallenges.admin")
                         .withArguments(new StringArgument("action")
