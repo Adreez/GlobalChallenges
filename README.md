@@ -35,9 +35,9 @@ To add GlobalChallenges to your Gradle project, include the following dependency
 ```groovy
 repositories {
     repositories {
-        mavenCentral()
-        maven { url 'https://jitpack.io' }
-    }
+			mavenCentral()
+			maven { url 'https://jitpack.io' }
+		}
 }
 
 dependencies {
