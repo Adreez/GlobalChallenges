@@ -24,7 +24,7 @@ GlobalChallenges is a Minecraft plugin designed to add global challenges and tas
 
 ## Wiki
 
-For more detailed information, please refer to our [Wiki](https://github.com/your-username/GlobalChallenges/wiki).
+For more detailed information, please refer to our [Wiki](https://github.com/Adreez/GlobalChallenges/wiki).
 
 ## Developer API
 
@@ -34,12 +34,13 @@ To add GlobalChallenges to your Gradle project, include the following dependency
 
 ```groovy
 repositories {
-    maven {
-        url 'https://repo.example.com/maven-repo' // Replace with the actual repository URL
-    }
+    repositories {
+			mavenCentral()
+			maven { url 'https://jitpack.io' }
+		}
 }
 
 dependencies {
-    implementation 'com.example:GlobalChallenges:1.0.0' // Replace with the actual version
+    implementation 'com.github.Adreez:GlobalChallenges:1.0.1'
 }
 ```
