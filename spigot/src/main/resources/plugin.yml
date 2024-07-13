@@ -6,9 +6,10 @@ load: STARTUP
 softdepend: [ PlaceholderAPI ]
 depend: [ CommandAPI ]
 authors: [ Adr3ez_ ]
-description: asd
 libraries:
   - org.hibernate.orm:hibernate-core:6.2.5.Final
   - org.reflections:reflections:0.10.2
   - com.zaxxer:HikariCP:5.1.0
   - org.hibernate.orm:hibernate-community-dialects:6.2.5.Final
+  - org.postgresql:postgresql:42.7.3
+

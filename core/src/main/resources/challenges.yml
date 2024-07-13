@@ -38,18 +38,28 @@ challenges:
 
   players_killed:
     name: "Kill players"
-    description: "<gray><i>Kill as much unique players as you can!"
+    description: "<gray><i>Kill as much unique players as possible!"
     enabled: true
     unlimited_score: true
 
   harvest_crops:
     name: "Harvest crops"
-    description: "<gray><i>Harvest as much crops as possible"
+    description: "<gray><i>Harvest as much <u>fully grown</u> crops of %value%"
     enabled: true
     unlimited_score: true
 
     list:
-      - wheat
-      - carrots
-      - potatoes
-      - beetroots
+      - WHEAT
+      - BEETROOTS
+      - CARROTS
+      - POTATOES
+      - PUMPKIN
+      - MELON
+      - CACTUS
+      - COCOA
+      - SUGAR_CANE
+      - SEA_PICKLE
+      - NETHER_WART
+      - PITCHER_CROP
+      - SWEET_BERRY_BUSH #Has to be bush in case you want to detect also this type of crop
+      - CAVE_VINES_PLANT # Has to be a VINES

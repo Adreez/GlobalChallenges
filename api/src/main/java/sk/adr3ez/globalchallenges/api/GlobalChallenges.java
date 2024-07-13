@@ -37,7 +37,6 @@ public interface GlobalChallenges {
      *
      * @return DataManager
      */
-    //@NotNull
     //DataManager getDataManager();
     @NotNull
     GameManager getGameManager();

@@ -7,6 +7,7 @@ public enum StorageMethod {
 
     MYSQL("org.hibernate.dialect.MySQLDialect"),
     SQLITE("org.hibernate.community.dialect.SQLiteDialect"),
+    POSTGRE("org.hibernate.dialect.PostgreSQLDialect"),
     //H2("org.hibernate.dialect.H2Dialect"),
     ;
 

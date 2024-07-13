@@ -6,8 +6,8 @@ import org.jetbrains.annotations.NotNull;
 import sk.adr3ez.globalchallenges.api.model.GameManager;
 import sk.adr3ez.globalchallenges.api.model.challenge.Challenge;
 
-public class ExperienceGatheredAbstractChallenge extends Challenge {
-    public ExperienceGatheredAbstractChallenge(@NotNull GameManager gameManager) {
+public class ExperienceGatheredChallenge extends Challenge {
+    public ExperienceGatheredChallenge(@NotNull GameManager gameManager) {
         super(gameManager);
     }
 
@@ -19,7 +19,13 @@ public class ExperienceGatheredAbstractChallenge extends Challenge {
 
     @Override
     public boolean canLoad() {
-        return false;
+        return true;
+    }
+
+    @Override
+    public String getDescription() {
+        return gameManager.getChallengesFile().getString("challenges." + getKey() + ".description")
+                .replaceAll("%value%", String.valueOf(getRequiredScore()));
     }
 
     @Override

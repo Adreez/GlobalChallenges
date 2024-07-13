@@ -35,6 +35,7 @@ import sk.adr3ez.globalchallenges.api.util.log.PluginLogger;
 import sk.adr3ez.globalchallenges.core.database.DatabaseManagerImp;
 import sk.adr3ez.globalchallenges.core.database.dao.GameDAO;
 import sk.adr3ez.globalchallenges.core.model.GameManagerAdapter;
+import sk.adr3ez.globalchallenges.core.util.Metrics;
 import sk.adr3ez.globalchallenges.spigot.util.BlockListener;
 import sk.adr3ez.globalchallenges.spigot.util.SpigotLogger;
 import sk.adr3ez.globalchallenges.spigot.util.UtilListener;
@@ -80,6 +81,7 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
             Bukkit.getPluginManager().registerEvents(new BlockListener(this), this);
 
         setupCommands();
+        Metrics metrics = new Metrics(this, 22132);
         getPluginLogger().info(ConsoleColors.format("&y[&cGlobalChallenges&y] &gPlugin has been loaded (" + (System.currentTimeMillis() - startupTime) + " ms)&reset"));
     }
 
