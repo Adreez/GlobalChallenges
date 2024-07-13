@@ -113,7 +113,6 @@ public class HarvestCropsChallenge extends Challenge {
 
     @EventHandler
     public void blockBoneMealEvent(PlayerInteractEvent event) {
-        //TODO Doesnt work
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK && event.getPlayer().getInventory().getItemInMainHand().getType() == Material.BONE_MEAL)
             blocks.add(event.getClickedBlock().getLocation().hashCode());
     }
@@ -133,7 +132,6 @@ public class HarvestCropsChallenge extends Challenge {
             blocks.add(blockHash);
     }
 
-    //TODO
     @Getter
     public enum PlantAges {
 
