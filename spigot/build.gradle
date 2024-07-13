@@ -1,37 +1,16 @@
-repositories {
-    mavenCentral()
-    maven {
-        name = "spigotmc-repo"
-        url = "https://hub.spigotmc.org/nexus/content/repositories/snapshots/"
-    }
-    maven {
-        name = "sonatype"
-        url = "https://oss.sonatype.org/content/groups/public/"
-    }
-}
-
 dependencies {
+    implementation project(':api')
+    implementation project(':core')
+
     compileOnly "org.spigotmc:spigot-api:1.20.4-R0.1-SNAPSHOT"
-    implementation "net.kyori:adventure-platform-bukkit:4.3.1"
+    compileOnly "dev.jorel:commandapi-bukkit-core:9.3.0"
+
+    implementation "net.kyori:adventure-platform-bukkit:4.3.2"
+    implementation "net.kyori:adventure-text-minimessage:4.14.0"
 }
 
-java {
-    def javaVersion = JavaVersion.toVersion(targetJavaVersion)
-    sourceCompatibility = javaVersion
-    targetCompatibility = javaVersion
-    if (JavaVersion.current() < javaVersion) {
-        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
-    }
-}
-
-tasks.withType(JavaCompile).configureEach {
-    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
-        options.release = targetJavaVersion
-    }
-}
-
-processResources {
-    def props = [version: version]
+tasks.processResources {
+    def props = [version: rootProject.version]
     inputs.properties props
     filteringCharset 'UTF-8'
     filesMatching('plugin.yml') {
@@ -40,7 +19,17 @@ processResources {
 }
 
 shadowJar {
-    //relocate 'sk.adr3ez.alib', 'sk.adr3ez.darkauth.alib'
+    archiveFileName.set("GlobalChallenges-Spigot-${rootProject.version}.jar")
 
-    archiveFileName.set("GlobalChallenges-${rootProject.version}.jar")
+    exclude 'waffle/**'
+    exclude 'org/**'
+    exclude 'net/bytebuddy/**'
+    exclude 'jakarta/**'
+    exclude 'com/**'
+
+    relocate 'dev.dejvokep.boostedyaml', 'sk.adr3ez.libs.boostedyaml'
+}
+
+artifacts {
+    archives shadowJar
 }

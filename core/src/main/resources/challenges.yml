@@ -1,0 +1,65 @@
+##########################################################################################
+# |-    ____ _       _           _  ____ _           _ _                              -| #
+# |-   / ___| | ___ | |__   __ _| |/ ___| |__   __ _| | | ___ _ __   __ _  ___  ___   -| #
+# |-  | |  _| |/ _ \| '_ \ / _` | | |   | '_ \ / _` | | |/ _ \ '_ \ / _` |/ _ \/ __|  -| #
+# |-  | |_| | | (_) | |_) | (_| | | |___| | | | (_| | | |  __/ | | | (_| |  __/\__ \  -| #
+# |-   \____|_|\___/|_.__/ \__,_|_|\____|_| |_|\__,_|_|_|\___|_| |_|\__, |\___||___/  -| #
+# |-                                                                |___/             -| #
+# |-  Author: Adr3ez_                                                                 -| #
+# |-                                                                                  -| #
+# |-  Wiki & Support: https://darklabs.gitbook.io/globalchallenges/                   -| #
+# |-                                                                                  -| #
+# |-  Github: https://github.com/Adreez/GlobalChallenges                              -| #
+# |-                                                                                  -| #
+##########################################################################################
+challenges:
+
+  mine_block:
+    name: "Mine block"
+    description: "<gray><i>Mine a <yellow>%block%"
+    enabled: true
+    unlimited_score: true
+
+    #If you want to cancel blocks placed by player, you can leave this to false but
+    #monitor_blocks in config.yml has to be enabled!
+    player_placed: false
+    list:
+      # Material : minimalValue : maximalValue <- (NOTE! -> These values are used for randomly generated number between them)
+      - DIAMOND_ORE:10:1
+      - GOLD_ORE:20:1
+      - IRON_ORE:30:1
+      - COAL_ORE:64:1
+
+  xp_gathered:
+    name: "Gather experience"
+    description: "<gray><i>Gather <yellow>%value%<gray><i> experience"
+    enabled: true
+    unlimited_score: true
+
+  players_killed:
+    name: "Kill players"
+    description: "<gray><i>Kill as much unique players as possible!"
+    enabled: true
+    unlimited_score: true
+
+  harvest_crops:
+    name: "Harvest crops"
+    description: "<gray><i>Harvest as much <u>fully grown</u> crops of %value%"
+    enabled: true
+    unlimited_score: true
+
+    list:
+      - WHEAT
+      - BEETROOTS
+      - CARROTS
+      - POTATOES
+      - PUMPKIN
+      - MELON
+      - CACTUS
+      - COCOA
+      - SUGAR_CANE
+      - SEA_PICKLE
+      - NETHER_WART
+      - PITCHER_CROP
+      - SWEET_BERRY_BUSH #Has to be bush in case you want to detect also this type of crop
+      - CAVE_VINES_PLANT # Has to be a VINES
