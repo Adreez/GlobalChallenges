@@ -39,7 +39,6 @@ storage:
       minimumConnections: 1
       maximumConnections: 20
       connectionTimeout: 2000
-      driverClassName: "com.mysql.cj.jdbc.Driver"
 
 # You can set this value to your own server name or leave it as global.
 # If you have network with more different servers that are using GlobalChallenges
