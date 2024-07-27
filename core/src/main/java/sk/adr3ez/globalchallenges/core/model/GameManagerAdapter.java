@@ -3,6 +3,8 @@ package sk.adr3ez.globalchallenges.core.model;
 import dev.dejvokep.boostedyaml.YamlDocument;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.title.Title;
+import org.bukkit.Bukkit;
+import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.reflections.Reflections;
@@ -33,6 +35,8 @@ public class GameManagerAdapter implements GameManager {
     @NotNull
     private final List<Challenge> registeredChallenges = new ArrayList<>();
 
+    private final BukkitTask autoStartTask; //TODO ADD SHUTDOWN ACTION
+
     public GameManagerAdapter(@NotNull GlobalChallenges plugin) {
         this.plugin = plugin;
 
@@ -59,6 +63,22 @@ public class GameManagerAdapter implements GameManager {
             } catch (Exception ignored) {
             }
         }
+
+        long autoStartTime = plugin.getConfiguration().getLong(ConfigRoutes.SETTINGS_AUTO_START.getRoute(), 900L) * 20;
+        autoStartTask = Bukkit.getScheduler().runTaskTimer(plugin.getJavaPlugin(), () -> {
+
+            if (getActiveChallenge().isPresent()) {
+                plugin.getPluginLogger().info("Automatic challenge cannot be started because there is already an active challenge.");
+                return;
+            }
+
+            if (plugin.getOnlinePlayers().isEmpty() || plugin.getOnlinePlayers().size() < plugin.getConfiguration().getInt(ConfigRoutes.SETTINGS_REQUIRED_PLAYERS.getRoute())) {
+                plugin.getPluginLogger().info("Not enough players online to start a game.");
+                return;
+            }
+            startRandom();
+
+        }, autoStartTime, autoStartTime);
     }
 
     @Nullable
