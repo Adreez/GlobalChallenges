@@ -20,6 +20,7 @@ public enum ConfigRoutes {
 
     SETTINGS_REQUIRED_PLAYERS("settings.players_required"),
     SETTINGS_CHALLENGE_TIME("settings.challenge_time"),
+    SETTINGS_AUTO_START("settings.auto_start"),
     SETTINGS_MONITOR_BLOCKS("settings.monitor_blocks"),
 
     MESSAGES_BROADCAST_GAMESTART_CHAT("messages.broadcast.game_start.chat"),

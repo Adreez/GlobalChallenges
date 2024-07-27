@@ -14,7 +14,7 @@
 ##########################################################################################
 
 # Please do not change! Unless developer told you to do so.
-file-version: 1
+file-version: 2
 
 ##########################################################################################
 # |-                                                                                  -| #
@@ -39,7 +39,6 @@ storage:
       minimumConnections: 1
       maximumConnections: 20
       connectionTimeout: 2000
-      driverClassName: "com.mysql.cj.jdbc.Driver"
 
 # You can set this value to your own server name or leave it as global.
 # If you have network with more different servers that are using GlobalChallenges
@@ -61,6 +60,9 @@ settings:
 
   # How many seconds will one challange be run for.
   challenge_time: 300 #5 minutes
+
+  # How many seconds between each automatic challenge
+  auto_start: 900 # 15 minutes
 
   # If placed blocks should be monitored for player_placed condition in challenges
   monitor_blocks: false
