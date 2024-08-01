@@ -52,8 +52,7 @@ public final class ActiveChallengeAdapter implements ActiveChallenge {
         if (challenge.canBeUnlimited()) {
             if (Math.random() > 0.5) {
                 requiredScore = -1.0;
-            } else
-                this.requiredScore = challenge.getRequiredScore();
+            } else this.requiredScore = challenge.getRequiredScore();
         } else {
             this.requiredScore = challenge.getRequiredScore();
         }
@@ -107,10 +106,8 @@ public final class ActiveChallengeAdapter implements ActiveChallenge {
 
     @Override
     public Optional<ActivePlayer> getPlayer(@NotNull UUID uuid) {
-        if (players.containsKey(uuid))
-            return Optional.of(players.get(uuid));
-        else if (finishedPlayers.containsKey(uuid))
-            return Optional.of(finishedPlayers.get(uuid));
+        if (players.containsKey(uuid)) return Optional.of(players.get(uuid));
+        else if (finishedPlayers.containsKey(uuid)) return Optional.of(finishedPlayers.get(uuid));
         return Optional.empty();
     }
 
@@ -118,9 +115,7 @@ public final class ActiveChallengeAdapter implements ActiveChallenge {
     public void joinPlayer(@NotNull UUID uuid, @NotNull String name, @NotNull Audience audience) {
         DBPlayer dbPlayer = PlayerDAO.findByUuid(uuid.toString());
 
-        ActivePlayer activePlayer = new ActivePlayer(uuid, name, audience,
-                new DBPlayerData(dbGame, dbPlayer, Timestamp.from(Instant.now())),
-                this);
+        ActivePlayer activePlayer = new ActivePlayer(uuid, name, audience, new DBPlayerData(dbGame, dbPlayer, Timestamp.from(Instant.now())), this);
 
         players.put(uuid, activePlayer);
     }
@@ -145,55 +140,58 @@ public final class ActiveChallengeAdapter implements ActiveChallenge {
     @Override
     @ApiStatus.Internal
     public void handleEnd() {
-        timer.cancel();
-        bossBarTask.cancel();
+        Bukkit.getScheduler().runTaskAsynchronously(plugin.getJavaPlugin(), () -> {
+            timer.cancel();
+            bossBarTask.cancel();
 
-        ArrayList<ActivePlayer> list = new ArrayList<>(players.values());
-        list.sort(Comparator.comparingDouble(ActivePlayer::getScore).reversed());
-        if (requiredScore == -1) {
+            ArrayList<ActivePlayer> list = new ArrayList<>(players.values());
+            list.sort(Comparator.comparingDouble(ActivePlayer::getScore).reversed());
+            if (requiredScore == -1) {
 
-            for (ActivePlayer activePlayer : list) {
-                activePlayer.setFinished(activePlayer.getScore() > 0);
-                activePlayer.setFinishTime(System.currentTimeMillis());
-                finishPlayer(activePlayer.getUuid());
+                for (ActivePlayer activePlayer : list) {
+                    activePlayer.setFinished(activePlayer.getScore() > 0);
+                    activePlayer.setFinishTime(System.currentTimeMillis());
+                    finishPlayer(activePlayer.getUuid());
+                }
             }
-        }
-        //Handle players that did not finish
-        list.addAll(finishedPlayers.values());
-        for (ActivePlayer activePlayer : list) {
-            UUID uuid = activePlayer.getUuid();
+            //Handle players that did not finish
+            list.addAll(finishedPlayers.values());
+            for (ActivePlayer activePlayer : list) {
+                UUID uuid = activePlayer.getUuid();
 
-            if (!finishedPlayers.containsKey(uuid))
-                finishPlayer(uuid);
+                if (!finishedPlayers.containsKey(uuid)) finishPlayer(uuid);
 
-            activePlayer.getAudience().hideBossBar(activePlayer.getBossBar());
-        }
+                activePlayer.getAudience().hideBossBar(activePlayer.getBossBar());
+            }
 
 
-        dbGame.setEndTime(Timestamp.valueOf(LocalDateTime.now()));
-        dbGame.setPlayersJoined(players.size() + finishedPlayers.size());
-        dbGame.setPlayersFinished(finishedPlayers.size());
+            dbGame.setEndTime(Timestamp.valueOf(LocalDateTime.now()));
+            dbGame.setPlayersJoined(players.size() + finishedPlayers.size());
+            dbGame.setPlayersFinished(finishedPlayers.size());
 
-        GameDAO.saveOrUpdate(dbGame);
 
-        for (ActivePlayer activePlayer : finishedPlayers.values()) {
-            if (activePlayer.finished()) {
-                if (plugin.getConfiguration().getInt("rewards.position." + activePlayer.getDbPlayerData().getPosition()) != null) {
-                    for (String s : plugin.getConfiguration().getStringList("rewards.position." + activePlayer.getDbPlayerData().getPosition())) {
-                        Bukkit.dispatchCommand(Bukkit.getServer().getConsoleSender(), s.replaceAll("%player%", activePlayer.getName()));
+            GameDAO.saveOrUpdate(dbGame);
+
+
+            for (ActivePlayer activePlayer : finishedPlayers.values()) {
+                if (activePlayer.finished()) {
+                    if (plugin.getConfiguration().getInt("rewards.position." + activePlayer.getDbPlayerData().getPosition()) != null) {
+                        for (String s : plugin.getConfiguration().getStringList("rewards.position." + activePlayer.getDbPlayerData().getPosition())) {
+                            Bukkit.getScheduler().runTask(plugin.getJavaPlugin(), () -> Bukkit.dispatchCommand(Bukkit.getServer().getConsoleSender(), s.replaceAll("%player%", activePlayer.getName())));
+                        }
                     }
+                }
+
+                for (String s : plugin.getConfiguration().getStringList("rewards.join")) {
+                    Bukkit.getScheduler().runTask(plugin.getJavaPlugin(), () -> Bukkit.dispatchCommand(Bukkit.getServer().getConsoleSender(), s.replaceAll("%player%", activePlayer.getName())));
                 }
             }
 
-            for (String s : plugin.getConfiguration().getStringList("rewards.join")) {
-                Bukkit.dispatchCommand(Bukkit.getServer().getConsoleSender(), s.replaceAll("%player%", activePlayer.getName()));
-            }
-        }
-
-        challenge.handleEnd();
-        this.challenge = null;
-        players = null;
-        finishedPlayers = null;
+            challenge.handleEnd();
+            this.challenge = null;
+            players = null;
+            finishedPlayers = null;
+        });
     }
 
     //Count for the position in which player has finished
@@ -216,9 +214,11 @@ public final class ActiveChallengeAdapter implements ActiveChallenge {
 
         activePlayer.setDbPlayerData(playerData);
 
+
         DBPlayer dbPlayer = PlayerDAO.findByUuid(uuid);
         dbPlayer.addPlayerData(playerData);
         PlayerDAO.saveOrUpdate(dbPlayer);
+
 
         finishedPlayers.put(uuid, activePlayer);
     }

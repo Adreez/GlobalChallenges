@@ -98,11 +98,10 @@ public final class GCSpigotPlugin extends JavaPlugin implements GlobalChallenges
     public void onDisable() {
         if (this.adventure != null) {
             this.adventure.close();
-            this.adventure = null;
         }
+        CommandAPI.unregister("globalchallenges");
         CommandAPI.onDisable();
         this.databaseManager.close();
-        CommandAPI.unregister("globalchallenges");
     }
 
     public @NotNull BukkitAudiences adventure() {
